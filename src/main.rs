@@ -3,42 +3,86 @@ use std::{error::Error, thread, time::{Duration, SystemTime, UNIX_EPOCH}};
 use rusb::{Device, UsbContext, open_device_with_vid_pid};
 use core::task::Context;
 
+use crate::classes::O_input_device;
 
+pub mod classes; 
+
+
+pub mod runtimedata; 
+use runtimedata::f_a_o_input_device;
+
+fn f_n_from_string(s: &str) -> usize {
+    s.chars().filter(|c| c.is_digit(10)).collect::<String>().parse::<usize>().unwrap()
+}
+
+fn f_update_o_input_device(
+    o_input_device: &mut O_input_device,
+    a_n_u8:  &[u8]//Vec<u8>
+) -> bool {
+
+    let mut n_bit = 0;
+            for o in &mut o_input_device.a_o_input_sensor {
+        let n_idx_byte = n_bit / 8; // e.g., 2
+        let n_bits = f_n_from_string(o.s_type); // e.g., 4 for 'u4'
+        let mut b_signed = false;
+        if o.s_type.contains('i'){
+            b_signed = true
+        } 
+
+        let n_idx_bit = n_bit % 8; // e.g., 4
+        let n_value_max = 2u64.pow(n_bits.try_into().unwrap()) - 1; // e.g., 2^4-1 = 15
+
+        let mut n_value_number = n_value_number;
+        if ![8, 16, 32, 64].contains(&n_bits.try_into().unwrap()) {
+            n_value_number = n_value_number >> n_idx_bit & n_value_max;
+        }
+        if o.s_type.contains('i') {
+            n_value_max /= 2;
+        }
+
+        o.value = Some(n_value_number.try_into().unwrap());
+        o.n_nor = n_value_number as f64 / n_value_max as f64;
+        if let Some(ref a_o_num_str_value) = o.a_o_num_str_value {
+            o.o_num_str_value = a_o_num_str_value.iter().find(|o_enum| o_enum.n == n_value_number);
+        }
+
+        n_bit += n_bits;
+        let v = if let Some(ref o_num_sta_o_num_str_value) = o.o_num_str_value {
+            &o_num_sta_o_num_str_value.s
+        } else {
+            &o.n_nor
+        };
+        println!("{:30}: {:?}", o.s_name, v);
+    }
+    return true
+}
 fn main() -> Result<(), Box<dyn Error>> {
 
+    let a_o_input_device = f_a_o_input_device();
+    let n_id_vendor = 0x045e;
+    let n_id_product = 0x028e; 
+    let mut o_input_device = 
+        a_o_input_device
+            .iter()
+            .find(
+                |&device|
+                device.n_id_vendor == n_id_vendor 
+                    && device.n_id_product == n_id_product
+            ).expect("could not find device")
+            .clone();
+
+
+
+    println!("Global Device {:?}", o_input_device);
+    // std::thread::sleep(std::time::Duration::from_millis(10000));
+
+    // println!("{:?}", o_input_sensor);
     let devices = rusb::devices()?;
 
-    // for device in devices.iter() {
-    //     let device_desc = device.device_descriptor()?;
-
-    //     let handle = match device.open() {
-    //         Ok(handle) => handle,
-    //         Err(_) => continue, // Skip devices that cannot be opened.
-    //     };
-
-    //     let manufacturer = handle.read_manufacturer_string_ascii(&device_desc)?;
-    //     let product = handle.read_product_string_ascii(&device_desc)?;
-    //     if(device_desc.vendor_id() == 0x045e
-    //         && device_desc.product_id() == 0x028e
-    //     ){
-    //         o_device = device
-    //     }
-    //     // println!("Manufacturer: {}, Product: {}", manufacturer, product);
-
-    //     println!("Bus {:03} Device {:03} ID {:04x}:{:04x} {} {}",
-    //              device.bus_number(),
-    //              device.address(),
-    //              device_desc.vendor_id(),
-    //              device_desc.product_id(),
-    //              manufacturer,
-    //                 product
-    //         );
-
-    // }
     let mut a_n_u8_read = [0u8; 64];
     let o_duration__timeout = std::time::Duration::from_secs(1);
     // println!("device found {}", o_device);
-    let mut o_device_handle = open_device_with_vid_pid(0x045e,0x028e).unwrap();
+    let mut o_device_handle = open_device_with_vid_pid(n_id_vendor,n_id_product).unwrap();
     // pub fn open_device_with_vid_pid(
         //     vendor_id: u16,
         //     product_id: u16
@@ -55,7 +99,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
         // Perform the interrupt read
         let n_b_read = o_device_handle.read_interrupt(0x81, &mut a_n_u8_read, o_duration__timeout)?;
-    
+        f_update_o_input_device(&mut o_input_device, &a_n_u8_read);
         println!("{:?}",a_n_u8_read);
     }
     // pub fn claim_interface(&mut self, iface: u8) -> Result<()>
