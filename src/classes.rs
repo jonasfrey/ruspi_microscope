@@ -1,3 +1,5 @@
+use std::time::Instant;
+
 #[derive(Debug)]
 #[derive(Clone)]
 pub struct O_num_str_value {
@@ -30,7 +32,7 @@ pub struct O_input_sensor {
     pub s_type: &'static str,
     pub s_name: &'static str,
     pub a_o_num_str_value: Option<Vec<O_num_str_value>>, 
-    pub value: Option<O_input_sensor_value>,
+    pub o_input_sensor_value: Option<O_input_sensor_value>,
     pub o_num_str_value: Option<O_num_str_value>, 
     pub n_nor: f64,
 }
@@ -44,3 +46,23 @@ pub struct O_input_device {
     pub a_o_input_sensor: Vec<O_input_sensor>,
 }
 
+
+
+
+
+#[derive(Debug)]
+#[derive(Clone)]
+pub struct O_stepper_28BYJ_48 {
+    pub a_n_pin : [usize; 4],
+    pub n_rpm_max: f64,
+    pub n_rpm_nor: f64, 
+    pub b_direction: bool, 
+    pub n_substeps: u64, 
+    pub n_radians: f64, 
+    pub n_fullsteps_per_round: u32, 
+    pub n_substeps_per_step: u32, 
+    pub n_idx_a_n_pin: u8, 
+    pub n_micsec_sleep_between_fullstep: f64, 
+    pub n_micsec_ts_last_step : u128,
+    pub o_instant: Instant
+}
