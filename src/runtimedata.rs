@@ -316,7 +316,7 @@ pub fn f_a_o_input_device() -> Vec<O_input_device> {
                 n_nor: 0.0,
             },
             O_input_sensor {
-                s_type: "u16",
+                s_type: "i16",
                 s_name: "right_y_axis",
                 a_o_num_str_value: None,
                 o_input_sensor_value: Some(O_input_sensor_value::I16(0)), // Placeholder for the axis value

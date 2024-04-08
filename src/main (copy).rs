@@ -1,10 +1,8 @@
 use classes::O_input_sensor_value;
 use rppal::gpio::Gpio;
-use std::{error::Error, os::unix::process, process::exit, sync::{mpsc,Arc, Mutex}, thread::{self, JoinHandle}, time::{Duration, Instant, SystemTime, UNIX_EPOCH}};
-use rusb::{Device, UsbContext, DeviceHandle, open_device_with_vid_pid};
+use std::{error::Error, os::unix::process, process::exit, sync::{Arc, Mutex}, thread::{self, JoinHandle}, time::{Duration, Instant, SystemTime, UNIX_EPOCH}};
+use rusb::{Device, UsbContext, open_device_with_vid_pid};
 use core::task::Context;
-
-
 
 use crate::classes::{O_input_device, O_stepper_28BYJ_48};
 
@@ -215,43 +213,47 @@ fn f_update_o_input_device(
     }
 }
 
+// fn f_update_o_input_device(
+//     o_input_device: &mut O_input_device,
+//     a_n_u8:  &[u8]//Vec<u8>
+// ) -> bool {
 
-fn f_start_usb_read_thread<C: UsbContext + 'static>(
-    device_handle: Arc<Mutex<DeviceHandle<C>>>,
-    timeout: Duration,
-) -> mpsc::Receiver<Vec<u8>> {
-    // Create a channel for communicating USB read results back to the main thread
-    let (tx, rx) = mpsc::channel();
+//     let mut n_bit = 0;
+//             for o in &mut o_input_device.a_o_input_sensor {
+//         let n_idx_byte = n_bit / 8; // e.g., 2
+//         let n_bits = f_n_from_string(o.s_type); // e.g., 4 for 'u4'
+//         let mut b_signed = false;
+//         if o.s_type.contains('i'){
+//             b_signed = true
+//         } 
 
-    thread::spawn(move || loop {
-        let mut buffer = vec![0u8; 32]; // Adjust buffer size as needed
-        {
-            let mut o_device_handle = device_handle.lock().unwrap();
-            let n_idx_iface = 0;
-            let _ = o_device_handle.detach_kernel_driver(n_idx_iface);
-            let o = o_device_handle.claim_interface(n_idx_iface);
-        }
-        {
-            // Lock the device handle for the duration of the USB operation
-            let handle = device_handle.lock().unwrap();
-            match handle.read_interrupt(0x81, &mut buffer, timeout) {
-                Ok(bytes_read) => {
-                    buffer.truncate(bytes_read); // Adjust buffer size to actual bytes read
-                    tx.send(buffer.clone()).expect("Failed to send data through channel");
-                }
-                Err(e) => {
-                    eprintln!("USB read error: {:?}", e);
-                    // Handle the error as needed (e.g., break the loop, retry, etc.)
-                }
-            }
-        }
+//         let n_idx_bit = n_bit % 8; // e.g., 4
+//         let n_value_max = 2u64.pow(n_bits.try_into().unwrap()) - 1; // e.g., 2^4-1 = 15
 
-        // Optional: sleep or yield to prevent the thread from monopolizing CPU resources
-        thread::sleep(Duration::from_millis(1)); // Adjust based on your requirements
-    });
+//         let mut n_value_number = n_value_number;
+//         if ![8, 16, 32, 64].contains(&n_bits.try_into().unwrap()) {
+//             n_value_number = n_value_number >> n_idx_bit & n_value_max;
+//         }
+//         if o.s_type.contains('i') {
+//             n_value_max /= 2;
+//         }
 
-    rx
-}
+//         o.value = Some(n_value_number.try_into().unwrap());
+//         o.n_nor = n_value_number as f64 / n_value_max as f64;
+//         if let Some(ref a_o_num_str_value) = o.a_o_num_str_value {
+//             o.o_num_str_value = a_o_num_str_value.iter().find(|o_enum| o_enum.n == n_value_number);
+//         }
+
+//         n_bit += n_bits;
+//         let v = if let Some(ref o_num_sta_o_num_str_value) = o.o_num_str_value {
+//             &o_num_sta_o_num_str_value.s
+//         } else {
+//             &o.n_nor
+//         };
+//         println!("{:30}: {:?}", o.s_name, v);
+//     }
+//     return true
+// }
 
 
 fn f_update_o_stepper(
@@ -280,7 +282,7 @@ fn f_update_o_stepper(
             n_idx_a_o_pin = (n_len-1);
         }
         o_stepper.n_idx_a_o_pin = n_idx_a_o_pin as u8;
-        println!("next substep  n_idx {}", n_idx_a_o_pin);
+        // println!("next substep  n_idx {}", n_idx_a_o_pin);
         for (n_idx, o) in o_stepper.a_o_pin.iter_mut().enumerate(){
             if(n_idx as u8 == o_stepper.n_idx_a_o_pin){
                 o.set_high();
@@ -320,22 +322,22 @@ fn main() -> Result<(), Box<dyn Error>> {
     let o_duration__timeout = std::time::Duration::from_secs(1);
     // println!("device found {}", o_device);
     let mut o_device_handle = open_device_with_vid_pid(n_id_vendor,n_id_product).unwrap();
+    // pub fn open_device_with_vid_pid(
+        //     vendor_id: u16,
+        //     product_id: u16
+        // ) -> Option<DeviceHandle<GlobalContext>>
+            // Detach kernel driver if necessary (specific to your device and OS)
+    let n_idx_iface = 0;
+    let _ = o_device_handle.detach_kernel_driver(n_idx_iface);
 
-    let timeout = Duration::from_millis(100);
-
-    // Start the USB read thread
-    let o_arc_mutex_o_device_handle = Arc::new(Mutex::new(o_device_handle));
-
-    let usb_read_receiver = f_start_usb_read_thread(o_arc_mutex_o_device_handle, timeout);
-
-    
+    let o = o_device_handle.claim_interface(n_idx_iface);
 
 
     // Obtain the GPIO instance
     let o_gpio = Gpio::new()?;
 
     let o_instant = Instant::now();
-    let n_rpm_max = 10.;
+    let n_rpm_max = 120.;
 
     let mut o_stepper_28BYJ_48_x = O_stepper_28BYJ_48{
 
@@ -388,57 +390,32 @@ fn main() -> Result<(), Box<dyn Error>> {
     let n_idx_o_input_sensor__right_axis_y = o_input_device.a_o_input_sensor.iter()
     .position(|sensor| sensor.s_name == "right_y_axis")
     .expect("Sensor 'right_y_axis' not found");
-    let n_idx_o_input_sensor__r1 = o_input_device.a_o_input_sensor.iter()
-    .position(|sensor| sensor.s_name == "r1")
-    .expect("Sensor 'r1' not found");
 
     let mut n_micsec_last: u128 = o_instant.elapsed().as_micros();
     loop{
         // println!("probe");
         let n_micsec_now = o_instant.elapsed().as_micros();
         let n_micsec_delta = (n_micsec_now - n_micsec_last) as f64;
-        // println!("micsec delta {}", n_micsec_delta);
-
-        // Perform the interrupt read, which would take around 8000 microsecs so we run a thread for it 
-        // let n_b_read = o_device_handle.read_interrupt(0x81, &mut a_n_u8_read, o_duration__timeout)?;
-        // f_update_o_input_device(&mut o_input_device, &a_n_u8_read);
-
-        match usb_read_receiver.try_recv() {
-            Ok(a_n_u8_read) => {
-                // Process the data received from the USB device
-                // println!("Received USB data: {:?}", a_n_u8_read);
-                f_update_o_input_device(&mut o_input_device, &a_n_u8_read);
-            }
-            Err(mpsc::TryRecvError::Empty) => {
-                // No data available yet; the main thread can perform other work
-            }
-            Err(e) => {
-                // Handle other kinds of errors (e.g., the sender was disconnected)
-                // eprintln!("Channel receive error: {:?}", e);
-                break;
-            }
-        }
-
-
+        println!("micsec delta {}", n_micsec_delta);
+        // Perform the interrupt read
+        let n_b_read = o_device_handle.read_interrupt(0x81, &mut a_n_u8_read, o_duration__timeout)?;
+        f_update_o_input_device(&mut o_input_device, &a_n_u8_read);
 
         let o_input_sensor__right_axis_x = &o_input_device.a_o_input_sensor[n_idx_o_input_sensor__right_axis_x];
         let o_input_sensor__right_axis_y = &o_input_device.a_o_input_sensor[n_idx_o_input_sensor__right_axis_y];
-        let o_input_sensor__r1 = &o_input_device.a_o_input_sensor[n_idx_o_input_sensor__r1];
 
-        let n_factor = if(o_input_sensor__r1.n_nor == 1.){ 0.1}else{1.};
-        
         o_stepper_28BYJ_48_y.b_direction = o_input_sensor__right_axis_y.n_nor > 0.; 
-        o_stepper_28BYJ_48_y.n_rpm_nor = o_input_sensor__right_axis_y.n_nor*n_factor;
+        o_stepper_28BYJ_48_y.n_rpm_nor = o_input_sensor__right_axis_y.n_nor;
         o_stepper_28BYJ_48_x.b_direction = o_input_sensor__right_axis_x.n_nor > 0.; 
-        o_stepper_28BYJ_48_x.n_rpm_nor = o_input_sensor__right_axis_x.n_nor*n_factor;
+        o_stepper_28BYJ_48_x.n_rpm_nor = o_input_sensor__right_axis_x.n_nor;
 
         // println!("{:?}", o_input_device);
-        println!("right y axis{}", o_input_sensor__right_axis_y.n_nor);
+        // println!("right y axis{}", o_input_sensor__right_axis_y.n_nor);
         f_update_o_stepper(&mut o_stepper_28BYJ_48_y);
         f_update_o_stepper(&mut o_stepper_28BYJ_48_x);
 
         let n_micsec_probe_diff = n_micsec_sleep_probe - n_micsec_delta;
-        // println!("probe sleep {}", n_micsec_probe_diff);
+        println!("probe sleep {}", n_micsec_probe_diff);
         if(n_micsec_probe_diff > 0.){
             thread::sleep(Duration::from_micros(
                 (n_micsec_probe_diff as u128).try_into().unwrap()

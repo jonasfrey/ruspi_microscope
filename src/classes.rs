@@ -1,4 +1,6 @@
 use std::time::Instant;
+use rppal::gpio::{Gpio, OutputPin};
+use std::error::Error;
 
 #[derive(Debug)]
 #[derive(Clone)]
@@ -51,9 +53,8 @@ pub struct O_input_device {
 
 
 #[derive(Debug)]
-#[derive(Clone)]
 pub struct O_stepper_28BYJ_48 {
-    pub a_n_pin : [usize; 4],
+    pub a_o_pin: Vec<OutputPin>,
     pub n_rpm_max: f64,
     pub n_rpm_nor: f64, 
     pub b_direction: bool, 
@@ -61,7 +62,7 @@ pub struct O_stepper_28BYJ_48 {
     pub n_radians: f64, 
     pub n_fullsteps_per_round: u32, 
     pub n_substeps_per_step: u32, 
-    pub n_idx_a_n_pin: u8, 
+    pub n_idx_a_o_pin: u8, 
     pub n_micsec_sleep_between_fullstep: f64, 
     pub n_micsec_ts_last_step : u128,
     pub o_instant: Instant
