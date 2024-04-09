@@ -37,6 +37,7 @@ pub struct O_input_sensor {
     pub o_input_sensor_value: Option<O_input_sensor_value>,
     pub o_num_str_value: Option<O_num_str_value>, 
     pub n_nor: f64,
+    pub n_nor__last: f64,
 }
 
 #[derive(Debug)]
@@ -59,10 +60,10 @@ pub struct O_stepper_28BYJ_48 {
     pub n_rpm_nor: f64, 
     pub b_direction: bool, 
     pub n_substeps: u64, 
+    pub n_idx_substep: u8,
     pub n_radians: f64, 
     pub n_fullsteps_per_round: u32, 
     pub n_substeps_per_step: u32, 
-    pub n_idx_a_o_pin: u8, 
     pub n_micsec_sleep_between_fullstep: f64, 
     pub n_micsec_ts_last_step : u128,
     pub o_instant: Instant

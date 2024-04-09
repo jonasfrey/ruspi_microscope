@@ -19,7 +19,8 @@ pub fn f_a_o_input_device() -> Vec<O_input_device> {
                 a_o_num_str_value: None,
                 o_input_sensor_value: None,
                 o_num_str_value: None,
-                n_nor: 0.0,     
+                n_nor: 0.0,
+                n_nor__last: 0.0,          
             },
             O_input_sensor {
                 s_type: "u8",
@@ -28,6 +29,7 @@ pub fn f_a_o_input_device() -> Vec<O_input_device> {
                 o_input_sensor_value: Some(O_input_sensor_value::U8(0)),
                 o_num_str_value: None,
                 n_nor: 0.0,
+                n_nor__last: 0.0,
             },
             O_input_sensor {
                 s_type: "u8",
@@ -36,6 +38,7 @@ pub fn f_a_o_input_device() -> Vec<O_input_device> {
                 o_input_sensor_value: Some(O_input_sensor_value::U8(0)),
                 o_num_str_value: None,
                 n_nor: 0.0,
+                n_nor__last: 0.0,
             },
             O_input_sensor {
                 s_type: "u8",
@@ -44,6 +47,7 @@ pub fn f_a_o_input_device() -> Vec<O_input_device> {
                 o_input_sensor_value: Some(O_input_sensor_value::U8(0)),
                 o_num_str_value: None,
                 n_nor: 0.0,
+                n_nor__last: 0.0,
             },
             O_input_sensor {
                 s_type: "u8",
@@ -52,6 +56,7 @@ pub fn f_a_o_input_device() -> Vec<O_input_device> {
                 o_input_sensor_value: Some(O_input_sensor_value::U8(0)),
                 o_num_str_value: None,
                 n_nor: 0.0,
+                n_nor__last: 0.0,
             },
             O_input_sensor {
                 s_type: "u8",
@@ -70,6 +75,7 @@ pub fn f_a_o_input_device() -> Vec<O_input_device> {
                 o_input_sensor_value: None,
                 o_num_str_value: None,
                 n_nor: 0.0,
+                n_nor__last: 0.0,
             },
             O_input_sensor {
                 s_type: "u1",
@@ -78,6 +84,7 @@ pub fn f_a_o_input_device() -> Vec<O_input_device> {
                 o_input_sensor_value: Some(O_input_sensor_value::Bool(true)),
                 o_num_str_value: None,
                 n_nor: 0.0,
+                n_nor__last: 0.0,
             },
             O_input_sensor {
                 s_type: "u1",
@@ -86,6 +93,7 @@ pub fn f_a_o_input_device() -> Vec<O_input_device> {
                 o_input_sensor_value: Some(O_input_sensor_value::Bool(false)),
                 o_num_str_value: None,
                 n_nor: 0.0,
+                n_nor__last: 0.0,
             },
             // Repeat for 'X', 'Y', 'L1', 'R1', 'L2_pressed', 'R2_pressed', 'back_select', 'Start', 'L3', 'R3'
             O_input_sensor {
@@ -95,6 +103,7 @@ pub fn f_a_o_input_device() -> Vec<O_input_device> {
                 o_input_sensor_value: Some(O_input_sensor_value::Bool(false)),
                 o_num_str_value: None,
                 n_nor: 0.0,
+                n_nor__last: 0.0,
             },
             O_input_sensor {
                 s_type: "u1",
@@ -103,6 +112,7 @@ pub fn f_a_o_input_device() -> Vec<O_input_device> {
                 o_input_sensor_value: Some(O_input_sensor_value::Bool(false)),
                 o_num_str_value: None,
                 n_nor: 0.0,
+                n_nor__last: 0.0,
             },
             // Assuming placeholders for 'L1', 'R1', 'L2_pressed', 'R2_pressed', 'back_select', 'Start', 'L3', 'R3'
             O_input_sensor {
@@ -112,6 +122,7 @@ pub fn f_a_o_input_device() -> Vec<O_input_device> {
                 o_input_sensor_value: Some(O_input_sensor_value::U8(0)), // Placeholder value
                 o_num_str_value: None,
                 n_nor: 0.0,
+                n_nor__last: 0.0,
             },
             O_input_sensor {
                 s_type: "u8",
@@ -120,6 +131,7 @@ pub fn f_a_o_input_device() -> Vec<O_input_device> {
                 o_input_sensor_value: Some(O_input_sensor_value::U8(0)), // Placeholder value
                 o_num_str_value: None,
                 n_nor: 0.0,
+                n_nor__last: 0.0,
             },
         ],
     };
@@ -136,6 +148,7 @@ pub fn f_a_o_input_device() -> Vec<O_input_device> {
                 o_input_sensor_value: None,
                 o_num_str_value: None,
                 n_nor: 0.0,
+                n_nor__last: 0.0,
             },
             O_input_sensor {
                 s_type: "u8",
@@ -144,6 +157,7 @@ pub fn f_a_o_input_device() -> Vec<O_input_device> {
                 o_input_sensor_value: None,
                 o_num_str_value: None,
                 n_nor: 0.0,
+                n_nor__last: 0.0,
             },
             O_input_sensor {
                 s_type: "u1",
@@ -152,6 +166,7 @@ pub fn f_a_o_input_device() -> Vec<O_input_device> {
                 o_input_sensor_value: Some(O_input_sensor_value::Bool(false)), // Assuming initial state is not pressed
                 o_num_str_value: None,
                 n_nor: 0.0,
+                n_nor__last: 0.0,
             },
             O_input_sensor {
                 s_type: "u1",
@@ -160,6 +175,7 @@ pub fn f_a_o_input_device() -> Vec<O_input_device> {
                 o_input_sensor_value: Some(O_input_sensor_value::Bool(false)),
                 o_num_str_value: None,
                 n_nor: 0.0,
+                n_nor__last: 0.0,
             },
             O_input_sensor {
                 s_type: "u1",
@@ -168,6 +184,7 @@ pub fn f_a_o_input_device() -> Vec<O_input_device> {
                 o_input_sensor_value: Some(O_input_sensor_value::Bool(false)),
                 o_num_str_value: None,
                 n_nor: 0.0,
+                n_nor__last: 0.0,
             },
             O_input_sensor {
                 s_type: "u1",
@@ -176,6 +193,7 @@ pub fn f_a_o_input_device() -> Vec<O_input_device> {
                 o_input_sensor_value: Some(O_input_sensor_value::Bool(false)),
                 o_num_str_value: None,
                 n_nor: 0.0,
+                n_nor__last: 0.0,
             },
             O_input_sensor {
                 s_type: "u1",
@@ -184,6 +202,7 @@ pub fn f_a_o_input_device() -> Vec<O_input_device> {
                 o_input_sensor_value: Some(O_input_sensor_value::Bool(false)),
                 o_num_str_value: None,
                 n_nor: 0.0,
+                n_nor__last: 0.0,
             },
             O_input_sensor {
                 s_type: "u1",
@@ -192,6 +211,7 @@ pub fn f_a_o_input_device() -> Vec<O_input_device> {
                 o_input_sensor_value: Some(O_input_sensor_value::Bool(false)),
                 o_num_str_value: None,
                 n_nor: 0.0,
+                n_nor__last: 0.0,
             },
             // Additional buttons follow the same pattern
             O_input_sensor {
@@ -201,6 +221,7 @@ pub fn f_a_o_input_device() -> Vec<O_input_device> {
                 o_input_sensor_value: Some(O_input_sensor_value::Bool(false)),
                 o_num_str_value: None,
                 n_nor: 0.0,
+                n_nor__last: 0.0,
             },
             O_input_sensor {
                 s_type: "u1",
@@ -209,6 +230,7 @@ pub fn f_a_o_input_device() -> Vec<O_input_device> {
                 o_input_sensor_value: Some(O_input_sensor_value::Bool(false)),
                 o_num_str_value: None,
                 n_nor: 0.0,
+                n_nor__last: 0.0,
             },
             O_input_sensor {
                 s_type: "u1",
@@ -217,6 +239,7 @@ pub fn f_a_o_input_device() -> Vec<O_input_device> {
                 o_input_sensor_value: Some(O_input_sensor_value::Bool(false)),
                 o_num_str_value: None,
                 n_nor: 0.0,
+                n_nor__last: 0.0,
             },
             O_input_sensor {
                 s_type: "u1",
@@ -225,6 +248,7 @@ pub fn f_a_o_input_device() -> Vec<O_input_device> {
                 o_input_sensor_value: Some(O_input_sensor_value::Bool(false)),
                 o_num_str_value: None,
                 n_nor: 0.0,
+                n_nor__last: 0.0,
             },
             O_input_sensor {
                 s_type: "u1",
@@ -233,6 +257,7 @@ pub fn f_a_o_input_device() -> Vec<O_input_device> {
                 o_input_sensor_value: Some(O_input_sensor_value::Bool(false)),
                 o_num_str_value: None,
                 n_nor: 0.0,
+                n_nor__last: 0.0,
             },
             O_input_sensor {
                 s_type: "u1",
@@ -241,22 +266,25 @@ pub fn f_a_o_input_device() -> Vec<O_input_device> {
                 o_input_sensor_value: Some(O_input_sensor_value::Bool(false)),
                 o_num_str_value: None,
                 n_nor: 0.0,
+                n_nor__last: 0.0,
             },
             O_input_sensor {
                 s_type: "u1",
-                s_name: "x_button",
+                s_name: "cross_button",
                 a_o_num_str_value: None,
                 o_input_sensor_value: Some(O_input_sensor_value::Bool(false)),
                 o_num_str_value: None,
                 n_nor: 0.0,
+                n_nor__last: 0.0,
             },
             O_input_sensor {
                 s_type: "u1",
-                s_name: "o_button",
+                s_name: "circle_button",
                 a_o_num_str_value: None,
                 o_input_sensor_value: Some(O_input_sensor_value::Bool(false)),
                 o_num_str_value: None,
                 n_nor: 0.0,
+                n_nor__last: 0.0,
             },
             O_input_sensor {
                 s_type: "u1",
@@ -265,6 +293,7 @@ pub fn f_a_o_input_device() -> Vec<O_input_device> {
                 o_input_sensor_value: Some(O_input_sensor_value::Bool(false)),
                 o_num_str_value: None,
                 n_nor: 0.0,
+                n_nor__last: 0.0,
             },
             O_input_sensor {
                 s_type: "u1",
@@ -273,6 +302,7 @@ pub fn f_a_o_input_device() -> Vec<O_input_device> {
                 o_input_sensor_value: Some(O_input_sensor_value::Bool(false)),
                 o_num_str_value: None,
                 n_nor: 0.0,
+                n_nor__last: 0.0,
             },
             // Omitting for brevity, repeat for each sensor as needed
             O_input_sensor {
@@ -282,6 +312,7 @@ pub fn f_a_o_input_device() -> Vec<O_input_device> {
                 o_input_sensor_value: Some(O_input_sensor_value::U8(0)), // Placeholder
                 o_num_str_value: None,
                 n_nor: 0.0,
+                n_nor__last: 0.0,
             },
             O_input_sensor {
                 s_type: "u8",
@@ -290,6 +321,7 @@ pub fn f_a_o_input_device() -> Vec<O_input_device> {
                 o_input_sensor_value: Some(O_input_sensor_value::U8(0)), // Placeholder
                 o_num_str_value: None,
                 n_nor: 0.0,
+                n_nor__last: 0.0,
             },
             O_input_sensor {
                 s_type: "i16",
@@ -298,6 +330,7 @@ pub fn f_a_o_input_device() -> Vec<O_input_device> {
                 o_input_sensor_value: Some(O_input_sensor_value::I16(0)), // Placeholder for the axis value
                 o_num_str_value: None,
                 n_nor: 0.0,
+                n_nor__last: 0.0,
             },
             O_input_sensor {
                 s_type: "i16",
@@ -306,6 +339,7 @@ pub fn f_a_o_input_device() -> Vec<O_input_device> {
                 o_input_sensor_value: Some(O_input_sensor_value::I16(0)), // Placeholder for the axis value
                 o_num_str_value: None,
                 n_nor: 0.0,
+                n_nor__last: 0.0,
             },
             O_input_sensor {
                 s_type: "i16",
@@ -314,6 +348,7 @@ pub fn f_a_o_input_device() -> Vec<O_input_device> {
                 o_input_sensor_value: Some(O_input_sensor_value::I16(0)), // Placeholder for the axis value
                 o_num_str_value: None,
                 n_nor: 0.0,
+                n_nor__last: 0.0,
             },
             O_input_sensor {
                 s_type: "i16",
@@ -322,6 +357,7 @@ pub fn f_a_o_input_device() -> Vec<O_input_device> {
                 o_input_sensor_value: Some(O_input_sensor_value::I16(0)), // Placeholder for the axis value
                 o_num_str_value: None,
                 n_nor: 0.0,
+                n_nor__last: 0.0,
             },
         ],
     };

@@ -3,7 +3,7 @@ use rppal::gpio::Gpio;
 use std::{error::Error, os::unix::process, process::exit, sync::{mpsc,Arc, Mutex}, thread::{self, JoinHandle}, time::{Duration, Instant, SystemTime, UNIX_EPOCH}};
 use rusb::{Device, UsbContext, DeviceHandle, open_device_with_vid_pid};
 use core::task::Context;
-
+use crate::classes::O_input_sensor;
 
 
 use crate::classes::{O_input_device, O_stepper_28BYJ_48};
@@ -13,7 +13,19 @@ pub mod classes;
 
 pub mod runtimedata; 
 use runtimedata::f_a_o_input_device;
-
+fn f_n_u8_sum_wrap(
+    n_u8: u8, 
+    n_u8_idx_max: u8, 
+    n_i8_summand : i8,  
+    // max = 4, summand = +1 -> 0, 1, 2, 3, 0, 1, 2, 3, 0...
+    // max = 4, summand = -1 -> 0, 3, 2, 1, 0, 3, 2, 1, 0...
+) -> u8 {
+    let n_res = n_u8 as i16 + n_i8_summand as i16;
+    if(n_res < 0){
+        return n_u8_idx_max-1;
+    } 
+    return (n_res % n_u8_idx_max as i16).try_into().unwrap()
+}
 fn f_n_from_string(s: &str) -> u32 {
     s.replace(|c: char| !c.is_digit(10), "").parse::<u32>().unwrap_or(0)
 }
@@ -138,7 +150,7 @@ fn f_update_o_input_device(
         n_res = f_convert_endianess(n_res, n_bits_rounded_up as usize);
         // println!("bit index start:end {}:{}", n_idx_bit_start, n_idx_bit_end);
         let mut n_value_max = (1 << n_bits) - 1;
-
+        o.n_nor__last = o.n_nor;
         if o.s_type.contains('i') {
             n_value_max = n_value_max / 2;
             // Handle signed integers if needed
@@ -254,7 +266,53 @@ fn f_start_usb_read_thread<C: UsbContext + 'static>(
 }
 
 
-fn f_update_o_stepper(
+fn f_substep_o_stepper(
+    o_stepper: &mut O_stepper_28BYJ_48
+){
+    let n_dir = if(o_stepper.b_direction){ 1 }else{ -1};
+
+    let n_len_a_o_pin = o_stepper.a_o_pin.len(); 
+    o_stepper.n_idx_substep = f_n_u8_sum_wrap(
+        o_stepper.n_idx_substep,
+        ((n_len_a_o_pin as u32 * o_stepper.n_substeps_per_step)).try_into().unwrap(),
+        n_dir as i8);   
+    // println!("n_idx_substep {}", o_stepper.n_idx_substep);                    
+    // next sub step
+
+    o_stepper.n_micsec_ts_last_step = o_stepper.o_instant.elapsed().as_micros();;
+    o_stepper.n_substeps+=1;
+
+    let mut n_idx_a_o_pin = (o_stepper.n_idx_substep as f32 / o_stepper.n_substeps_per_step as f32) as usize; 
+    {
+        let mut o_pin = &mut o_stepper.a_o_pin[n_idx_a_o_pin];
+        o_pin.set_high();
+    }
+    let n_mod = if(n_dir == 1) { 1} else {0};
+    if(o_stepper.n_idx_substep % o_stepper.n_substeps_per_step as u8 == n_mod){
+        let mut o_pin_last = &mut o_stepper.a_o_pin[
+            f_n_u8_sum_wrap(
+                n_idx_a_o_pin.try_into().unwrap(),
+                n_len_a_o_pin.try_into().unwrap(),
+                n_dir*-1
+            ) as usize
+        ];
+        o_pin_last.set_low();
+    }
+    // println!("n_idx_a_o_pin {}", n_idx_a_o_pin);                    
+    
+
+    // 2 substeps
+    // 1 0 0 0 
+    // 1 1 0 0
+    // 0 1 0 0
+    // 0 1 1 0
+    // 0 0 1 0 
+    // 0 0 1 1
+    // 0 0 0 1
+    // 1 0 0 1 
+    // 1 0 0 0
+}
+fn f_check_mic_sec_delta_and_potentially_step(
     o_stepper: &mut O_stepper_28BYJ_48
 ){
 
@@ -267,34 +325,24 @@ fn f_update_o_stepper(
     // println!("micsec elapsed {}", n_micsec_ts_now);
     // println!("micsec delta {}", n_micsec_ts_now - o_stepper.n_micsec_ts_last_step);
     if((n_micsec_ts_now - o_stepper.n_micsec_ts_last_step) > n_micsec_between_substep as u128){
-        // next sub step
-        o_stepper.n_micsec_ts_last_step = n_micsec_ts_now;
-        o_stepper.n_substeps+=1;
-        let n_dir = if(o_stepper.b_direction){ 1 }else{ -1};
-        let mut n_idx_a_o_pin = o_stepper.n_idx_a_o_pin as i32 + n_dir as i32;
-        let n_len = o_stepper.a_o_pin.len() as i32;
-        if(n_idx_a_o_pin > (n_len-1)){
-            n_idx_a_o_pin = 0;
-        }
-        if(n_idx_a_o_pin < 0){
-            n_idx_a_o_pin = (n_len-1);
-        }
-        o_stepper.n_idx_a_o_pin = n_idx_a_o_pin as u8;
-        println!("next substep  n_idx {}", n_idx_a_o_pin);
-        for (n_idx, o) in o_stepper.a_o_pin.iter_mut().enumerate(){
-            if(n_idx as u8 == o_stepper.n_idx_a_o_pin){
-                o.set_high();
-            }else{
-                o.set_low();
-            }
-        }
+        f_substep_o_stepper(o_stepper);
         
     }
     // println!("o_stepper.n_substeps_per_step {}", o_stepper.n_substeps_per_step);                    
-    // println!("n_micsec_between_substep {}", n_micsec_between_substep);                    
+    println!("n_micsec_between_substep {}", n_micsec_between_substep);                    
     // println!("n_rpm {}", n_rpm);                    
     // println!("{:?}", o_stepper);                    
 }
+fn f_o_input_sensor_from_s_name<'a>(a_o_input_sensor: &'a [O_input_sensor], s_name: &str) -> Option<&'a O_input_sensor> {
+    match a_o_input_sensor.iter().find(|o_input_sensor| o_input_sensor.s_name == s_name) {
+        Some(o_input_sensor) => Some(o_input_sensor),
+        None => {
+            println!("Error: o_input_sensor '{}' not found", s_name); // Print error message here
+            None
+        }
+    }
+}
+
 fn main() -> Result<(), Box<dyn Error>> {
 
 
@@ -329,7 +377,29 @@ fn main() -> Result<(), Box<dyn Error>> {
     let usb_read_receiver = f_start_usb_read_thread(o_arc_mutex_o_device_handle, timeout);
 
     
-
+    //raspi pinout pin layout 
+    // |----------------------|----------------------|
+    // |_   3v3 power         |_   5v power          |
+    // |_   GPIO 2 (SDA)      |_   5v power          |
+    // |_   GPIO 3 (SCL)      |_   Ground            |
+    // |_   GPIO 4 (GPCLK0)   |_   GPIO 14 (TXD)     |
+    // |_   Ground            |_   GPIO 15 (RXD)     |
+    // |_   GPIO 17           |_   GPIO 18 (PCM_CLK) |
+    // |_   GPIO 27           |_   Ground            |
+    // |_   GPIO 22           |_   GPIO 23           |
+    // |_   3v3 power         |_   GPIO 24           |
+    // |_   GPIO 10 (MOSI)    |_   Ground            |
+    // |_   GPIO 9 (MISO)     |_   GPIO 25           |
+    // |_   GPIO 11 (SCLK)    |_   GPIO 8 (CEO)      |
+    // |_   Ground            |_   GPIO 7 (CE1)      |
+    // |_   GPIO 0 (ID_SD)    |_   GPIO 1 (ID_SD)    |
+    // |_   GPIO 5            |_   Ground            |
+    // |_   GPIO 6            |_   GPIO 12 (PWM0)    |
+    // |_   GPIO 13 (PWM1)    |_   Ground            |
+    // |_   GPIO 19 (PCM_FS)  |_   GPIO 16           |
+    // |_   GPIO 26           |_   GPIO 20 (PCM_DIN) |
+    // |_   Ground            |_   GPIO 21 (PCM_DOUT)|
+    // |----------------------|----------------------|
 
     // Obtain the GPIO instance
     let o_gpio = Gpio::new()?;
@@ -349,10 +419,10 @@ fn main() -> Result<(), Box<dyn Error>> {
         n_rpm_max : n_rpm_max,
         b_direction : true,
         n_substeps: 1,
+        n_idx_substep: 0,
         n_radians : 0.0,
         n_fullsteps_per_round : 2048,
-        n_substeps_per_step: 1, // 2 half stepping
-        n_idx_a_o_pin: 0 , 
+        n_substeps_per_step: 2,//1,//2, // 2 half stepping
         n_micsec_sleep_between_fullstep: 0.0, 
         n_micsec_ts_last_step: o_instant.elapsed().as_micros(),
         o_instant: o_instant
@@ -361,19 +431,19 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut o_stepper_28BYJ_48_y = O_stepper_28BYJ_48{
 
         a_o_pin : vec![
-            o_gpio.get(27).expect("cannot get pin").into_output(),
-            o_gpio.get(22).expect("cannot get pin").into_output(),
-            o_gpio.get(10).expect("cannot get pin").into_output(),
-            o_gpio.get(9).expect("cannot get pin").into_output()
+            o_gpio.get(6).expect("cannot get pin").into_output(),
+            o_gpio.get(13).expect("cannot get pin").into_output(),
+            o_gpio.get(19).expect("cannot get pin").into_output(),
+            o_gpio.get(26).expect("cannot get pin").into_output()
         ],
         n_rpm_nor : 0.01,
         n_rpm_max : n_rpm_max,
         b_direction : true,
         n_substeps: 1,
+        n_idx_substep: 0,
         n_radians : 0.0,
         n_fullsteps_per_round : 2048,
-        n_substeps_per_step: 1, // 2 half stepping
-        n_idx_a_o_pin: 0 , 
+        n_substeps_per_step: 2,//1,//2, // 2 half stepping
         n_micsec_sleep_between_fullstep: 0.0, 
         n_micsec_ts_last_step: o_instant.elapsed().as_micros(),
         o_instant: o_instant
@@ -392,6 +462,12 @@ fn main() -> Result<(), Box<dyn Error>> {
     .position(|sensor| sensor.s_name == "r1")
     .expect("Sensor 'r1' not found");
 
+    // cross_button
+    // circle_button
+
+
+
+
     let mut n_micsec_last: u128 = o_instant.elapsed().as_micros();
     loop{
         // println!("probe");
@@ -402,12 +478,39 @@ fn main() -> Result<(), Box<dyn Error>> {
         // Perform the interrupt read, which would take around 8000 microsecs so we run a thread for it 
         // let n_b_read = o_device_handle.read_interrupt(0x81, &mut a_n_u8_read, o_duration__timeout)?;
         // f_update_o_input_device(&mut o_input_device, &a_n_u8_read);
+        let o_input_sensor__right_x_axis =  f_o_input_sensor_from_s_name(&o_input_device.a_o_input_sensor, "right_x_axis" ).unwrap();
+        let o_input_sensor__right_y_axis =  f_o_input_sensor_from_s_name(&o_input_device.a_o_input_sensor, "right_y_axis" ).unwrap();
+        let o_input_sensor__r1 = f_o_input_sensor_from_s_name(&o_input_device.a_o_input_sensor, "r1" ).unwrap();
+        let n_factor = if(o_input_sensor__r1.n_nor == 1.){ 0.1}else{1.};
+        
+        o_stepper_28BYJ_48_y.b_direction = o_input_sensor__right_y_axis.n_nor > 0.; 
+        o_stepper_28BYJ_48_y.n_rpm_nor = o_input_sensor__right_y_axis.n_nor*n_factor;
+        o_stepper_28BYJ_48_x.b_direction = o_input_sensor__right_x_axis.n_nor > 0.; 
+        o_stepper_28BYJ_48_x.n_rpm_nor = o_input_sensor__right_x_axis.n_nor*n_factor;
+
+        // println!("{:?}", o_input_device);
+        // println!("right y axis{}", o_input_sensor__right_y_axis.n_nor);
+        f_check_mic_sec_delta_and_potentially_step(&mut o_stepper_28BYJ_48_y);
+        f_check_mic_sec_delta_and_potentially_step(&mut o_stepper_28BYJ_48_x);
 
         match usb_read_receiver.try_recv() {
             Ok(a_n_u8_read) => {
                 // Process the data received from the USB device
                 // println!("Received USB data: {:?}", a_n_u8_read);
+            
+                
                 f_update_o_input_device(&mut o_input_device, &a_n_u8_read);
+                let o_input_sensor__d_pad_left = f_o_input_sensor_from_s_name(&o_input_device.a_o_input_sensor, "d_pad_left").unwrap();
+                let o_input_sensor__d_pad_right = f_o_input_sensor_from_s_name(&o_input_device.a_o_input_sensor, "d_pad_right").unwrap();
+
+                if(o_input_sensor__d_pad_right.n_nor == 1. && o_input_sensor__d_pad_right.n_nor__last != 1.){
+                    o_stepper_28BYJ_48_x.b_direction = true; 
+                    f_substep_o_stepper(&mut o_stepper_28BYJ_48_x)
+                }
+                if(o_input_sensor__d_pad_left.n_nor == 1. && o_input_sensor__d_pad_left.n_nor__last != 1.){
+                    o_stepper_28BYJ_48_x.b_direction = false; 
+                    f_substep_o_stepper(&mut o_stepper_28BYJ_48_x)
+                }
             }
             Err(mpsc::TryRecvError::Empty) => {
                 // No data available yet; the main thread can perform other work
@@ -421,21 +524,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
 
 
-        let o_input_sensor__right_axis_x = &o_input_device.a_o_input_sensor[n_idx_o_input_sensor__right_axis_x];
-        let o_input_sensor__right_axis_y = &o_input_device.a_o_input_sensor[n_idx_o_input_sensor__right_axis_y];
-        let o_input_sensor__r1 = &o_input_device.a_o_input_sensor[n_idx_o_input_sensor__r1];
 
-        let n_factor = if(o_input_sensor__r1.n_nor == 1.){ 0.1}else{1.};
-        
-        o_stepper_28BYJ_48_y.b_direction = o_input_sensor__right_axis_y.n_nor > 0.; 
-        o_stepper_28BYJ_48_y.n_rpm_nor = o_input_sensor__right_axis_y.n_nor*n_factor;
-        o_stepper_28BYJ_48_x.b_direction = o_input_sensor__right_axis_x.n_nor > 0.; 
-        o_stepper_28BYJ_48_x.n_rpm_nor = o_input_sensor__right_axis_x.n_nor*n_factor;
-
-        // println!("{:?}", o_input_device);
-        println!("right y axis{}", o_input_sensor__right_axis_y.n_nor);
-        f_update_o_stepper(&mut o_stepper_28BYJ_48_y);
-        f_update_o_stepper(&mut o_stepper_28BYJ_48_x);
 
         let n_micsec_probe_diff = n_micsec_sleep_probe - n_micsec_delta;
         // println!("probe sleep {}", n_micsec_probe_diff);
