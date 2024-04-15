@@ -9,3 +9,7 @@ edition = "2021"
 rppal = "0.13.1" # Check for the latest version on crates.io
 # read usb with rust
 rusb = "0.8"
+tokio = { version = "1", features = ["full"] }
+tokio-tungstenite = "0.16"
+tungstenite = "0.16"
+futures = "0.3"

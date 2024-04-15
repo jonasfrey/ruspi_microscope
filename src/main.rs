@@ -4,8 +4,16 @@ use std::{error::Error, os::unix::process, process::exit, sync::{mpsc,Arc, Mutex
 use rusb::{Device, UsbContext, DeviceHandle, open_device_with_vid_pid};
 use core::task::Context;
 use crate::classes::O_input_sensor;
-
-
+// use tokio::sync::{Mutex, mpsc};
+// use tokio::sync::mpsc;
+use tokio::net::TcpListener;
+use tokio::net::TcpStream;
+use futures::SinkExt;
+use tokio_tungstenite::accept_async;
+// use tokio::stream::StreamExt;
+use tungstenite::protocol::Message;
+// use futures_util::stream::stream::StreamExt;
+use futures::stream::StreamExt;
 use crate::classes::{O_input_device, O_stepper_28BYJ_48};
 
 pub mod classes; 
@@ -343,7 +351,68 @@ fn f_o_input_sensor_from_s_name<'a>(a_o_input_sensor: &'a [O_input_sensor], s_na
     }
 }
 
-fn main() -> Result<(), Box<dyn Error>> {
+
+struct O_test{
+    n: u8
+}
+async fn handle_connection(raw_stream: TcpStream, state: Arc<Mutex<O_test>>) {
+    let ws_stream = accept_async(raw_stream).await.expect("Failed to accept");
+    let (mut write, mut read) = ws_stream.split();
+
+    // Spawn a task to handle incoming messages
+    let read_task = tokio::spawn(async move {
+        while let Some(message) = read.next().await {
+            match message {
+                Ok(msg) => {
+                    if let Message::Text(text) = msg {
+                        let mut stepper = state.lock().unwrap();
+                        // Modify stepper based on text
+                        // e.g., parse command and apply to stepper
+                        println!("Received via WebSocket: {}", text);
+                    }
+                }
+                Err(e) => {
+                    eprintln!("WebSocket error: {:?}", e);
+                    break;
+                }
+            }
+        }
+    });
+
+    // Continuously send messages at a fixed interval
+    let mut interval = tokio::time::interval(Duration::from_millis(1000));
+    loop {
+        interval.tick().await;  // Wait for the next interval tick
+        // Prepare your message
+        let message = Message::Text("Periodic message from server".to_string());
+        if write.send(message).await.is_err() {
+            eprintln!("Failed to send message");
+            break;
+        }
+    }
+
+    // Await the reader task to finish (if it finishes)
+    let _ = read_task.await;
+}
+
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn Error>> {
+
+
+
+
+
+    let o_test_arc_mutex = Arc::new(Mutex::new(O_test {
+        // Initialize your stepper struct
+        n: 2
+    }));
+
+    let listener = TcpListener::bind("127.0.0.1:9000").await?;
+    while let Ok((stream, _)) = listener.accept().await {
+        let state = o_test_arc_mutex.clone();
+        tokio::spawn(handle_connection(stream, state));
+    }
 
 
     // read usb controlle 
@@ -464,8 +533,6 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     // cross_button
     // circle_button
-
-
 
 
     let mut n_micsec_last: u128 = o_instant.elapsed().as_micros();
