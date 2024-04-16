@@ -1,8 +1,10 @@
 use classes::O_input_sensor_value;
 use rppal::gpio::Gpio;
+use serde_json::{Value, json};
 use std::{error::Error, os::unix::process, process::exit, sync::{mpsc,Arc, Mutex}, thread::{self, JoinHandle}, time::{Duration, Instant, SystemTime, UNIX_EPOCH}};
 use rusb::{Device, UsbContext, DeviceHandle, open_device_with_vid_pid};
 use core::task::Context;
+use std::process::Command;
 use crate::classes::O_input_sensor;
 // use tokio::sync::{Mutex, mpsc};
 // use tokio::sync::mpsc;
@@ -15,6 +17,8 @@ use tungstenite::protocol::Message;
 // use futures_util::stream::stream::StreamExt;
 use futures::stream::StreamExt;
 use crate::classes::{O_input_device, O_stepper_28BYJ_48};
+use tokio::runtime::Runtime;
+use warp::Filter;
 
 pub mod classes; 
 
@@ -244,6 +248,7 @@ fn f_start_usb_read_thread<C: UsbContext + 'static>(
     let (tx, rx) = mpsc::channel();
 
     thread::spawn(move || loop {
+        
         let mut buffer = vec![0u8; 32]; // Adjust buffer size as needed
         {
             let mut o_device_handle = device_handle.lock().unwrap();
@@ -256,6 +261,7 @@ fn f_start_usb_read_thread<C: UsbContext + 'static>(
             let handle = device_handle.lock().unwrap();
             match handle.read_interrupt(0x81, &mut buffer, timeout) {
                 Ok(bytes_read) => {
+                    println!("read from usb device success");
                     buffer.truncate(bytes_read); // Adjust buffer size to actual bytes read
                     tx.send(buffer.clone()).expect("Failed to send data through channel");
                 }
@@ -369,6 +375,25 @@ async fn handle_connection(raw_stream: TcpStream, state: Arc<Mutex<O_test>>) {
                         // Modify stepper based on text
                         // e.g., parse command and apply to stepper
                         println!("Received via WebSocket: {}", text);
+
+                            // Parse the JSON string
+                        // let v =  serde_json::from_str::<Value>(&text);
+                        let v: Value = serde_json::from_str(&text).expect("cannot parse json");
+
+                        let n_id_vendor = v["o_usb_device"]["n_id_vendor"].as_u64().unwrap() as u16;
+                        let n_id_product = v["o_usb_device"]["n_id_vendor"].as_u64().unwrap() as u16;
+
+                        let mut o_device_handle = open_device_with_vid_pid(
+                            1133,// n_id_vendor, 
+                            49948// n_id_product
+                        ).unwrap();
+                        
+                        // Start the USB read thread
+                        let o_arc_mutex_o_device_handle = Arc::new(Mutex::new(o_device_handle));
+                        let timeout = Duration::from_millis(100);
+                        
+                        let usb_read_receiver = f_start_usb_read_thread(o_arc_mutex_o_device_handle, timeout);
+
                     }
                 }
                 Err(e) => {
@@ -385,7 +410,16 @@ async fn handle_connection(raw_stream: TcpStream, state: Arc<Mutex<O_test>>) {
         interval.tick().await;  // Wait for the next interval tick
         // Prepare your message
         let message = Message::Text("Periodic message from server".to_string());
-        if write.send(message).await.is_err() {
+        let output = Command::new("lsusb")
+            .output().expect("cannot run lsusb")
+            .stdout;
+        let sdev = (String::from_utf8_lossy(&output).to_string());
+
+        let json_output = json!({ "s_stdout__lsusb": sdev });
+        let json_string = json_output.to_string();
+
+        // println!("message {:?}", sdev);
+        if write.send(Message::Text(json_string)).await.is_err() {
             eprintln!("Failed to send message");
             break;
         }
@@ -400,6 +434,16 @@ async fn handle_connection(raw_stream: TcpStream, state: Arc<Mutex<O_test>>) {
 async fn main() -> Result<(), Box<dyn Error>> {
 
 
+
+    thread::spawn(|| {
+        let rt = Runtime::new().unwrap();
+        rt.block_on(async {
+            let route = warp::fs::dir("public");
+            warp::serve(route)
+                .run(([127, 0, 0, 1], 3030))
+                .await;
+        });
+    });
 
 
 
@@ -438,13 +482,13 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // println!("device found {}", o_device);
     let mut o_device_handle = open_device_with_vid_pid(n_id_vendor,n_id_product).unwrap();
 
-    let timeout = Duration::from_millis(100);
-
+    
     // Start the USB read thread
     let o_arc_mutex_o_device_handle = Arc::new(Mutex::new(o_device_handle));
-
+    let timeout = Duration::from_millis(100);
+    
     let usb_read_receiver = f_start_usb_read_thread(o_arc_mutex_o_device_handle, timeout);
-
+    
     
     //raspi pinout pin layout 
     // |----------------------|----------------------|
