@@ -9,7 +9,13 @@ import {
 import {
   f_o_html__and_make_renderable,
 }
-from 'https://deno.land/x/f_o_html_from_o_js@2.9/mod.js'
+from 'https://deno.land/x/f_o_html_from_o_js@3.0/mod.js'
+
+import {
+    f_o_js as f_o_js__notifire, 
+    f_o_throw_notification,
+    f_clear_all_notifications
+}from "https://deno.land/x/f_o_html_from_o_js@3.0/localhost/jsh_modules/notifire/mod.js"
 
 import {
   f_n_idx_binding_from_params,
@@ -52,6 +58,9 @@ f_add_css(
       flex-direction: column;
       justify-content:flex-end;
   }
+  video{
+    display:none;
+  }
   ${
       f_s_css_from_o_variables(
           o_variables
@@ -67,32 +76,230 @@ if(!o_el_vid){
     document.body.appendChild(o_el_vid)
 }
 let o_el_canvas = document.querySelector('canvas');
-let o_ctx = null;
+// let o_ctx = null;
 if(!o_el_canvas){
   o_el_canvas = document.createElement('canvas');
   document.body.appendChild(o_el_canvas);
-  
 }
-o_ctx = o_el_canvas.getContext('2d');
+o_el_canvas.width = 1920;
+o_el_canvas.height= 1080;
+
+let n_len_a_o_trn = 50;
+let n_idx_a_o_trn = 0;
+let o_gpu_gateway = await f_o_gpu_gateway(
+    o_el_canvas, 
+    `#version 300 es
+    in vec4 a_o_vec_position_vertex;
+    out vec2 o_trn_nor_pixel;
+    void main() {
+        gl_Position = a_o_vec_position_vertex;
+        o_trn_nor_pixel = (a_o_vec_position_vertex.xy) / 2.0; // Convert from clip space to texture coordinates
+    }`,
+    `#version 300 es
+    precision mediump float;
+    in vec2 o_trn_nor_pixel;
+    out vec4 fragColor;
+    uniform float n_ms_time;
+    uniform float n_factor_scale;
+    uniform float n_factor_brightness;
+    uniform float n_factor_contrast;
+    uniform float n_factor_gamma;
+    uniform float n_x_trn_nor;
+    uniform float n_y_trn_nor;
+    uniform vec2 o_trn_nor_mouse;
+    uniform vec2 o_trn_nor_mouse_last;
+    uniform vec2 o_trn_nor_mouse_follow;
+    uniform vec2 o_scl_canvas;
+    uniform sampler2D image_from_video;
+    
+
+    void main() {
+      //o_trn_nor_pixel normalized pixel coordinates from -1.0 -1.0 to 1.0 1.0
+      
+      vec2 o_trn = o_trn_nor_pixel * n_factor_scale + vec2(n_x_trn_nor, n_y_trn_nor);
+      vec4 o_pixel_value_image_from_video = texture(image_from_video, ((o_trn)+.5)); 
+      o_pixel_value_image_from_video *= n_factor_brightness;
+
+      o_pixel_value_image_from_video.rgb = ((o_pixel_value_image_from_video.rgb - 0.5) * n_factor_contrast + 0.5);
+
+      o_pixel_value_image_from_video.rgb = pow(o_pixel_value_image_from_video.rgb, vec3(1.0 / n_factor_gamma));
+
+       fragColor = o_pixel_value_image_from_video;
+        // fragColor = vec4(o_trn_nor_pixel.x*2.);
+    }
+    `,
+)
+
+var a_o_trn = new Float32Array(new Array(n_len_a_o_trn*4).fill(0));
+var buffer = o_gpu_gateway.o_ctx.createBuffer();
+o_gpu_gateway.o_ctx.bindBuffer(o_gpu_gateway.o_ctx.ARRAY_BUFFER, buffer);
+o_gpu_gateway.o_ctx.bufferData(o_gpu_gateway.o_ctx.ARRAY_BUFFER, a_o_trn, o_gpu_gateway.o_ctx.STATIC_DRAW);
+var o_location_a_o_trn = o_gpu_gateway.o_ctx.getUniformLocation(o_gpu_gateway.o_shader__program, 'a_o_trn');
+o_gpu_gateway.o_ctx.uniform4fv(o_location_a_o_trn, a_o_trn);
+
+
+
+// o_ctx = o_el_canvas.getContext('2d');
 
 let o_state = {
+    o_state__notifire: {
+
+    },
+    n_id_timeout: null,
   a_o_usb_device: [], 
   o_usb_device: null, 
+  o_trn_nor_mouse_last: [.5,.5],
+  o_trn_nor_mouse: [.5,.5], 
+  o_trn_nor_mouse_follow: [0.,0.], 
+  n_factor_scale: 1., 
+  n_factor_brightness: 1., 
+  n_factor_contrast: 1.,
+  n_factor_gamma: 2.2,
+  n_x_trn_nor: 0.0,
+  n_y_trn_nor: 0.0,
+  a_o_webcam: [],
+  s_api_key_openai: 'sk-....', 
+  s_prompt_image_ai: `
+  return information about this image
+  , the image is taken with a camera that is connected to a microscope give the response as a json object with the following structure, the prefixes indicate the types (n_... number) (s_... string) (o_... object) (a_[prefix]... array , eg. a_o_... arrray of objects, a_s_... array of strings ) 'n_micrometer_x_axis_approx': the approximate size of the image on the full x axis try to guess based on what you see on this 'a_o_object' (array of objects) an array holding objects , each object represents an object that is seen on the image (if there are multiple same for example bloodcells, only the best visible should be listed here otherwise hundrets of object would need to be listed in the example of bloodcells...), where the json structure of a "o_object" looks like this 's_name' (string) a short string describing the object 'n_x_nor' a normalized number describing the position on the x axis where 1.0 is fully on the right and 0.0 is fully on the left of the image 'n_y_nor' same like n_x_nor for the y axis, 0.0 is fully on the bottom, 1.0 is fully on the top 'n_micrometer_diameter_approx' approximation of the diameter of the circle bounding the object
+
+  's_description' a general description of what can be seen on the image `,
+  s_prompt_image_ai_generic: `
+  return information about this image,
+  
+  return the response as a json object that has the following structure, the prefixes indicate the types (n_... number) (s_... string) (o_... object) (a_[prefix]... array , eg. a_o_... arrray of objects, a_s_... array of strings ) 'n_micrometer_x_axis_approx': the approximate size of the image on the full x axis try to guess based on what you see on this 'a_o_object' (array of objects) an array holding objects , each object represents an object that is seen on the image (if there are multiple same for example bloodcells, only the best visible should be listed here otherwise hundrets of object would need to be listed in the example of bloodcells...), where the json structure of a "o_object" looks like this 's_name' (string) a short string describing the object 'n_x_nor' a normalized number describing the position on the x axis where 1.0 is fully on the right and 0.0 is fully on the left of the image 'n_y_nor' same like n_x_nor for the y axis, 0.0 is fully on the bottom, 1.0 is fully on the top 'n_micrometer_diameter_approx' approximation of the diameter of the circle bounding the object
+
+  's_description' a general description of what can be seen on the image `
 }
+
 window.o_state = o_state
 async function startWebcam() {
+  if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
+    console.log("enumerateDevices() not supported.");
+    return;
+  }
+
   try {
     const stream = await navigator.mediaDevices.getUserMedia({
       video: { width: 1920, height: 1080 }
     });
     o_el_vid.srcObject = stream;
+
   } catch (error) {
     console.error('Error accessing the webcam:', error);
   }
+
+  let gl = o_gpu_gateway.o_ctx;
+
+  o_el_canvas.width = 1920;//o_el_vid?.videoWidth
+  o_el_canvas.height = 1080;//o_el_vid?.videoHeight
+  let n_ms_delta_max = 1000/30;
+  let n_ms_last = 0;
+    function updateTexture() {
+      let n_ms = window.performance.now();
+      let n_ms_delta = n_ms - n_ms_last;
+      if(n_ms_delta > n_ms_delta_max){
+        if (o_el_vid.readyState >= o_el_vid.HAVE_CURRENT_DATA) {
+            f_update_data_in_o_gpu_gateway(
+                {
+                    n_factor_scale: o_state.n_factor_scale,
+                    n_x_trn_nor: o_state.n_x_trn_nor,
+                    n_y_trn_nor: o_state.n_y_trn_nor,
+                    n_factor_brightness: o_state.n_factor_brightness,
+                    n_factor_contrast: o_state.n_factor_contrast,
+                    n_factor_gamma: o_state.n_factor_gamma,
+                    n_ms_time: window.performance.now(), 
+                    image_from_video: f_o_gpu_texture__from_o_web_api_object(
+                      o_el_vid
+                    ),
+                }, 
+                o_gpu_gateway, 
+            )
+            f_render_o_gpu_gateway(
+                o_gpu_gateway, 
+            );
+  
+            // Add your WebGL drawing code here to manipulate the video frame
+            // gl.drawArrays(gl.TRIANGLES, 0, 6);
+        }
+        n_ms_last = n_ms;
+      }
+      requestAnimationFrame(updateTexture);
+  }
+
+  updateTexture();
+
 }
 
+
+
+window.addEventListener('keydown', async (o_e)=>{
+  [
+    ['q',"n_factor_scale", + 0.01], 
+    ['e',"n_factor_scale", - 0.01],    
+    ['w',"n_y_trn_nor", + 0.01],    
+    ['s',"n_y_trn_nor", - 0.01],    
+    ['a',"n_x_trn_nor", - 0.01],    
+    ['d',"n_x_trn_nor", + 0.01],    
+    ['r',"n_factor_brightness", - 0.01],    
+    ['f',"n_factor_brightness", + 0.01],    
+    ['t',"n_factor_contrast", - 0.01],    
+    ['g',"n_factor_contrast", + 0.01],    
+    ['y',"n_factor_gamma", - 0.01],    
+    ['h',"n_factor_gamma", + 0.01]
+].map(a_v =>{
+  if(o_e.key == a_v[0]){
+    o_state[a_v[1]] += a_v[2]
+    o_state[`o_js__${a_v[1]}`]._f_render()
+  }
+})
+if(o_e.key == ' '){
+
+    // Convert canvas to a data URL (Base64 image)
+    const s_data_url = o_el_canvas.toDataURL('image/jpeg');
+
+    
+    let o_resp = await fetch(
+        "https://api.openai.com/v1/chat/completions", 
+        {
+            headers: {
+                "Content-Type":" application/json" ,
+                "Authorization":`Bearer ${o_state.s_api_key_openai}`,
+            }, 
+            body: JSON.stringify(
+                {
+                    "model": "gpt-4-turbo",
+                    "messages": [
+                      {
+                        "role": "user",
+                        "content": [
+                          {
+                            "type": "text",
+                            "text": o_state.s_prompt_image_ai_generic
+                          },
+                          {
+                            "type": "image_url",
+                            "image_url": {
+                              "url": s_data_url
+                            }
+                          }
+                        ]
+                      }
+                    ],
+                    "max_tokens": 300
+                  }
+            )
+        }
+    )   
+    let o_parsed = o_resp.json();
+    console.log(o_parsed);
+    window.o_parsed = o_parsed
+
+}
+
+})
 // Replace 'ws://example.com/socket' with the URL of your WebSocket server
-const o_ws = new WebSocket('ws://localhost:9000');
+const o_ws = new WebSocket(`ws://${location.hostname}:${location.port}/ws`);
 
 // Connection opened
 o_ws.addEventListener('open', function (event) {
@@ -161,26 +368,191 @@ o_ws.addEventListener('close', function (event) {
 
 
 
-startWebcam();
 
 
 o_state.f_captureAndSendImage = function() {
-  o_ctx.drawImage(o_el_vid, 0, 0, o_el_vid.videoWidth, o_el_vid.videoHeight);
-  const s_data_url = o_el_canvas.toDataURL('image/jpeg'); // Converts image to JPEG base64
-  console.log(s_data_url)
-  o_ws.send(s_data_url)
-  // o_ws.send(JSON.stringify({
-  //   s_b64_image: s_data_url
-  // }));
+  o_el_canvas.width = o_el_vid?.videoWidth
+  o_el_canvas.height = o_el_vid?.videoHeight
+  // o_ctx.drawImage(o_el_vid, 0, 0, o_el_vid.videoWidth, o_el_vid.videoHeight);
+
+  
+    // Convert canvas to a data URL (Base64 image)
+    const s_data_url = o_el_canvas.toDataURL('image/jpeg');
+    // Send JSON data to WebSocket server
+    o_ws.send(
+      JSON.stringify({
+        s_data_url: s_data_url,
+      })
+    );
+    
 }
 
 
+
+startWebcam();
+
+
+let f_resize = ()=>{
+  o_el_canvas.width = window.innerWidth
+  o_el_canvas.height = window.innerHeight
+  f_update_data_in_o_gpu_gateway(
+      {o_scl_canvas: [
+          o_el_canvas.width,
+          o_el_canvas.height
+      ]}, 
+      o_gpu_gateway, 
+  )
+}
+window.addEventListener('resize',()=>{
+  f_resize()
+});
+f_resize()
+
+
+
+
+
+window.addEventListener('pointermove', (o_e)=>{
+  o_state.o_trn_nor_mouse = [
+      (o_e.clientX / window.innerWidth), 
+      1.-(o_e.clientY / window.innerHeight), 
+  ];
+
+  f_update_data_in_o_gpu_gateway(
+      {
+          o_trn_nor_mouse: o_state.o_trn_nor_mouse_last,
+          o_trn_nor_mouse_last: o_state.o_trn_nor_mouse, 
+      }, 
+      o_gpu_gateway, 
+  )
+  o_state.o_trn_nor_mouse_last = o_state.o_trn_nor_mouse
+})
 document.body.appendChild(
   await f_o_html__and_make_renderable(
       {
           s_tag: 'div', 
-          class: "app",
+          class: "app inputs",
           a_o: [
+            f_o_js__notifire( 
+                o_state.o_state__notifire
+            ), 
+            Object.assign(
+                o_state,
+                {
+                    o_js__s_prompt_image_ai_generic: {
+                        f_o_jsh: ()=>{
+                            return {
+                                a_o:[   
+                                    {
+                                        innerText: "prompt_for_ai"
+                                    }, 
+                                    {
+                                        s_tag: "input", 
+                                        type: 'text', 
+                                        value: o_state.s_prompt_image_ai_generic,
+                                        oninput: (o_e)=>{
+                                            o_state.s_prompt_image_ai_generic = o_e.target.value
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                }
+            
+            ).o_js__s_prompt_image_ai_generic,
+            Object.assign(
+                o_state,
+                {
+                    o_js__s_api_key_openai: {
+                        f_o_jsh: ()=>{
+                            return {
+                                a_o:[   
+                                    {
+                                        innerText: "api_key_openai"
+                                    }, 
+                                    {
+                                        s_tag: "input", 
+                                        type: 'text', 
+                                        oninput: (o_e)=>{
+                                            o_state.s_api_key_openai = o_e.target.value
+
+                                            clearTimeout(o_state.n_id_timeout)
+                                            o_state.n_id_timeout = setTimeout( async ()=>{
+                                                let o = await fetch(
+                                                    "https://api.openai.com/v1/organizations",
+                                                    {
+                                                        headers: {
+                                                            "Authorization": `Bearer ${o_state.s_api_key_openai}`
+                                                        }
+                                                    }    
+                                                );
+                                                let b_invalid = false;
+                                                if(!o.ok){
+                                                    b_invalid = true;
+                                                }
+                                                try {
+                                                    let o_parsed = await o.json();
+                                                    await f_o_throw_notification(o_state.o_state__notifire,`valid api key added`, 'success')
+
+                                                } catch (error) {
+                                                    // f_o_throw_notification('api key invalid')
+                                                    b_invalid = true
+                                                }
+                                                if(b_invalid){
+                                                    await f_o_throw_notification(o_state.o_state__notifire,`invalid api key: ${o_state.s_api_key_openai}!`, 'warning')
+                                                }
+
+                                            },3000)
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                }
+            
+            ).o_js__s_api_key_openai,
+            ...[
+                "n_factor_scale",
+                "n_factor_brightness",
+                "n_factor_contrast",
+                "n_factor_gamma",
+                "n_x_trn_nor",
+                "n_y_trn_nor",
+            ].map(s_prop=>{
+                let s_prop2 = `o_js__${s_prop}`
+                return Object.assign(
+                    o_state,
+                    {
+                        [s_prop2]: {
+                            f_o_jsh:()=>{
+                                return {
+                                    a_o: [
+                                        {
+                                            s_tag: "label", 
+                                            innerText: s_prop
+                                        },
+                                        {
+                                            s_tag: "input",
+                                            type: 'range', 
+                                            step: 0.01, 
+                                            min: -1,
+                                            max:3.,
+                                            value:  o_state[s_prop],
+                                            oninput: (o_e)=>{
+                                                let n = parseFloat(o_e.target.value)
+                                                o_state[s_prop] = n;
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                )[s_prop2]
+            }),
+
               Object.assign(
                   o_state, 
                   {
@@ -223,3 +595,7 @@ document.body.appendChild(
       }
   )
 );
+
+
+// await f_o_throw_notification(o_state.o_state__notifire,'Loading, please wait !', 'warning')
+// await f_clear_all_notifications(o_state.o_state__notifire);
