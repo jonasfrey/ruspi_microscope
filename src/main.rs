@@ -1,12 +1,17 @@
 use classes::O_input_sensor_value;
 use rppal::gpio::Gpio;
+use data_url::{DataUrl, mime};
 use serde_json::{Value, json};
-use std::{error::Error, os::unix::process, process::exit, sync::{mpsc,Arc, Mutex}, thread::{self, JoinHandle}, time::{Duration, Instant, SystemTime, UNIX_EPOCH}};
+use std::{error::Error, os::unix::process, process::exit, sync::{Arc}, thread::{self, JoinHandle}, time::{Duration, Instant, SystemTime, UNIX_EPOCH}};
 use rusb::{Device, UsbContext, DeviceHandle, open_device_with_vid_pid};
 use core::task::Context;
 use std::process::Command;
+use image::ImageFormat;
+use base64::decode;
+use image::save_buffer;
 use crate::classes::O_input_sensor;
-// use tokio::sync::{Mutex, mpsc};
+use tokio::sync::{Mutex, mpsc};
+use tokio::sync::mpsc::error::TryRecvError;
 // use tokio::sync::mpsc;
 use tokio::net::TcpListener;
 use tokio::net::TcpStream;
@@ -19,8 +24,9 @@ use futures::stream::StreamExt;
 use crate::classes::{O_input_device, O_stepper_28BYJ_48};
 use tokio::runtime::Runtime;
 use warp::Filter;
-
+use std::fs::File;
 pub mod classes; 
+use image::load_from_memory;
 
 
 pub mod runtimedata; 
@@ -240,40 +246,42 @@ fn f_update_o_input_device(
 }
 
 
-fn f_start_usb_read_thread<C: UsbContext + 'static>(
+
+async fn f_start_usb_read_thread<C: UsbContext + 'static>(
     device_handle: Arc<Mutex<DeviceHandle<C>>>,
     timeout: Duration,
 ) -> mpsc::Receiver<Vec<u8>> {
     // Create a channel for communicating USB read results back to the main thread
-    let (tx, rx) = mpsc::channel();
+    let (tx, mut rx) = tokio::sync::mpsc::channel(32); // Adjust channel size as needed
 
-    thread::spawn(move || loop {
-        
-        let mut buffer = vec![0u8; 32]; // Adjust buffer size as needed
-        {
-            let mut o_device_handle = device_handle.lock().unwrap();
-            let n_idx_iface = 0;
-            let _ = o_device_handle.detach_kernel_driver(n_idx_iface);
-            let o = o_device_handle.claim_interface(n_idx_iface);
-        }
-        {
-            // Lock the device handle for the duration of the USB operation
-            let handle = device_handle.lock().unwrap();
-            match handle.read_interrupt(0x81, &mut buffer, timeout) {
-                Ok(bytes_read) => {
-                    println!("read from usb device success");
-                    buffer.truncate(bytes_read); // Adjust buffer size to actual bytes read
-                    tx.send(buffer.clone()).expect("Failed to send data through channel");
-                }
-                Err(e) => {
-                    eprintln!("USB read error: {:?}", e);
-                    // Handle the error as needed (e.g., break the loop, retry, etc.)
+    tokio::spawn(async move {
+        loop {
+            let mut buffer = vec![0u8; 32]; // Adjust buffer size as needed
+            {
+                let mut o_device_handle = device_handle.lock().await;
+                let n_idx_iface = 0;
+                let _ = o_device_handle.detach_kernel_driver(n_idx_iface).ok();
+                let _ = o_device_handle.claim_interface(n_idx_iface).ok();
+            }
+            {
+                let handle = device_handle.lock().await;
+                match handle.read_interrupt(0x81, &mut buffer, timeout) {
+                    Ok(bytes_read) => {
+                        println!("Read from USB device success");
+                        buffer.truncate(bytes_read); // Adjust buffer size to actual bytes read
+                        if tx.send(buffer.clone()).await.is_err() {
+                            eprintln!("Failed to send data through channel");
+                            break;
+                        }
+                    },
+                    Err(e) => {
+                        eprintln!("USB read error: {:?}", e);
+                        break;
+                    }
                 }
             }
+            tokio::time::sleep(Duration::from_millis(1)).await; // Adjust based on your requirements
         }
-
-        // Optional: sleep or yield to prevent the thread from monopolizing CPU resources
-        thread::sleep(Duration::from_millis(1)); // Adjust based on your requirements
     });
 
     rx
@@ -356,7 +364,32 @@ fn f_o_input_sensor_from_s_name<'a>(a_o_input_sensor: &'a [O_input_sensor], s_na
         }
     }
 }
+/// Parses a data URL and extracts the MIME type and encoded data.
+fn parse_data_url(data_url: &str) -> Option<(&str, &str)> {
+    let parts: Vec<&str> = data_url.splitn(2, ',').collect();
+    if parts.len() == 2 {
+        let metadata = parts[0];
+        let encoded_data = parts[1];
+        let metadata_parts: Vec<&str> = metadata.split(';').collect();
+        if metadata_parts.len() == 2 && metadata_parts[1] == "base64" {
+            return Some((metadata_parts[0].strip_prefix("data:").unwrap_or(""), encoded_data));
+        }
+    }
+    None
+}
 
+async fn save_image(data: &[u8]) {
+    match image::load_from_memory(data) {
+        Ok(img) => {
+            let mut output = File::create("output.jpg").expect("Failed to create file");
+            img.write_to(&mut output, ImageFormat::Jpeg).expect("Failed to write image");
+            println!("Image saved as output.jpg");
+        },
+        Err(e) => {
+            eprintln!("Error processing image: {:?}", e);
+        }
+    }
+}
 
 struct O_test{
     n: u8
@@ -371,28 +404,65 @@ async fn handle_connection(raw_stream: TcpStream, state: Arc<Mutex<O_test>>) {
             match message {
                 Ok(msg) => {
                     if let Message::Text(text) = msg {
-                        let mut stepper = state.lock().unwrap();
+                        let mut stepper = state.lock().await;
                         // Modify stepper based on text
                         // e.g., parse command and apply to stepper
                         println!("Received via WebSocket: {}", text);
+                        let s_b64_image = text;
+                        let url = DataUrl::process(&s_b64_image).unwrap();
+                        let (body, fragment) = url.decode_to_vec().unwrap();
+                        println!("body {:?}", body);
+                        let img = load_from_memory(&body).expect("Failed to load image from memory");
+                        let output_path = "./test.png";
+                        img.save(output_path).expect("Failed to save image");
 
-                            // Parse the JSON string
-                        // let v =  serde_json::from_str::<Value>(&text);
-                        let v: Value = serde_json::from_str(&text).expect("cannot parse json");
 
-                        let n_id_vendor = v["o_usb_device"]["n_id_vendor"].as_u64().unwrap() as u16;
-                        let n_id_product = v["o_usb_device"]["n_id_vendor"].as_u64().unwrap() as u16;
+                        //     // Parse the JSON string
+                        // // let v =  serde_json::from_str::<Value>(&text);
+                        // let v: Value = serde_json::from_str(&text).expect("cannot parse json");
 
-                        let mut o_device_handle = open_device_with_vid_pid(
-                            1133,// n_id_vendor, 
-                            49948// n_id_product
-                        ).unwrap();
+                        // if v.get("s_b64_image").is_some() {
+                        //     let s_b64_image = v["s_b64_image"].to_string();
+   
+                        //     // Strip the prefix off
+                        //     let prefix = "data:image/jpeg;base64,";
+                        //     let output_path = "./tmp.jpeg";
+                        //     let base64_data = &s_b64_image[prefix.len()..];
+
+                        //     // Decode the base64 data to bytes
+                        //     let image_data = decode(base64_data).expect("failed to decode");
                         
-                        // Start the USB read thread
-                        let o_arc_mutex_o_device_handle = Arc::new(Mutex::new(o_device_handle));
-                        let timeout = Duration::from_millis(100);
+                        //     // Save the decoded bytes as an image
+                        //     save_buffer(output_path, &image_data, 100, 100, image::ColorType::Rgb8);
+
+                        //     // println!("s_b64_image {}", s_b64_image);
+                        //     // let url = DataUrl::process(&s_b64_image).unwrap();
+                        //     // let (body, fragment) = url.decode_to_vec().unwrap();
+                        //     // println!("body {:?}", body);
+                        //     // let image_data = decode(encoded_data).expect("Failed to decode base64");
+                        //     // let img = load_from_memory(&image_data).expect("Failed to load image from memory");
+                        //     // let output_path = "./test.png";
+                        //     // img.save(output_path).expect("Failed to save image");
+
+                        // }
+
                         
-                        let usb_read_receiver = f_start_usb_read_thread(o_arc_mutex_o_device_handle, timeout);
+                        // if v.get("o_usb_device").is_some() {
+
+                        //     let n_id_vendor = v["o_usb_device"]["n_id_vendor"].as_u64().unwrap() as u16;
+                        //     let n_id_product = v["o_usb_device"]["n_id_vendor"].as_u64().unwrap() as u16;
+    
+                        //     let mut o_device_handle = open_device_with_vid_pid(
+                        //         1133,// n_id_vendor, 
+                        //         49948// n_id_product
+                        //     ).unwrap();
+                            
+                        //     // Start the USB read thread
+                        //     let o_arc_mutex_o_device_handle = Arc::new(Mutex::new(o_device_handle));
+                        //     let timeout = Duration::from_millis(100);
+                            
+                        //     let usb_read_receiver = f_start_usb_read_thread(o_arc_mutex_o_device_handle, timeout);
+                        // }
 
                     }
                 }
@@ -604,34 +674,40 @@ async fn main() -> Result<(), Box<dyn Error>> {
         f_check_mic_sec_delta_and_potentially_step(&mut o_stepper_28BYJ_48_y);
         f_check_mic_sec_delta_and_potentially_step(&mut o_stepper_28BYJ_48_x);
 
-        match usb_read_receiver.try_recv() {
-            Ok(a_n_u8_read) => {
-                // Process the data received from the USB device
-                // println!("Received USB data: {:?}", a_n_u8_read);
+        // while let Some(a_n_u8_read) = usb_read_receiver.await.recv().await {
+        //     // Process the data received from the USB device
+        //     println!("Received USB data: {:?}", a_n_u8_read);
+        //     // Further processing...
+        // }
+
+        // match usb_read_receiver.await.try_recv() {
+        //     Ok(a_n_u8_read) => {
+        //         // Process the data received from the USB device
+        //         // println!("Received USB data: {:?}", a_n_u8_read);
             
                 
-                f_update_o_input_device(&mut o_input_device, &a_n_u8_read);
-                let o_input_sensor__d_pad_left = f_o_input_sensor_from_s_name(&o_input_device.a_o_input_sensor, "d_pad_left").unwrap();
-                let o_input_sensor__d_pad_right = f_o_input_sensor_from_s_name(&o_input_device.a_o_input_sensor, "d_pad_right").unwrap();
+        //         f_update_o_input_device(&mut o_input_device, &a_n_u8_read);
+        //         let o_input_sensor__d_pad_left = f_o_input_sensor_from_s_name(&o_input_device.a_o_input_sensor, "d_pad_left").unwrap();
+        //         let o_input_sensor__d_pad_right = f_o_input_sensor_from_s_name(&o_input_device.a_o_input_sensor, "d_pad_right").unwrap();
 
-                if(o_input_sensor__d_pad_right.n_nor == 1. && o_input_sensor__d_pad_right.n_nor__last != 1.){
-                    o_stepper_28BYJ_48_x.b_direction = true; 
-                    f_substep_o_stepper(&mut o_stepper_28BYJ_48_x)
-                }
-                if(o_input_sensor__d_pad_left.n_nor == 1. && o_input_sensor__d_pad_left.n_nor__last != 1.){
-                    o_stepper_28BYJ_48_x.b_direction = false; 
-                    f_substep_o_stepper(&mut o_stepper_28BYJ_48_x)
-                }
-            }
-            Err(mpsc::TryRecvError::Empty) => {
-                // No data available yet; the main thread can perform other work
-            }
-            Err(e) => {
-                // Handle other kinds of errors (e.g., the sender was disconnected)
-                // eprintln!("Channel receive error: {:?}", e);
-                break;
-            }
-        }
+        //         if(o_input_sensor__d_pad_right.n_nor == 1. && o_input_sensor__d_pad_right.n_nor__last != 1.){
+        //             o_stepper_28BYJ_48_x.b_direction = true; 
+        //             f_substep_o_stepper(&mut o_stepper_28BYJ_48_x)
+        //         }
+        //         if(o_input_sensor__d_pad_left.n_nor == 1. && o_input_sensor__d_pad_left.n_nor__last != 1.){
+        //             o_stepper_28BYJ_48_x.b_direction = false; 
+        //             f_substep_o_stepper(&mut o_stepper_28BYJ_48_x)
+        //         }
+        //     }
+        //     Err(tokio::sync::mpsc::error::TryRecvError::Empty) => {
+        //         // No data available yet; the main thread can perform other work
+        //     }
+        //     Err(e) => {
+        //         // Handle other kinds of errors (e.g., the sender was disconnected)
+        //         // eprintln!("Channel receive error: {:?}", e);
+        //         break;
+        //     }
+        // }
 
 
 

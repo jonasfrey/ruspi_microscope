@@ -66,6 +66,14 @@ if(!o_el_vid){
     o_el_vid = document.createElement('video');
     document.body.appendChild(o_el_vid)
 }
+let o_el_canvas = document.querySelector('canvas');
+let o_ctx = null;
+if(!o_el_canvas){
+  o_el_canvas = document.createElement('canvas');
+  document.body.appendChild(o_el_canvas);
+  
+}
+o_ctx = o_el_canvas.getContext('2d');
 
 let o_state = {
   a_o_usb_device: [], 
@@ -154,6 +162,17 @@ o_ws.addEventListener('close', function (event) {
 
 
 startWebcam();
+
+
+o_state.f_captureAndSendImage = function() {
+  o_ctx.drawImage(o_el_vid, 0, 0, o_el_vid.videoWidth, o_el_vid.videoHeight);
+  const s_data_url = o_el_canvas.toDataURL('image/jpeg'); // Converts image to JPEG base64
+  console.log(s_data_url)
+  o_ws.send(s_data_url)
+  // o_ws.send(JSON.stringify({
+  //   s_b64_image: s_data_url
+  // }));
+}
 
 
 document.body.appendChild(
