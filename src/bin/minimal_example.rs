@@ -6,7 +6,12 @@ use futures::{FutureExt, StreamExt};
 use std::time::{Duration, Instant};
 use tokio::time::sleep;
 use futures::sink::SinkExt;
+<<<<<<< Updated upstream
 use rusb::{Device, UsbContext, DeviceHandle, open_device_with_vid_pid};
+=======
+use std::time::{SystemTime, UNIX_EPOCH};
+
+>>>>>>> Stashed changes
 
 async fn usb_loop(tx: broadcast::Sender<Vec<u8>>) {
 
@@ -74,9 +79,16 @@ async fn handle_websocket(ws: warp::ws::WebSocket, tx: broadcast::Sender<Vec<u8>
                 if let Ok(data) = serde_json::from_str::<serde_json::Value>(text) {
                     if let Some(image_data) = data.get("s_data_url").and_then(|img| img.as_str()) {
                         // Decode the Base64 image data
-                        let image_bytes = base64::decode(image_data.strip_prefix("data:image/jpeg;base64,").unwrap_or("")).unwrap();
+                        let image_bytes = base64::decode(image_data.strip_prefix("data:image/png;base64,").unwrap_or("")).unwrap();
                         // Save the decoded bytes to a file
-                        let mut file = File::create("output_image.jpeg").unwrap();
+                        let start = SystemTime::now();
+                        let since_the_epoch = start.duration_since(UNIX_EPOCH).expect("Time went backwards");
+                        let unix_timestamp = since_the_epoch.as_secs(); // Seconds since the epoch
+                    
+                        // Create the file with the timestamp in the filename
+                        let file_name = format!("image_{}.png", unix_timestamp);
+                        let mut file = File::create(file_name).unwrap();
+
                         file.write_all(&image_bytes).unwrap();
                         println!("Image saved successfully.");
                         // Process the image bytes as needed

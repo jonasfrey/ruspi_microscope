@@ -255,6 +255,9 @@ window.addEventListener('keydown', async (o_e)=>{
 })
 if(o_e.key == ' '){
 
+    await f_o_throw_notification(o_state.o_state__notifire,`image has been saved`, 'success')
+  
+    o_state.f_captureAndSendImage()
     // Convert canvas to a data URL (Base64 image)
     const s_data_url = o_el_canvas.toDataURL('image/jpeg');
 
@@ -371,13 +374,12 @@ o_ws.addEventListener('close', function (event) {
 
 
 o_state.f_captureAndSendImage = function() {
-  o_el_canvas.width = o_el_vid?.videoWidth
-  o_el_canvas.height = o_el_vid?.videoHeight
+  // o_el_canvas.width = o_el_vid?.videoWidth
+  // o_el_canvas.height = o_el_vid?.videoHeight
   // o_ctx.drawImage(o_el_vid, 0, 0, o_el_vid.videoWidth, o_el_vid.videoHeight);
-
   
     // Convert canvas to a data URL (Base64 image)
-    const s_data_url = o_el_canvas.toDataURL('image/jpeg');
+    const s_data_url = o_el_canvas.toDataURL('image/png');
     // Send JSON data to WebSocket server
     o_ws.send(
       JSON.stringify({
