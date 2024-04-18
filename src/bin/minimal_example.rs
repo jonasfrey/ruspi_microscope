@@ -6,11 +6,43 @@ use futures::{FutureExt, StreamExt};
 use std::time::{Duration, Instant};
 use tokio::time::sleep;
 use futures::sink::SinkExt;
-
+use rusb::{Device, UsbContext, DeviceHandle, open_device_with_vid_pid};
 
 async fn usb_loop(tx: broadcast::Sender<Vec<u8>>) {
-    let mut context = rusb::Context::new().unwrap(); // ensure this can also fail gracefully
+
+    // Bus 001 Device 006: ID Bus 001 Device 006: ID 046d:c31c Logitech, Inc. Keyboard K120:c31c Logitech, Inc. Keyboard K120
+    let mut n_vid = 0x046d;
+    let mut n_pid = 0xc31c;
+    //Bus 003 Device 007: ID 045e:028e Microsoft Corp. Xbox360 Controller
+    // n_vid = 0x045e;
+    // n_pid = 0x028e;
+    let mut o_device_handle = open_device_with_vid_pid(
+        n_vid,// n_id_vendor, 
+        n_pid// n_id_product
+    ).expect("cannot open usb device, are you root?");
+    let n_idx_iface = 0;
+    let _ = o_device_handle.detach_kernel_driver(n_idx_iface).expect("cannot detach kernel diver, is the device used by another program?");
+    let _ = o_device_handle.claim_interface(n_idx_iface).expect("cannot claim interface, is the device used by another program");
+    // let mut context = rusb::Context::new().expect("cannot create new context, rusb::Context::new"); // ensure this can also fail gracefully
     loop {
+        let mut buffer = vec![0u8; 32]; // Adjust buffer size as needed
+        let timeout = Duration::from_millis(100);
+        match o_device_handle.read_interrupt(0x81, &mut buffer, timeout) {
+            Ok(bytes_read) => {
+
+                println!("Read from USB device success, bytes read: {:?}", bytes_read);
+                buffer.truncate(bytes_read); // Adjust buffer size to actual bytes read
+                if tx.send(buffer.clone()).is_err() {
+                    eprintln!("Failed to send data through channel");
+                    break;
+                }
+            },
+            Err(e) => {
+                eprintln!("USB read error: {:?}", e);
+                break;
+            }
+        }
+
         let data = vec![1, 2, 3]; // Dummy data simulating USB read
         if tx.send(data).is_err() {
             // println!("Warning: No subscribers available to receive data.");
