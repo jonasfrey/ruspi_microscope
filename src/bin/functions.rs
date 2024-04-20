@@ -45,7 +45,7 @@ pub fn f_update_o_input_device(
         let n_bits_rounded_up = ((n_bits / 8) as f32).ceil() * 8.0;
         n_res = f_convert_endianess(n_res, n_bits_rounded_up as usize);
         // println!("bit index start:end {}:{}", n_idx_bit_start, n_idx_bit_end);
-        let mut n_value_max = (1 << n_bits) - 1;
+        let mut n_value_max = (1u64 << n_bits) - 1;
         o.n_nor__last = o.n_nor;
         if o.s_type.contains('i') {
             n_value_max = n_value_max / 2;
