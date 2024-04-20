@@ -65,32 +65,38 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .expect(&format!("Cannot open USB device {:?}, is the device connected? are you root?", s_device).to_string());
     
     
-    let n_idx_iface = 0;
-    let _ = o_device_handle.set_auto_detach_kernel_driver(true).expect("cannot set auto a- de- tach of the kernel driver");
-    println!(" kernel_driver_active {:?}", o_device_handle.kernel_driver_active(n_idx_iface));
-    // let _ = o_device_handle.detach_kernel_driver(n_idx_iface).expect("cannot detach kernel driver");
-    let _ = o_device_handle.claim_interface(n_idx_iface).expect("Cannot claim interface");
-
     let mut o_timeout = Duration::from_millis(1000);
     let mut n_len_a_n_u8__readout = 32;
+    let mut n_interface = 0;
     let mut n_address_endpoint_in = 0x81;
     let config_desc = o_device_handle.device().active_config_descriptor().expect("Failed to get configuration descriptor");
+    let mut b_no_in_interface_found_yet = true;
     for interface in config_desc.interfaces() {
+
         for interface_desc in interface.descriptors() {
             for endpoint_desc in interface_desc.endpoint_descriptors() {
                 if endpoint_desc.direction() == Direction::In
                     && endpoint_desc.transfer_type() == TransferType::Interrupt
                 {
-                    println!("Found an IN endpoint: 0x{:02x}", endpoint_desc.address());
-                    n_address_endpoint_in = endpoint_desc.address();
-                    let n = endpoint_desc.interval() as f32;
-                    o_timeout = Duration::from_millis((n*5.00) as u64);// account for overhead and ensure reliability
-                    n_len_a_n_u8__readout = endpoint_desc.max_packet_size();
+                    if(b_no_in_interface_found_yet || interface_desc.class_code() == 3){
+
+                        println!("Found an IN endpoint: 0x{:02x}", endpoint_desc.address());
+                        n_address_endpoint_in = endpoint_desc.address();
+                        let n = endpoint_desc.interval() as f32;
+                        n_interface = interface.number();
+                        o_timeout = Duration::from_millis((n*5.00) as u64);// account for overhead and ensure reliability
+                        n_len_a_n_u8__readout = endpoint_desc.max_packet_size();
+                    }
                 }
             }
         }
     }
-    println!("found interrupt endpoint IN addr:{}, timeout:{:?}, n_len_a_n_u8_readout {:?}", n_address_endpoint_in, o_timeout, n_len_a_n_u8__readout);
+    println!("found interrupt interface: {}, endpoint IN addr:{}, timeout:{:?}, n_len_a_n_u8_readout {:?}", n_interface, n_address_endpoint_in, o_timeout, n_len_a_n_u8__readout);
+
+    let _ = o_device_handle.set_auto_detach_kernel_driver(true).expect("cannot set auto a- de- tach of the kernel driver");
+    println!(" kernel_driver_active {:?}", o_device_handle.kernel_driver_active(n_interface));
+    // let _ = o_device_handle.detach_kernel_driver(n_interface).expect("cannot detach kernel driver");
+    let _ = o_device_handle.claim_interface(n_interface).expect("Cannot claim interface");
 
     // std::process::exit(0);
 
