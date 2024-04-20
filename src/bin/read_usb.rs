@@ -36,9 +36,12 @@ fn usb_read_thread(
                     // release the old interface and attach the kernel driver
 
                 }
+
                 n_id_vendor = vid;
                 n_id_product = pid;
                 o_device_handle_option = open_device_with_vid_pid(vid, pid);
+
+
                 if let Some(ref mut o_device_handle ) = o_device_handle_option {
                     let n_idx_iface = 0;
                     let _ = o_device_handle.set_auto_detach_kernel_driver(true).expect("cannot set auto a- de- tach of the kernel driver");

@@ -1,17 +1,16 @@
 use std::time::Instant;
 use rppal::gpio::{Gpio, OutputPin};
 use std::error::Error;
+use serde::{Serialize, Deserialize};
 
-#[derive(Debug)]
-#[derive(Clone)]
+#[derive(Clone, Serialize, Deserialize, Debug)]
 pub struct O_num_str_value {
     pub n: u64, 
-    pub s: &'static str, 
-    pub s_comment: &'static str, 
+    pub a_s_name: Vec<String>, 
+    pub s_comment: String, 
 }
 
-#[derive(Debug)]
-#[derive(Clone)]
+#[derive(Clone, Serialize, Deserialize, Debug)]
 pub enum O_input_sensor_value {
     Bool(bool),
     U8(u8),
@@ -28,29 +27,29 @@ pub enum O_input_sensor_value {
     F64(f64),
 }
 
-#[derive(Debug)]
-#[derive(Clone)]
+#[derive(Clone, Serialize, Deserialize, Debug)]
 pub struct O_input_sensor {
-    pub s_type: &'static str,
-    pub s_name: &'static str,
-    pub a_o_num_str_value: Option<Vec<O_num_str_value>>, 
-    pub o_input_sensor_value: Option<O_input_sensor_value>,
-    pub o_num_str_value: Option<O_num_str_value>, 
+    pub s_type: String,
+    pub s_name: String,
+    pub v_o_input_sensor_value: Option<O_input_sensor_value>,
+    pub a_o_num_str_value: Vec<O_num_str_value>, 
+    pub v_o_num_str_value: Option<O_num_str_value>, 
     pub n_nor: f64,
     pub n_nor__last: f64,
 }
 
-#[derive(Debug)]
-#[derive(Clone)]
+#[derive(Clone, Serialize, Deserialize, Debug)]
+pub struct O_name_synonym{
+    pub s_name: String,
+    pub a_s_synonym: Vec<String>,
+} 
+#[derive(Serialize, Deserialize, Debug)]
 pub struct O_input_device {
-    pub s_name: &'static str,
+    pub s_name: String,
     pub n_id_vendor: u16,
     pub n_id_product: u16,
     pub a_o_input_sensor: Vec<O_input_sensor>,
 }
-
-
-
 
 
 #[derive(Debug)]
@@ -68,3 +67,7 @@ pub struct O_stepper_28BYJ_48 {
     pub n_micsec_ts_last_step : u128,
     pub o_instant: Instant
 }
+
+pub type A_o_input_device = Vec<O_input_device>;
+pub type A_o_name_synonym = Vec<O_name_synonym>;
+

@@ -382,6 +382,7 @@ dependencies = [
  "image",
  "rppal",
  "rusb",
+ "serde",
  "serde_json",
  "tokio",
  "tokio-tungstenite 0.16.1",
