@@ -62,6 +62,52 @@ f_add_css(
   video{
     display:none;
   }
+  .gamepad_controls {
+      border:1px solid red;
+      width: 100%; 
+      height: 100%; 
+      aspect-ratio:1/1;
+      position:relative;
+  }
+  .gamepad_controls .svg {
+      position:absolute;
+      top:50%;
+      left:50%;
+      width:50%;
+      transform: translate(-50%, -50%);
+      height: auto; 
+  }
+  .gamepad_controls .svg path{
+    stroke: rgba(222,222,222,0.7);
+    stroke-width: 0.5px;
+  }
+  .line2 {
+    height: 50px;
+    border-left: 3px solid rgba(222,222,222,0.8);
+    position: absolute;
+    top: -50px;
+    left: 0;
+}
+
+.text {
+    right: 0;
+    position: absolute;
+}
+
+.text2 {
+    position: absolute;
+    top: -41px;
+}
+
+.line3 {
+    height: 50px;
+    border-left: 3px solid rgba(222, 222, 222, 0.8);
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+
   ${
       f_s_css_from_o_variables(
           o_variables
@@ -438,7 +484,7 @@ o_state.f_captureAndSendImage = function() {
 
 
 
-startWebcam();
+// startWebcam();
 
 
 let f_resize = ()=>{
@@ -476,6 +522,9 @@ window.addEventListener('pointermove', (o_e)=>{
   )
   o_state.o_trn_nor_mouse_last = o_state.o_trn_nor_mouse
 })
+
+let s_svg = await (await fetch("./gamepad.svg")).text();
+
 document.body.appendChild(
   await f_o_html__and_make_renderable(
       {
@@ -485,6 +534,236 @@ document.body.appendChild(
             f_o_js__notifire( 
                 o_state.o_state__notifire
             ), 
+            Object.assign(
+              o_state,
+              {
+                  o_js__gamepad_controls: {
+                      f_o_jsh: ()=>{
+                          return {
+                              a_o:[   
+                                  {
+                                    class: "gamepad_controls",
+                                    a_o: [
+                                      {
+                                        class: "svg",
+                                        innerHTML: s_svg
+                                      }, 
+                                      {
+                                        s_class="line r1"
+                                      style:`
+                                  width: 17.2%;
+                                  border-top: 3px solid rgba(222,222,222,0.8);
+                                  position: absolute;
+                                  top: 38%;
+                                  left: 70%;
+                              `>
+                                      {
+                                        s_class="text`>speed control</div>
+                                  </div>
+                                  {
+                                    s_class="r2"
+                                      style:`
+                                  width: 18.3%;
+                                  border-top: 3px solid rgba(222,222,222,0.8);
+                                  position: absolute;
+                                  top: 35%;
+                                  left: 69.1%;
+                              `>
+                                      {
+                                        s_class="text`>speed control</div>
+                                  </div>
+                                  {
+                                    s_class="line fbt"
+                                      style:`
+                                  width: 19%;
+                                  border-top: 3px solid rgba(222,222,222,0.8);
+                                  position: absolute;
+                                  top: 42%;
+                                  left: 68%;
+                              `>
+                                      {
+                                        s_class="text`>speed control</div>
+                                  </div>
+                                  {
+                                    s_class="line fbr"
+                                      style:`
+                                  width: 16%;
+                                  border-top: 3px solid rgba(222,222,222,0.8);
+                                  position: absolute;
+                                  top: 46%;
+                                  left: 71%;
+                              `>
+                                      {
+                                        s_class="text`>speed control</div>
+                                  </div>
+                                  {
+                                    s_class="line fbb"
+                                      style:`
+                                  width: 19%;
+                                  border-top: 3px solid rgba(222,222,222,0.8);
+                                  position: absolute;
+                                  top: 50%;
+                                  left: 68%;
+                              `>
+                                      {
+                                        s_class="text`>speed control</div>
+                                  </div>
+                                  {
+                                    s_class="fbl"
+                                      style:`
+                                  width: 18%;
+                                  border-top: 3px solid rgba(222,222,222,0.8);
+                                  position: absolute;
+                                  top: 54%;
+                                  left: 61%;
+                              `>
+                                      {
+                                        s_class="text`>speed control</div>
+                                      {
+                                        s_class="line2`></div>
+                                  </div>
+                                  {
+                                    s_class="rts"
+                                      style:`
+                                  width: 15%;
+                                  border-top: 3px solid rgba(222,222,222,0.8);
+                                  position: absolute;
+                                  top: 61%;
+                                  left: 57%;
+                              `>
+                                      {
+                                        s_class="text`>speed control</div>
+                                      {
+                                        s_class="line2`></div>
+                                  </div>
+                                  {
+                                    s_class="rmk"
+                                      style:`
+                                  width: 6%;
+                                  border-top: 3px solid rgba(222,222,222,0.8);
+                                  position: absolute;
+                                  top: 39%;
+                                  left: 53%;
+                              `>
+                                      {
+                                        s_class="text2`>speed control</div>
+                                      {
+                                        s_class="line3`></div>
+                                  </div>
+                          
+                          
+                                  <!-- left side  -->
+                          
+                                  {
+                                    s_class="line l1"
+                                      style:`
+                              width: 17.2%;
+                              border-top: 3px solid rgba(222,222,222,0.8);
+                              position: absolute;
+                              top: 38%;
+                              left: 70%;
+                          `>
+                                      {
+                                        s_class="text`>speed control</div>
+                                  </div>
+                                  {
+                                    s_class="l2"
+                                      style:`
+                              width: 18.3%;
+                              border-top: 3px solid rgba(222,222,222,0.8);
+                              position: absolute;
+                              top: 35%;
+                              left: 69.1%;
+                          `>
+                                      {
+                                        s_class="text`>speed control</div>
+                                  </div>
+                                  {
+                                    s_class="line dpu"
+                                      style:`
+                              width: 19%;
+                              border-top: 3px solid rgba(222,222,222,0.8);
+                              position: absolute;
+                              top: 42%;
+                              left: 68%;
+                          `>
+                                      {
+                                        s_class="text`>speed control</div>
+                                  </div>
+                                  {
+                                    s_class="line dpr"
+                                      style:`
+                              width: 16%;
+                              border-top: 3px solid rgba(222,222,222,0.8);
+                              position: absolute;
+                              top: 46%;
+                              left: 71%;
+                          `>
+                                      {
+                                        s_class="text`>speed control</div>
+                                  </div>
+                                  {
+                                    s_class="line dpd"
+                                      style:`
+                              width: 19%;
+                              border-top: 3px solid rgba(222,222,222,0.8);
+                              position: absolute;
+                              top: 50%;
+                              left: 68%;
+                          `>
+                                      {
+                                        s_class="text`>speed control</div>
+                                  </div>
+                                  {
+                                    s_class="dpl"
+                                      style:`
+                              width: 18%;
+                              border-top: 3px solid rgba(222,222,222,0.8);
+                              position: absolute;
+                              top: 54%;
+                              left: 61%;
+                          `>
+                                      {
+                                        s_class="text`>speed control</div>
+                                      {
+                                        s_class="line2`></div>
+                                  </div>
+                                  {
+                                    s_class="lts"
+                                      style:`
+                              width: 15%;
+                              border-top: 3px solid rgba(222,222,222,0.8);
+                              position: absolute;
+                              top: 61%;
+                              left: 57%;
+                          `>
+                                      {
+                                        s_class="text`>speed control</div>
+                                      {
+                                        s_class="line2`></div>
+                                  </div>
+                                  {
+                                    s_class="lmk"
+                                      style:`
+                              width: 6%;
+                              border-top: 3px solid rgba(222,222,222,0.8);
+                              position: absolute;
+                              top: 39%;
+                              left: 53%;
+                          `>
+                                      {
+                                        s_class="text2`>speed control</div>
+                                      {
+                                        s_class="line3`></div>
+                                  </div>
+                                    ]
+                                  }, 
+                              ]
+                          }
+                      }
+                  }
+              }
+          ).o_js__gamepad_controls,
             Object.assign(
                 o_state,
                 {
