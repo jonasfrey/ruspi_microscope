@@ -31,171 +31,25 @@ import {
   f_update_data_in_o_gpu_gateway,
   f_update_data_in_o_gpu_gateway_webgpu,
 }
-from 'https://deno.land/x/gpugateway@0.3/mod.js'
+from 'https://deno.land/x/gpugateway@0.5/mod.js'
 
 
-o_variables.n_rem_font_size_base = 1. // adjust font size, other variables can also be adapted before adding the css to the dom
-o_variables.n_rem_padding_interactive_elements = 0.5; // adjust padding for interactive elements 
-f_add_css(
-  `
-  body{
-      min-height: 100vh;
-      min-width: 100vw;
-      /* background: rgba(0,0,0,0.84);*/
-      display:flex;
-      justify-content:center;
-  }
-  canvas{
-      width: 100%;
-      height: 100%;
-      position:fixed;
-      z-index:-1;
-  }
-  .app{
-      max-width: 1000px;
-      width:100%;
-      height: 100vh;
-      display:flex;
-      flex-direction: column;
-      justify-content:flex-end;
-  }
-  video{
-    display:none;
-  }
-  .gamepad_controls {
-      border:1px solid red;
-      width: 100%; 
-      height: 100%; 
-      aspect-ratio:1/1;
-      position:relative;
-  }
-  .gamepad_controls .svg {
-      position:absolute;
-      top:50%;
-      left:50%;
-      width:50%;
-      transform: translate(-50%, -50%);
-      height: auto; 
-  }
-  .gamepad_controls .svg path{
-    stroke: rgba(222,222,222,0.7);
-    stroke-width: 0.5px;
-  }
-  .line2 {
-    height: 50px;
-    border-left: 3px solid rgba(222,222,222,0.8);
-    position: absolute;
-    top: -50px;
-    left: 0;
-}
-
-.text {
-    right: 0;
-    position: absolute;
-}
-
-.text2 {
-    position: absolute;
-    top: -41px;
-}
-
-.line3 {
-    height: 50px;
-    border-left: 3px solid rgba(222, 222, 222, 0.8);
-    position: absolute;
-    top: 0;
-    left: 0;
-}
-
-
-  ${
-      f_s_css_from_o_variables(
-          o_variables
-      )
-  }
-  `
-
-);
-
-let o_el_vid = document.querySelector('video');
-if(!o_el_vid){
-    o_el_vid = document.createElement('video');
-    document.body.appendChild(o_el_vid)
-}
-let o_el_canvas = document.querySelector('canvas');
-// let o_ctx = null;
-if(!o_el_canvas){
-  o_el_canvas = document.createElement('canvas');
-  document.body.appendChild(o_el_canvas);
-}
-o_el_canvas.width = 1920;
-o_el_canvas.height= 1080;
-
-let n_len_a_o_trn = 50;
-let n_idx_a_o_trn = 0;
-let o_gpu_gateway = await f_o_gpu_gateway(
-    o_el_canvas, 
-    `#version 300 es
-    in vec4 a_o_vec_position_vertex;
-    out vec2 o_trn_nor_pixel;
-    void main() {
-        gl_Position = a_o_vec_position_vertex;
-        o_trn_nor_pixel = (a_o_vec_position_vertex.xy) / 2.0; // Convert from clip space to texture coordinates
-    }`,
-    `#version 300 es
-    precision mediump float;
-    in vec2 o_trn_nor_pixel;
-    out vec4 fragColor;
-    uniform float n_ms_time;
-    uniform float n_factor_scale;
-    uniform float n_factor_brightness;
-    uniform float n_factor_contrast;
-    uniform float n_factor_gamma;
-    uniform float n_x_trn_nor;
-    uniform float n_y_trn_nor;
-    uniform vec2 o_trn_nor_mouse;
-    uniform vec2 o_trn_nor_mouse_last;
-    uniform vec2 o_trn_nor_mouse_follow;
-    uniform vec2 o_scl_canvas;
-    uniform sampler2D image_from_video;
-    
-
-    void main() {
-      //o_trn_nor_pixel normalized pixel coordinates from -1.0 -1.0 to 1.0 1.0
-      
-      vec2 o_trn = o_trn_nor_pixel * n_factor_scale + vec2(n_x_trn_nor, n_y_trn_nor);
-      vec2 o_trn2 = ((o_trn)+.5);
-      o_trn2.y = 1.-o_trn2.y;
-      vec4 o_pixel_value_image_from_video = texture(image_from_video, o_trn2); 
-      o_pixel_value_image_from_video *= n_factor_brightness;
-
-      o_pixel_value_image_from_video.rgb = ((o_pixel_value_image_from_video.rgb - 0.5) * n_factor_contrast + 0.5);
-
-      o_pixel_value_image_from_video.rgb = pow(o_pixel_value_image_from_video.rgb, vec3(1.0 / n_factor_gamma));
-
-       fragColor = o_pixel_value_image_from_video;
-        // fragColor = vec4(o_trn_nor_pixel.x*2.);
-    }
-    `,
-)
-
-var a_o_trn = new Float32Array(new Array(n_len_a_o_trn*4).fill(0));
-var buffer = o_gpu_gateway.o_ctx.createBuffer();
-o_gpu_gateway.o_ctx.bindBuffer(o_gpu_gateway.o_ctx.ARRAY_BUFFER, buffer);
-o_gpu_gateway.o_ctx.bufferData(o_gpu_gateway.o_ctx.ARRAY_BUFFER, a_o_trn, o_gpu_gateway.o_ctx.STATIC_DRAW);
-var o_location_a_o_trn = o_gpu_gateway.o_ctx.getUniformLocation(o_gpu_gateway.o_shader__program, 'a_o_trn');
-o_gpu_gateway.o_ctx.uniform4fv(o_location_a_o_trn, a_o_trn);
-
-
-
-// o_ctx = o_el_canvas.getContext('2d');
-
+let a_s_image_mode = [
+  'rgba_normal',
+  'rgba_inverted',
+  'red_channel_only',
+  'green_channel_only', 
+  'blue_channel_only', 
+  'edge_detection'
+]
 let o_state = {
+  n_idx_a_s_image_mode: 5,
+  a_s_image_mode: a_s_image_mode,
+  n_fps: 24,
+  b_render__o_js__gamepad_controls: false,
   v_o_input_device: null,
-    o_state__notifire: {
-
-    },
-    n_id_timeout: null,
+  o_state__notifire: {},
+  n_id_timeout: null,
   a_o_usb_device: [], 
   o_usb_device: null, 
   o_trn_nor_mouse_last: [.5,.5],
@@ -222,6 +76,343 @@ let o_state = {
   's_description' a general description of what can be seen on the image `
 }
 
+o_variables.n_rem_font_size_base = 1. // adjust font size, other variables can also be adapted before adding the css to the dom
+o_variables.n_rem_padding_interactive_elements = 0.5; // adjust padding for interactive elements 
+f_add_css(
+  `
+  body{
+      min-height: 100vh;
+      min-width: 100vw;
+      /* background: rgba(0,0,0,0.84);*/
+      display:flex;
+      justify-content:center;
+  }
+  .canvas_container {
+      position: fixed;
+      width: 100vw;
+      height: 100vh;
+      z-index:-1;
+  }
+  canvas{
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+  .app{
+      max-width: 1000px;
+      width:100%;
+      height: 100vh;
+      display:flex;
+      flex-direction: column;
+      justify-content:flex-end;
+  }
+  video{
+    display:none;
+  }
+  .gamepad_controls {
+      
+      width: 100%; 
+      height: 100%; 
+      aspect-ratio:2/1;
+      position:relative;
+      background: rgba(22,22,22,0.8);
+  }
+  .gamepad_controls .layer{
+    font-size:2rem;
+    left: 50%;
+    top: 5%;
+    position:absolute;
+    transform:translate(-50%, -50%)
+  }
+  .gamepad_controls .svg {
+      position:absolute;
+      top:50%;
+      left:50%;
+      width:100%;
+      transform: translate(-50%, -50%);
+      height: auto; 
+  }
+  .gamepad_controls .svg path{
+    stroke: rgba(222,222,222,0.7);
+    stroke-width: 0.3px;
+  }
+  .line2 {
+    height: 50px;
+    border-left: 3px solid rgba(222,222,222,0.8);
+    position: absolute;
+    top: -50px;
+    left: 0;
+}
+
+  .gamepad_controls .item{
+    position:absolute;
+    width: 20%;
+  }
+
+
+  .right_meta1_button, .left_meta1_button{
+    top: 16%;
+    left: 47%;
+}
+.left_meta1_button{
+    left: 53%;
+    transform:translate(-120%,0) 
+}
+  .right_middle_finger_button_r2, .left_middle_finger_button_l2 {
+    top: 5%;
+    left: calc(50% + 26.5%);
+}
+.left_middle_finger_button_l2{     left: calc(50% - 26.5%); transform:translate(-120%,0) }
+
+.right_index_finger_button_r1, .left_index_finger_button_l1 {
+    top: 12%;
+    left: calc(50% + 26.5%);
+}
+.left_index_finger_button_l1{     left: calc(50% - 26.5%); transform:translate(-120%,0) }
+
+ .face_button_left, .direction_pad_left {
+    top: 20%;
+    left: calc(50% + 26.5%);
+}
+.direction_pad_left{     left: calc(50% - 26.5%); transform:translate(-120%,0) }
+
+ .face_button_top, .direction_pad_up {
+    top: 27%;
+    left: calc(50% + 26.5%);
+}
+.direction_pad_up{     left: calc(50% - 26.5%); transform:translate(-120%,0) }
+
+ .face_button_right, .direction_pad_right {
+    top: 35%;
+    left: calc(50% + 26.5%);
+}
+.direction_pad_right{     left: calc(50% - 26.5%); transform:translate(-120%,0) }
+
+ .face_button_bottom, .direction_pad_down {
+    top: 43%;
+    left: calc(50% + 26.5%);
+}
+.direction_pad_down{     left: calc(50% - 26.5%); transform:translate(-120%,0) }
+
+ .right_stick_y_axis, .left_stick_y_axis {
+    top: 81%;
+    left: calc(45% + 0.0%);
+}
+.left_stick_y_axis{     left: calc(52% - 0.0%); transform:translate(-120%,0) }
+
+
+
+  .text {
+      right: 0;
+      position: absolute;
+  }
+
+  .text2 {
+      position: absolute;
+      top: -41px;
+  }
+
+  .line3 {
+      height: 50px;
+      border-left: 3px solid rgba(222, 222, 222, 0.8);
+      position: absolute;
+      top: 0;
+      left: 0;
+  }
+
+
+  ${
+      f_s_css_from_o_variables(
+          o_variables
+      )
+  }
+  `
+
+);
+
+let o_el_vid = document.querySelector('video');
+if(!o_el_vid){
+    o_el_vid = document.createElement('video');
+    document.body.appendChild(o_el_vid)
+}
+let o_el_canvas = document.querySelector('canvas');
+// let o_ctx = null;
+if(!o_el_canvas){
+  let o_div = document.createElement('div');
+  o_div.className = 'canvas_container'
+  o_el_canvas = document.createElement('canvas');
+  o_div.appendChild(o_el_canvas)
+  document.body.appendChild(o_div);
+}
+o_el_canvas.width = 1920;
+o_el_canvas.height= 1080;
+
+let n_len_a_o_trn = 50;
+let n_idx_a_o_trn = 0;
+let o_gpu_gateway = await f_o_gpu_gateway(
+    o_el_canvas, 
+    `#version 300 es
+    in vec4 a_o_vec_position_vertex;
+    out vec2 o_trn_nor_pixel;
+    void main() {
+        gl_Position = a_o_vec_position_vertex;
+        o_trn_nor_pixel = (a_o_vec_position_vertex.xy) / 2.0; // Convert from clip space to texture coordinates
+    }`,
+    `#version 300 es
+    precision mediump float;
+    in vec2 o_trn_nor_pixel;
+    out vec4 fragColor;
+    uniform float n_ms_time;
+    uniform float n_factor_scale;
+    uniform float n_factor_brightness;
+    uniform float n_factor_contrast;
+    uniform float n_factor_gamma;
+    uniform float n_x_trn_nor;
+    uniform float n_y_trn_nor;
+    uniform float n_idx_a_s_image_mode;
+    uniform vec2 o_trn_nor_mouse;
+    uniform vec2 o_trn_nor_mouse_last;
+    uniform vec2 o_trn_nor_mouse_follow;
+    uniform vec2 o_scl_canvas;
+    uniform sampler2D image_from_video;
+
+    
+
+    void main() {
+      //o_trn_nor_pixel normalized pixel coordinates from -1.0 -1.0 to 1.0 1.0
+      
+      vec2 o_trn = o_trn_nor_pixel * n_factor_scale + vec2(n_x_trn_nor, n_y_trn_nor);
+      vec2 o_trn2 = ((o_trn)+.5);
+      o_trn2.y = 1.-o_trn2.y;
+      vec4 o_pixel_value_image_from_video = texture(image_from_video, o_trn2); 
+      o_pixel_value_image_from_video *= n_factor_brightness;
+
+      o_pixel_value_image_from_video.rgb = ((o_pixel_value_image_from_video.rgb - 0.5) * n_factor_contrast + 0.5);
+
+      o_pixel_value_image_from_video.rgb = pow(o_pixel_value_image_from_video.rgb, vec3(1.0 / n_factor_gamma));
+
+
+      fragColor = o_pixel_value_image_from_video;
+
+      if(n_idx_a_s_image_mode == ${(o_state.a_s_image_mode.indexOf("rgba_normal"))}.){
+        // do nothing
+      }
+      if(n_idx_a_s_image_mode == ${(o_state.a_s_image_mode.indexOf("rgba_inverted"))}.){
+        fragColor = vec4(vec3(1.)-o_pixel_value_image_from_video.rgb, 1.);
+      }
+      if(n_idx_a_s_image_mode == ${(o_state.a_s_image_mode.indexOf("red_channel_only"))}.){
+        fragColor *= vec4(1., 0., 0., 1.);
+      }
+      if(n_idx_a_s_image_mode == ${(o_state.a_s_image_mode.indexOf("green_channel_only"))}.){
+        fragColor *= vec4(0., 1., 0., 1.);
+      }
+      if(n_idx_a_s_image_mode == ${(o_state.a_s_image_mode.indexOf("blue_channel_only"))}.){
+        fragColor *= vec4(0., 0., 1., 1.);
+      }
+      if(n_idx_a_s_image_mode == ${(o_state.a_s_image_mode.indexOf("edge_detection"))}.){
+        vec2 iResolution  = o_scl_canvas;
+        vec2 fragCoord = o_trn2 * iResolution;
+        // vec2 o_trn_nor = ( (fragCoord.xy - iResolution.xy*0.5) / iResolution.yy );
+        vec2 o_trn_nor = o_trn2;
+        vec2 o_scl_krnl = vec2(3.);
+        vec2 o_scl_krnl_half = floor(o_scl_krnl/2.);
+        float n_elements_krnl = o_scl_krnl.x * o_scl_krnl.y;
+        vec2 o_factor_edge = vec2(2.);
+        vec2 o_factor_nonedge = vec2(1.);
+        vec4 o_blur = vec4(0.);
+        vec4 o_sum_sobel_x = vec4(0.);
+        vec4 o_sum_sobel_y = vec4(0.);
+        for(
+            float n_trn_x = - o_scl_krnl_half.x;  
+            n_trn_x<o_scl_krnl_half.x+1.;
+            n_trn_x+=1.
+        ){  
+            for(
+                float n_trn_y = - o_scl_krnl_half.y;  
+                n_trn_y<o_scl_krnl_half.y+1.;
+                n_trn_y+=1.
+            ){
+    
+                vec2 o_trn = fragCoord.xy+vec2(n_trn_x, n_trn_y);
+                vec4 o_c_b1 = texture(image_from_video, o_trn/iResolution.xy);
+                vec2 o_fctr = vec2(
+                    (n_trn_y == 0.) ? n_trn_x*o_factor_edge.x : o_factor_nonedge.x*n_trn_x,
+                    (n_trn_x == 0.) ? n_trn_y*o_factor_edge.y : o_factor_nonedge.y*n_trn_y
+                );
+                o_sum_sobel_x += o_c_b1*o_fctr.x;
+                o_sum_sobel_y += o_c_b1*o_fctr.y;
+                o_blur += o_c_b1;
+            }
+    
+        }
+        vec4 o_prod_sobel_x = o_sum_sobel_x*o_sum_sobel_x;
+        vec4 o_prod_sobel_y = o_sum_sobel_y*o_sum_sobel_y;
+        
+        vec4 o_edges = vec4(
+            length(o_prod_sobel_x.x+o_prod_sobel_y.x),
+            length(o_prod_sobel_x.y+o_prod_sobel_y.y),
+            length(o_prod_sobel_x.z+o_prod_sobel_y.z),
+            length(o_prod_sobel_x.w+o_prod_sobel_y.w)
+        );
+          
+        o_blur /= n_elements_krnl;
+        vec4 o_c_b1 = texture(image_from_video, fragCoord.xy/iResolution.xy);
+        fragColor = vec4(o_edges);//*(1.+(1./n_elements_krnl));
+        fragColor.w = 1.;
+        //fragColor = vec4(o_c_b1)*o_edges;//*(1.+(1./n_elements_krnl));
+        //fragColor = vec4(0.)+n*(1./n_elements_krnl);
+        // fragColor = (fragColor);
+        // fragColor = vec4(length(o_prod_sobel_x.x+o_prod_sobel_y.x));
+      }
+    }
+    `,
+)
+
+var a_o_trn = new Float32Array(new Array(n_len_a_o_trn*4).fill(0));
+var buffer = o_gpu_gateway.o_ctx.createBuffer();
+o_gpu_gateway.o_ctx.bindBuffer(o_gpu_gateway.o_ctx.ARRAY_BUFFER, buffer);
+o_gpu_gateway.o_ctx.bufferData(o_gpu_gateway.o_ctx.ARRAY_BUFFER, a_o_trn, o_gpu_gateway.o_ctx.STATIC_DRAW);
+var o_location_a_o_trn = o_gpu_gateway.o_ctx.getUniformLocation(o_gpu_gateway.o_shader__program, 'a_o_trn');
+o_gpu_gateway.o_ctx.uniform4fv(o_location_a_o_trn, a_o_trn);
+
+
+
+// o_ctx = o_el_canvas.getContext('2d');
+
+
+let f_reset_image_manipulation = function(){
+  o_state.n_x_trn_nor = 0
+  o_state.n_y_trn_nor = 0
+  o_state.n_factor_scale = 1
+  o_state.n_factor_brightness = 1
+  o_state.n_factor_contrast = 1
+  o_state.n_factor_gamma = 2.2
+}
+
+
+
+
+let f_n_grouped_value = function(
+  s_name
+){
+  let n = 0;
+  if(o_state.v_o_input_device?.a_o_input_sensor?.find(o=>o.s_name == 'direction_pad_values')?.v_o_num_str_value?.a_s_name.includes(s_name)){
+    n = 1
+  }
+  return n
+}
+let f_n_signed_nor_with_threshhold = function(
+  s_name, 
+  n_threshhold
+){  
+  let v_o = (o_state?.v_o_input_device?.a_o_input_sensor?.find(o=> o.s_name == s_name ));
+
+  let n_tmp = ((v_o?.n_nor)-.5)*2.;
+  if(Math.abs(n_tmp) <= n_threshhold){
+    n_tmp = 0
+  }
+  return n_tmp
+}
 window.o_state = o_state
 async function startWebcam() {
   if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
@@ -243,45 +434,93 @@ async function startWebcam() {
 
   o_el_canvas.width = 1920;//o_el_vid?.videoWidth
   o_el_canvas.height = 1080;//o_el_vid?.videoHeight
-  let n_ms_delta_max = 1000/30;
+  let n_ms_delta_max = 1000/o_state.n_fps;
   let n_ms_last = 0;
+  let n_c = 0;
     function updateTexture() {
+      n_c +=1;
+      if(n_c == 100){
+        o_el_canvas.width = o_el_vid?.videoWidth
+        o_el_canvas.height = o_el_vid?.videoWidth
+      }
       let n_ms = window.performance.now();
       let n_ms_delta = n_ms - n_ms_last;
       if(n_ms_delta > n_ms_delta_max){
         if (o_el_vid.readyState >= o_el_vid.HAVE_CURRENT_DATA) {
           // process input from controller 
-          let v_o_r2 = (o_state?.v_o_input_device?.a_o_input_sensor?.find(o=> o.s_name == "left_middle_finger_button_l2"));
-          let v_o_rx = (o_state?.v_o_input_device?.a_o_input_sensor?.find(o=> o.s_name == "right_stick_x_axis" ));
-          let v_o_ry = (o_state?.v_o_input_device?.a_o_input_sensor?.find(o=> o.s_name == "right_stick_y_axis" ));
-          let v_o_ly = (o_state?.v_o_input_device?.a_o_input_sensor?.find(o=> o.s_name == "left_stick_y_axis" ));
-          if(v_o_rx?.n_nor != null){
-            //map frm -1. to 1.
-            let nx = ((v_o_rx?.n_nor)-.5)*2.;
-            if(Math.abs(nx) > 0.1){
-              o_state.n_x_trn_nor+=nx*0.02;
-            }
-          }
-          if(v_o_ry?.n_nor != null){
-            //map frm -1. to 1.
-            let ny = -1*((v_o_ry?.n_nor)-.5)*2.;
-            if(Math.abs(ny) > 0.1){
-              o_state.n_y_trn_nor+=ny*0.02;
-            }
-          }
-          if(v_o_ly?.n_nor != null){
-            //map frm -1. to 1.
-            let ny = ((v_o_ly?.n_nor)-.5)*2.;
-            if(Math.abs(ny) > 0.2){
-              o_state.n_factor_scale+=ny*0.02;
-            }
-          }
-          console.log(v_o_rx?.n_nor)
+          let v_o_l2 = (o_state?.v_o_input_device?.a_o_input_sensor?.find(o=> o.s_name == "left_middle_finger_button_l2"));
 
+          let v__o_l1 = (o_state?.v_o_input_device?.a_o_input_sensor?.find(o=> o.s_name == "left_index_finger_button_l1"));
+          let v__o_l1__last = (o_state?.v_o_input_device__last?.a_o_input_sensor?.find(o=> o.s_name == "left_index_finger_button_l1"));
+          let v__o_r1 = (o_state?.v_o_input_device?.a_o_input_sensor?.find(o=> o.s_name == "right_index_finger_button_r1"));
+          let v__o_r1__last = (o_state?.v_o_input_device__last?.a_o_input_sensor?.find(o=> o.s_name == "right_index_finger_button_r1"));
+
+          let v_o__right_meta1_button = (o_state?.v_o_input_device?.a_o_input_sensor?.find(o=> o.s_name == "right_meta1_button"));
+          let v_o__right_meta1_button_last = (o_state?.v_o_input_device__last?.a_o_input_sensor?.find(o=> o.s_name == "right_meta1_button"));
+          let v_o__left_meta1_button = (o_state?.v_o_input_device?.a_o_input_sensor?.find(o=> o.s_name == "left_meta1_button"));
+          let v_o__left_meta1_button_last = (o_state?.v_o_input_device__last?.a_o_input_sensor?.find(o=> o.s_name == "left_meta1_button"));
+
+          if(
+            v_o__right_meta1_button?.n_nor == 1.0
+            && v_o__right_meta1_button_last?.n_nor == 0.0
+            ){
+              o_state.b_render__o_js__gamepad_controls = !o_state.b_render__o_js__gamepad_controls
+              o_state.o_js__gamepad_controls._f_render()
+            }
+            
+          o_state.b_render__o_js__gamepad_controls
+          if(v_o_l2?.n_nor == 1.0){
+            //layer 2 camera control
+            o_state.n_x_trn_nor+=f_n_signed_nor_with_threshhold( "right_stick_x_axis", 0.09)*0.02;
+            o_state.n_y_trn_nor+=f_n_signed_nor_with_threshhold( "right_stick_y_axis", 0.09)*-0.02;
+            o_state.n_factor_scale+=f_n_signed_nor_with_threshhold( "left_stick_y_axis", 0.09)*0.02;
+            o_state.n_factor_contrast-=f_n_grouped_value("direction_pad_down")*0.02;
+            o_state.n_factor_contrast+=f_n_grouped_value("direction_pad_up")*0.02;
+            o_state.n_factor_gamma+=f_n_grouped_value("direction_pad_right")*0.02;
+            o_state.n_factor_gamma-=f_n_grouped_value("direction_pad_left")*0.02;
+            console.log({
+              v__o_l1, 
+              v__o_l1__last
+            })
+            let n_summand__n_idx_a_s_image_mode = 0;
+            if(
+              v__o_l1?.n_nor == 1.0 
+              && v__o_l1__last?.n_nor == 0.0
+            ){
+              n_summand__n_idx_a_s_image_mode = -1
+            }
+            if(
+              v__o_r1?.n_nor == 1.0 
+              && v__o_r1__last?.n_nor == 0.0
+            ){
+              n_summand__n_idx_a_s_image_mode = +1
+            }
+            if(n_summand__n_idx_a_s_image_mode != 0){
+              o_state.n_idx_a_s_image_mode = (o_state.n_idx_a_s_image_mode+n_summand__n_idx_a_s_image_mode);
+              if(o_state.n_idx_a_s_image_mode < 0){
+                o_state.n_idx_a_s_image_mode = o_state.a_s_image_mode.length-1
+              }
+              if(o_state.n_idx_a_s_image_mode > (o_state.a_s_image_mode.length-1)){
+                o_state.n_idx_a_s_image_mode = 0;
+              }
+              console.log(o_state.n_idx_a_s_image_mode)
+            }
+          }
+
+          if(v_o__left_meta1_button_last?.n_nor == 1.0){
+            f_reset_image_manipulation();
+
+          }
+          o_state.v_o_input_device__last = o_state.v_o_input_device
 
 
             f_update_data_in_o_gpu_gateway(
                 {
+                    o_scl_canvas: [
+                          o_el_vid?.videoWidth,
+                          o_el_vid?.videoHeight
+                    ],
+                    n_idx_a_s_image_mode: o_state.n_idx_a_s_image_mode, 
                     n_factor_scale: o_state.n_factor_scale,
                     n_x_trn_nor: o_state.n_x_trn_nor,
                     n_y_trn_nor: o_state.n_y_trn_nor,
@@ -305,10 +544,11 @@ async function startWebcam() {
         n_ms_last = n_ms;
       }
       requestAnimationFrame(updateTexture);
+
   }
+  f_resize_canvas()
 
   updateTexture();
-
 }
 
 
@@ -482,26 +722,24 @@ o_state.f_captureAndSendImage = function() {
     
 }
 
-
-
-// startWebcam();
-
-
-let f_resize = ()=>{
-  o_el_canvas.width = window.innerWidth
-  o_el_canvas.height = window.innerHeight
-  f_update_data_in_o_gpu_gateway(
-      {o_scl_canvas: [
-          o_el_canvas.width,
-          o_el_canvas.height
-      ]}, 
-      o_gpu_gateway, 
-  )
+let f_resize_canvas = ()=>{
+  o_el_canvas.width = o_el_vid?.videoWidth
+  o_el_canvas.height = o_el_vid?.videoWidth
+  // f_update_data_in_o_gpu_gateway(
+  //     {o_scl_canvas: [
+  //         o_el_canvas.width,
+  //         o_el_canvas.height
+  //     ]}, 
+  //     o_gpu_gateway, 
+  // )
 }
 window.addEventListener('resize',()=>{
-  f_resize()
+  f_resize_canvas()
 });
-f_resize()
+
+
+startWebcam();
+f_resize_canvas()
 
 
 
@@ -523,8 +761,89 @@ window.addEventListener('pointermove', (o_e)=>{
   o_state.o_trn_nor_mouse_last = o_state.o_trn_nor_mouse
 })
 
-let s_svg = await (await fetch("./gamepad.svg")).text();
+let s_svg_original = await (await fetch("./gamepad.svg")).text();
 
+let f_o_svg = function(
+  o_s_name_input_s_description, 
+  s_layer
+){
+  let s_svg = s_svg_original;
+  let b_face_button_up_down_different = ((
+    typeof o_s_name_input_s_description?.face_button_bottom == 'string'
+    || typeof o_s_name_input_s_description?.face_button_top == 'string'
+    ) && o_s_name_input_s_description?.face_button_bottom != o_s_name_input_s_description?.face_button_top)
+    b_face_button_up_down_different = !(o_s_name_input_s_description?.face_button_bottom.trim() == '' || o_s_name_input_s_description?.face_button_top.trim() == '')
+    if(!b_face_button_up_down_different){
+    s_svg = s_svg.replace(`class="face_button_up_down_single"`, 'class="face_button_up_down_single" display="none"')
+    s_svg = s_svg.replace(`class="face_button_up_down_single"`, 'class="face_button_up_down_single" display="none"')
+
+  }else{
+    s_svg = s_svg.replace(`class="face_button_up_down_combiner"`, 'class="face_button_up_down_combiner" display="none"')
+    s_svg = s_svg.replace(`class="face_button_up_down_single"`, 'class="face_button_up_down_single" display="none"')
+  }
+  let b_face_button_left_right_different = ((
+    typeof o_s_name_input_s_description?.face_button_left == 'string'
+    || typeof o_s_name_input_s_description?.face_button_right == 'string'
+    ) && o_s_name_input_s_description?.face_button_left != o_s_name_input_s_description?.face_button_right)
+    b_face_button_left_right_different = !(o_s_name_input_s_description?.face_button_left.trim() == '' || o_s_name_input_s_description?.face_button_right.trim() == '')
+    if(!b_face_button_left_right_different){
+    s_svg = s_svg.replace(`class="face_button_left_right_single"`, 'class="face_button_left_right_single" display="none"')
+  }else{
+    s_svg = s_svg.replace(`class="face_button_left_right_combiner"`, 'class="face_button_left_right_combiner" display="none"')
+  }
+  
+  let b_direction_pad_up_down_different = ((
+    typeof o_s_name_input_s_description?.direction_pad_down == 'string'
+    || typeof o_s_name_input_s_description?.direction_pad_up == 'string'
+    ) && o_s_name_input_s_description?.direction_pad_down != o_s_name_input_s_description?.direction_pad_up)
+    b_direction_pad_up_down_different = !(o_s_name_input_s_description?.direction_pad_down.trim() == '' || o_s_name_input_s_description?.direction_pad_up.trim() == '')
+    if(!b_direction_pad_up_down_different){
+    s_svg = s_svg.replace(`class="direction_pad_up_down_single"`, 'class="direction_pad_up_down_single" display="none"')
+  }else{
+    s_svg = s_svg.replace(`class="direction_pad_up_down_combiner"`, 'class="direction_pad_up_down_combiner" display="none"')
+  }
+  let b_direction_pad_left_right_different = ((
+    typeof o_s_name_input_s_description?.direction_pad_left == 'string'
+    || typeof o_s_name_input_s_description?.direction_pad_right == 'string'
+    ) && o_s_name_input_s_description?.direction_pad_left != o_s_name_input_s_description?.direction_pad_right)
+    b_direction_pad_left_right_different = !(o_s_name_input_s_description?.direction_pad_left.trim() == '' || o_s_name_input_s_description?.direction_pad_right.trim() == '')
+
+    if(!b_direction_pad_left_right_different){
+    s_svg = s_svg.replace(`class="direction_pad_left_right_single"`, 'class="direction_pad_left_right_single" display="none"')
+  }else{
+    s_svg = s_svg.replace(`class="direction_pad_left_right_combiner"`, 'class="direction_pad_left_right_combiner" display="none"')
+  }
+  
+
+  return {
+    a_o:[   
+        {
+          class: "gamepad_controls",
+          a_o: [
+            {
+              class: "svg",
+              innerHTML: s_svg
+            }, 
+            {
+              class: "layer", 
+              innerText: s_layer
+            },
+            Object.keys(o_s_name_input_s_description).map(s=>{
+              return {
+                class: `item ${s}`, 
+                a_o:[
+                  {
+                    class: "text", 
+                    innerText: o_s_name_input_s_description[s],
+                  },
+                ]
+              }
+            })
+          ]
+        }
+    ]
+}
+}
 document.body.appendChild(
   await f_o_html__and_make_renderable(
       {
@@ -539,227 +858,93 @@ document.body.appendChild(
               {
                   o_js__gamepad_controls: {
                       f_o_jsh: ()=>{
-                          return {
-                              a_o:[   
-                                  {
-                                    class: "gamepad_controls",
-                                    a_o: [
-                                      {
-                                        class: "svg",
-                                        innerHTML: s_svg
-                                      }, 
-                                      {
-                                        s_class="line r1"
-                                      style:`
-                                  width: 17.2%;
-                                  border-top: 3px solid rgba(222,222,222,0.8);
-                                  position: absolute;
-                                  top: 38%;
-                                  left: 70%;
-                              `>
-                                      {
-                                        s_class="text`>speed control</div>
-                                  </div>
-                                  {
-                                    s_class="r2"
-                                      style:`
-                                  width: 18.3%;
-                                  border-top: 3px solid rgba(222,222,222,0.8);
-                                  position: absolute;
-                                  top: 35%;
-                                  left: 69.1%;
-                              `>
-                                      {
-                                        s_class="text`>speed control</div>
-                                  </div>
-                                  {
-                                    s_class="line fbt"
-                                      style:`
-                                  width: 19%;
-                                  border-top: 3px solid rgba(222,222,222,0.8);
-                                  position: absolute;
-                                  top: 42%;
-                                  left: 68%;
-                              `>
-                                      {
-                                        s_class="text`>speed control</div>
-                                  </div>
-                                  {
-                                    s_class="line fbr"
-                                      style:`
-                                  width: 16%;
-                                  border-top: 3px solid rgba(222,222,222,0.8);
-                                  position: absolute;
-                                  top: 46%;
-                                  left: 71%;
-                              `>
-                                      {
-                                        s_class="text`>speed control</div>
-                                  </div>
-                                  {
-                                    s_class="line fbb"
-                                      style:`
-                                  width: 19%;
-                                  border-top: 3px solid rgba(222,222,222,0.8);
-                                  position: absolute;
-                                  top: 50%;
-                                  left: 68%;
-                              `>
-                                      {
-                                        s_class="text`>speed control</div>
-                                  </div>
-                                  {
-                                    s_class="fbl"
-                                      style:`
-                                  width: 18%;
-                                  border-top: 3px solid rgba(222,222,222,0.8);
-                                  position: absolute;
-                                  top: 54%;
-                                  left: 61%;
-                              `>
-                                      {
-                                        s_class="text`>speed control</div>
-                                      {
-                                        s_class="line2`></div>
-                                  </div>
-                                  {
-                                    s_class="rts"
-                                      style:`
-                                  width: 15%;
-                                  border-top: 3px solid rgba(222,222,222,0.8);
-                                  position: absolute;
-                                  top: 61%;
-                                  left: 57%;
-                              `>
-                                      {
-                                        s_class="text`>speed control</div>
-                                      {
-                                        s_class="line2`></div>
-                                  </div>
-                                  {
-                                    s_class="rmk"
-                                      style:`
-                                  width: 6%;
-                                  border-top: 3px solid rgba(222,222,222,0.8);
-                                  position: absolute;
-                                  top: 39%;
-                                  left: 53%;
-                              `>
-                                      {
-                                        s_class="text2`>speed control</div>
-                                      {
-                                        s_class="line3`></div>
-                                  </div>
-                          
-                          
-                                  <!-- left side  -->
-                          
-                                  {
-                                    s_class="line l1"
-                                      style:`
-                              width: 17.2%;
-                              border-top: 3px solid rgba(222,222,222,0.8);
-                              position: absolute;
-                              top: 38%;
-                              left: 70%;
-                          `>
-                                      {
-                                        s_class="text`>speed control</div>
-                                  </div>
-                                  {
-                                    s_class="l2"
-                                      style:`
-                              width: 18.3%;
-                              border-top: 3px solid rgba(222,222,222,0.8);
-                              position: absolute;
-                              top: 35%;
-                              left: 69.1%;
-                          `>
-                                      {
-                                        s_class="text`>speed control</div>
-                                  </div>
-                                  {
-                                    s_class="line dpu"
-                                      style:`
-                              width: 19%;
-                              border-top: 3px solid rgba(222,222,222,0.8);
-                              position: absolute;
-                              top: 42%;
-                              left: 68%;
-                          `>
-                                      {
-                                        s_class="text`>speed control</div>
-                                  </div>
-                                  {
-                                    s_class="line dpr"
-                                      style:`
-                              width: 16%;
-                              border-top: 3px solid rgba(222,222,222,0.8);
-                              position: absolute;
-                              top: 46%;
-                              left: 71%;
-                          `>
-                                      {
-                                        s_class="text`>speed control</div>
-                                  </div>
-                                  {
-                                    s_class="line dpd"
-                                      style:`
-                              width: 19%;
-                              border-top: 3px solid rgba(222,222,222,0.8);
-                              position: absolute;
-                              top: 50%;
-                              left: 68%;
-                          `>
-                                      {
-                                        s_class="text`>speed control</div>
-                                  </div>
-                                  {
-                                    s_class="dpl"
-                                      style:`
-                              width: 18%;
-                              border-top: 3px solid rgba(222,222,222,0.8);
-                              position: absolute;
-                              top: 54%;
-                              left: 61%;
-                          `>
-                                      {
-                                        s_class="text`>speed control</div>
-                                      {
-                                        s_class="line2`></div>
-                                  </div>
-                                  {
-                                    s_class="lts"
-                                      style:`
-                              width: 15%;
-                              border-top: 3px solid rgba(222,222,222,0.8);
-                              position: absolute;
-                              top: 61%;
-                              left: 57%;
-                          `>
-                                      {
-                                        s_class="text`>speed control</div>
-                                      {
-                                        s_class="line2`></div>
-                                  </div>
-                                  {
-                                    s_class="lmk"
-                                      style:`
-                              width: 6%;
-                              border-top: 3px solid rgba(222,222,222,0.8);
-                              position: absolute;
-                              top: 39%;
-                              left: 53%;
-                          `>
-                                      {
-                                        s_class="text2`>speed control</div>
-                                      {
-                                        s_class="line3`></div>
-                                  </div>
-                                    ]
-                                  }, 
-                              ]
-                          }
+                        return {
+                          b_render: o_state.b_render__o_js__gamepad_controls,
+                          a_o: [
+                            //layer1
+                            // f_o_svg(
+                            //   {
+                            //     "left_stick_x_axis":'left_stick_x_axis',
+                            //     "left_stick_y_axis":'left_stick_y_axis',
+                            //     "right_stick_x_axis":'right_stick_x_axis',
+                            //     "right_stick_y_axis":'right_stick_y_axis',
+                            //     "direction_pad_up":'direction_pad_up',
+                            //     "direction_pad_left":'direction_pad_left',
+                            //     "direction_pad_down":'direction_pad_down',
+                            //     "direction_pad_right":'direction_pad_right',
+                            //     "face_button_bottom":'face_button_bottom',
+                            //     "face_button_right":'face_button_right',
+                            //     "face_button_left":'face_button_left',
+                            //     "face_button_top":'face_button_top',
+                            //     "left_index_finger_button_l1":'left_index_finger_button_l1',
+                            //     "right_index_finger_button_r1":'right_index_finger_button_r1',
+                            //     "left_middle_finger_button_l2":'left_middle_finger_button_l2',
+                            //     "right_middle_finger_button_r2":'right_middle_finger_button_r2',
+                            //     "left_meta1_button":'left_meta1_button',
+                            //     "right_meta1_button":'right_meta1_button',
+                            //     "center_meta1_button": 'center_meta1_button',
+                            //     "left_stick_button_l3":'left_stick_button_l3',
+                            //     "right_stick_button_r3":'right_stick_button_r3',
+                            //     "right_middle_finger_button_r2":'right_middle_finger_button_r2',
+                            //     "left_middle_finger_button_l2":'left_middle_finger_button_l2',
+                            //   },
+                            //   `Layer test`
+                            //  ),
+                            f_o_svg(
+                              {
+                                "left_stick_x_axis":'',
+                                "left_stick_y_axis":'Focus (y)',
+                                "right_stick_x_axis":'',
+                                "right_stick_y_axis":'move slide (x y)',
+                                "direction_pad_up":'',
+                                "direction_pad_left":'',
+                                "direction_pad_down":'Move slide slow (y)',
+                                "direction_pad_right":'Move slide slow (x)',
+                                "face_button_bottom":'Take screenshot',
+                                "face_button_right":'Record video',
+                                "face_button_left":'Ask AI (GPT4)',
+                                "face_button_top":'Focus stack (add image)',
+                                "left_index_finger_button_l1":'',
+                                "right_index_finger_button_r1":'Finish focus stack',
+                                "left_middle_finger_button_l2":'',
+                                "right_middle_finger_button_r2":'Hold down, switch Layer 2',
+                                "left_meta1_button":'Reset image manipulation',
+                                "right_meta1_button":'show controls',
+                                "center_meta1_button": '',
+                                "left_stick_button_l3":'',
+                                "right_stick_button_r3":'',
+                              },
+                              `Layer 1`
+                             ),
+                             f_o_svg(
+                              {
+                                "left_stick_x_axis":'',
+                                "left_stick_y_axis":'Zoom digial (y)',
+                                "right_stick_x_axis":'',
+                                "right_stick_y_axis":'Move digital (x y)',
+                                "direction_pad_up":'',
+                                "direction_pad_left":'',
+                                "direction_pad_down":'Contrast + -',
+                                "direction_pad_right":'Gamma + -',
+                                "face_button_bottom":'',
+                                "face_button_right":'',
+                                "face_button_left":'',
+                                "face_button_top":'',
+                                "left_index_finger_button_l1":'Previous Image mode',
+                                "right_index_finger_button_r1":'Next Image mode',
+                                "left_middle_finger_button_l2":'',
+                                "right_middle_finger_button_r2":'',
+                                "left_meta1_button":'',
+                                "right_meta1_button":'',
+                                "center_meta1_button": '',
+                                "left_stick_button_l3":'',
+                                "right_stick_button_r3":'',
+                              },
+                              `Layer 2 (Image control)`
+                             ),
+
+                          ]
+                        }
                       }
                   }
               }
