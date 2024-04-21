@@ -105,14 +105,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let s_json = fs::read_to_string("./o_info.json").expect("Unable to read file");
     // Deserialize the JSON data into a serde_json::Value
     let v: serde_json::Value = serde_json::from_str(&s_json)?;
-
-
-
     let mut a_o_input_device: A_o_input_device = serde_json::from_value(v.get("a_o_input_device").expect("json must have a_o_input_device").clone()).expect("cannot decode json");
     let mut a_o_name_synonym: A_o_name_synonym = serde_json::from_value(v.get("a_o_name_synonym").expect("json must have a_o_name_synonym").clone()).expect("cannot decode json");
     println!("a_o_input_device {:?}", a_o_input_device);
     let mut v_o_input_device = a_o_input_device.iter_mut().find(|o| o.n_id_vendor == n_id_vendor && o.n_id_product == n_id_product);
-    
     
     if(v_o_input_device.is_none()){
         println!("cannot find o_input_device and therefore the redout report from 0x81 cannot be decoded,

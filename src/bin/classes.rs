@@ -1,7 +1,7 @@
 use std::time::Instant;
 use rppal::gpio::{Gpio, OutputPin};
 use std::error::Error;
-use serde::{Serialize, Deserialize};
+use serde::{forward_to_deserialize_any, Deserialize, Serialize};
 
 #[derive(Clone, Serialize, Deserialize, Debug)]
 pub struct O_num_str_value {
@@ -43,7 +43,7 @@ pub struct O_name_synonym{
     pub s_name: String,
     pub a_s_synonym: Vec<String>,
 } 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct O_input_device {
     pub s_name: String,
     pub n_id_vendor: u16,
@@ -71,3 +71,15 @@ pub struct O_stepper_28BYJ_48 {
 pub type A_o_input_device = Vec<O_input_device>;
 pub type A_o_name_synonym = Vec<O_name_synonym>;
 
+
+pub enum ControlCommand {
+    Start,
+    Stop,
+    SwitchDevice(u16, u16),  // Vendor ID, Product ID
+}
+
+#[derive(Clone)]
+pub struct SendData{
+    pub a_n_u8_usb_read_result: Option<Vec<u8>>,
+    pub v_o_input_device: Option<O_input_device>
+}

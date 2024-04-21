@@ -33,6 +33,7 @@ import {
 }
 from 'https://deno.land/x/gpugateway@0.3/mod.js'
 
+
 o_variables.n_rem_font_size_base = 1. // adjust font size, other variables can also be adapted before adding the css to the dom
 o_variables.n_rem_padding_interactive_elements = 0.5; // adjust padding for interactive elements 
 f_add_css(
@@ -117,7 +118,9 @@ let o_gpu_gateway = await f_o_gpu_gateway(
       //o_trn_nor_pixel normalized pixel coordinates from -1.0 -1.0 to 1.0 1.0
       
       vec2 o_trn = o_trn_nor_pixel * n_factor_scale + vec2(n_x_trn_nor, n_y_trn_nor);
-      vec4 o_pixel_value_image_from_video = texture(image_from_video, ((o_trn)+.5)); 
+      vec2 o_trn2 = ((o_trn)+.5);
+      o_trn2.y = 1.-o_trn2.y;
+      vec4 o_pixel_value_image_from_video = texture(image_from_video, o_trn2); 
       o_pixel_value_image_from_video *= n_factor_brightness;
 
       o_pixel_value_image_from_video.rgb = ((o_pixel_value_image_from_video.rgb - 0.5) * n_factor_contrast + 0.5);
@@ -142,6 +145,7 @@ o_gpu_gateway.o_ctx.uniform4fv(o_location_a_o_trn, a_o_trn);
 // o_ctx = o_el_canvas.getContext('2d');
 
 let o_state = {
+  v_o_input_device: null,
     o_state__notifire: {
 
     },
@@ -200,6 +204,36 @@ async function startWebcam() {
       let n_ms_delta = n_ms - n_ms_last;
       if(n_ms_delta > n_ms_delta_max){
         if (o_el_vid.readyState >= o_el_vid.HAVE_CURRENT_DATA) {
+          // process input from controller 
+          let v_o_r2 = (o_state?.v_o_input_device?.a_o_input_sensor?.find(o=> o.s_name == "left_middle_finger_button_l2"));
+          let v_o_rx = (o_state?.v_o_input_device?.a_o_input_sensor?.find(o=> o.s_name == "right_stick_x_axis" ));
+          let v_o_ry = (o_state?.v_o_input_device?.a_o_input_sensor?.find(o=> o.s_name == "right_stick_y_axis" ));
+          let v_o_ly = (o_state?.v_o_input_device?.a_o_input_sensor?.find(o=> o.s_name == "left_stick_y_axis" ));
+          if(v_o_rx?.n_nor != null){
+            //map frm -1. to 1.
+            let nx = ((v_o_rx?.n_nor)-.5)*2.;
+            if(Math.abs(nx) > 0.1){
+              o_state.n_x_trn_nor+=nx*0.02;
+            }
+          }
+          if(v_o_ry?.n_nor != null){
+            //map frm -1. to 1.
+            let ny = -1*((v_o_ry?.n_nor)-.5)*2.;
+            if(Math.abs(ny) > 0.1){
+              o_state.n_y_trn_nor+=ny*0.02;
+            }
+          }
+          if(v_o_ly?.n_nor != null){
+            //map frm -1. to 1.
+            let ny = ((v_o_ly?.n_nor)-.5)*2.;
+            if(Math.abs(ny) > 0.2){
+              o_state.n_factor_scale+=ny*0.02;
+            }
+          }
+          console.log(v_o_rx?.n_nor)
+
+
+
             f_update_data_in_o_gpu_gateway(
                 {
                     n_factor_scale: o_state.n_factor_scale,
@@ -304,9 +338,18 @@ if(o_e.key == ' '){
 // Replace 'ws://example.com/socket' with the URL of your WebSocket server
 const o_ws = new WebSocket(`ws://${location.hostname}:${location.port}/ws`);
 
+
 // Connection opened
 o_ws.addEventListener('open', function (event) {
     console.log("WebSocket is open now.");
+
+    o_ws.send(
+      JSON.stringify({
+        s_name_function: "f_s_stdout_from_s_command", 
+        s_command: "lsusb"
+      })
+    );
+    
 });
 
 // Listen for messages
@@ -317,6 +360,9 @@ o_ws.addEventListener('message', function (event) {
     
   } catch (error) {
     
+  }
+  if(v_o?.o_input_device){
+    o_state.v_o_input_device = v_o.o_input_device;
   }
   if(v_o?.s_stdout__lsusb){
     // console.log(v_o)
@@ -353,6 +399,7 @@ o_ws.addEventListener('message', function (event) {
       a_o_usb_device.length != o_state.a_o_usb_device.length //ugly and lazy way to check if usbdevice has been unplugged or plugged
     ){
       o_state.a_o_usb_device = a_o_usb_device
+      console.log(o_state.a_o_usb_device)
       o_state?.o_js__a_o_usb_device._f_render()
     }
   }
@@ -570,10 +617,12 @@ document.body.appendChild(
                                     });
                                     if(o_usb_device){
                                       o_state.o_usb_device = o_usb_device
-                                      console.log(o_usb_device)
+                                      // console.log(o_usb_device)
                                       o_ws.send(
                                         JSON.stringify({
-                                          o_usb_device
+                                          s_name_function: "f_switch_usb_device", 
+                                          n_id_vendor: o_usb_device.n_id_vendor,
+                                          n_id_product: o_usb_device.n_id_product,
                                         })
                                       )
                                     }

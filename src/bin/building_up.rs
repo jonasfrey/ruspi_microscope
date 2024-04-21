@@ -216,8 +216,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let tx_clone = tx.clone();  // Keep a clone to send messages from the main loop
 
     // Web server and WebSocket setup
-    let routes = warp::path("ws").and(warp::ws()).map(move |ws: warp::ws::Ws| {
-        let tx = tx.clone();
+    let routes = warp::path("/").and(warp::ws()).map(move |ws: warp::ws::Ws| {
+        let tx: broadcast::Sender<Vec<u8>> = tx.clone();
         let control_tx_clone = control_tx.clone();
         ws.on_upgrade(move |socket| websocket_thread(socket, tx.clone(), control_tx_clone, ws_rx))
     }).or(warp::fs::dir("public")); // Serve static files from 'public' directory
