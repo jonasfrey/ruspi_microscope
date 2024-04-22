@@ -1,0 +1,1421 @@
+
+
+{
+  "o_example": {
+    "s_description": "this example object shows how variables should be named",
+    "n": 1, 
+    "b": true, 
+    "s": "this is a string",
+    "s_f": "()=>{return 'if this was javascript the \"f_\" is used for functions  }", 
+    "a_v": [1,true,"test"], 
+    "a_n": [1,2,3], 
+    "a_b": [false, true],
+    "a_s": ["first", "second"],
+    "a_a_n": [[1,2], [3]], 
+    "o": {"n": 2, "s": "example", "b": true}, 
+    "o_person": {"s_name": "hans", "n_age":80}, 
+    "a_o_person": [{"s_name":"mascha", "n_age":5}, {"s_name": "nula", "n_age":10}],
+    "o_s_name_n_age":{
+      "hans": 80, 
+      "nula": 10
+    },
+    "v_o_person__rudolf": null, 
+    "v_o_person__hans": {"s_name": "hans", "n_age": 80},
+    "s_json__a_o_person": "[{\"s_name\":\"mascha\", \"n_age\":5}, {\"s_name\": \"nula\", \"n_age\":10}]"
+  }, 
+  "a_o_name_synonym": [
+    {
+      "s_name": "face_button_bottom", 
+      "a_s_synonym": ["cross", "a"]
+    },
+    {
+      "s_name": "face_button_right", 
+      "a_s_synonym": ["circle", "b"]
+    },
+    {
+      "s_name": "face_button_top", 
+      "a_s_synonym": ["triangle", "y"]
+    }, 
+    {
+      "s_name": "face_button_left", 
+      "a_s_synonym": ["square", "x"]
+    },
+    {
+      "s_name": "right_index_finger_button_r1", 
+      "a_s_synonym": ["r1", "rb"]
+    },
+    {
+      "s_name": "right_middle_finger_button_r2", 
+      "a_s_synonym": ["r2", "rt"]
+    },
+    {
+      "s_name": "left_index_finger_button_l1", 
+      "a_s_synonym": ["l1", "lb"]
+    },
+    {
+      "s_name": "left_middle_finger_button_l2", 
+      "a_s_synonym": ["l2", "lt"]
+    },
+    {
+      "s_name": "left_stick_button_l3", 
+      "a_s_synonym": ["l3"]
+    }, 
+    {
+      "s_name": "right_stick_button_r3", 
+      "a_s_synonym": ["r3"]
+    },
+    {
+      "s_name": "left_stick_x_axis", 
+      "a_s_synonym": ["l_x"]
+    },
+    {
+      "s_name": "left_stick_y_axis", 
+      "a_s_synonym": ["l_y"]
+    },
+    {
+      "s_name": "right_stick_x_axis", 
+      "a_s_synonym": ["r_x"]
+    },
+    {
+      "s_name": "right_stick_y_axis", 
+      "a_s_synonym": ["r_y"]
+    }, 
+    {
+      "s_name": "left_meta1_button", 
+      "a_s_synonym": ["share", "back"]
+    },
+    {
+      "s_name": "right_meta1_button", 
+      "a_s_synonym": ["options", "start"]
+    }, 
+    {
+      "s_name": "center_meta1_button", 
+      "a_s_synonym": ["ps", "guide", "home"]
+    }, 
+    {
+      "s_name": "direction_pad_up", 
+      "a_s_synonym": ["dpad_up"]
+    }, 
+    {
+      "s_name": "direction_pad_down", 
+      "a_s_synonym": ["dpad_down"]
+    },
+    {
+      "s_name": "direction_pad_right", 
+      "a_s_synonym": ["dpad_right"]
+    },
+    {
+      "s_name": "direction_pad_left", 
+      "a_s_synonym": ["dpad_left"]
+    }, 
+    {
+      "s_name": "direction_pad_values",
+      "a_s_synonym": ["dpad_values"]
+    }
+  ],
+  "a_o_input_device": 
+    [
+      {
+        "s_name": "ShenZhen ShanWan Technology Co., Ltd. Android Gamepad",
+        "n_id_vendor": 9571,
+        "n_id_product": 1318,
+        "a_o_input_sensor": [
+          {
+            "s_type": "u8",
+            "s_name": "padding_or_not_found_out_yet",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u8",
+            "s_name": "left_stick_x_axis",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u8",
+            "s_name": "left_stick_y_axis",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u8",
+            "s_name": "right_stick_x_axis",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u8",
+            "s_name": "right_stick_y_axis",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u8",
+            "s_name": "direction_pad_values",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [
+              {
+                "n": 0,
+                "a_s_name": ["direction_pad_up"],
+                "s_comment": ""
+              },
+              {
+                "n": 1,
+                "a_s_name": ["direction_pad_up", "direction_pad_right"],
+                "s_comment": ""
+              },
+              {
+                "n": 2,
+                "a_s_name": ["direction_pad_right"],
+                "s_comment": ""
+              },
+              {
+                "n": 3,
+                "a_s_name": ["direction_pad_right", "direction_pad_down"],
+                "s_comment": ""
+              },
+              {
+                "n": 4,
+                "a_s_name": ["direction_pad_down"],
+                "s_comment": ""
+              },
+              {
+                "n": 5,
+                "a_s_name": ["direction_pad_down", "direction_pad_left"],
+                "s_comment": ""
+              },
+              {
+                "n": 6,
+                "a_s_name": ["direction_pad_left"],
+                "s_comment": ""
+              },
+              {
+                "n": 7,
+                "a_s_name": ["direction_pad_left", "direction_pad_up"],
+                "s_comment": ""
+              },
+              {
+                "n": 8,
+                "a_s_name": ["none"],
+                "s_comment": ""
+              }
+            ],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u1",
+            "s_name": "face_button_bottom",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u1",
+            "s_name": "face_button_right",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u1",
+            "s_name": "padding_or_not_found_out_yet",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u1",
+            "s_name": "face_button_left",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u1",
+            "s_name": "face_button_top",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u1",
+            "s_name": "padding_or_not_found_out_yet",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u1",
+            "s_name": "left_index_finger_button_l1",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u1",
+            "s_name": "right_index_finger_button_r1",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u1",
+            "s_name": "left_middle_finger_button_l2",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u1",
+            "s_name": "right_middle_finger_button_r2",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u1",
+            "s_name": "left_meta1_button",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u1",
+            "s_name": "right_meta1_button",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u1",
+            "s_name": "padding_or_not_found_out_yet",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u1",
+            "s_name": "left_stick_button_l3",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          }, 
+          {
+            "s_type": "u1",
+            "s_name": "right_stick_button_r3",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          }, 
+          {
+            "s_type": "u8",
+            "s_name": "right_middle_finger_button_r2",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u8",
+            "s_name": "left_middle_finger_button_l2",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          }
+        ]
+      },
+      {
+        "s_name": "Microsoft Corp. Xbox360 Controller",
+        "n_id_vendor": 1118,
+        "n_id_product": 654,
+        "a_o_input_sensor": [
+          {
+            "s_type": "u8",
+            "s_name": "padding_or_not_found_out_yet",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u8",
+            "s_name": "padding_or_not_found_out_yet",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u1",
+            "s_name": "direction_pad_up",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u1",
+            "s_name": "direction_pad_down",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u1",
+            "s_name": "direction_pad_left",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u1",
+            "s_name": "direction_pad_right",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u1",
+            "s_name": "right_meta1_button",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u1",
+            "s_name": "left_meta1_button",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u1",
+            "s_name": "left_stick_button_l3",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u1",
+            "s_name": "right_stick_button_r3",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u1",
+            "s_name": "left_index_finger_button_l1",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u1",
+            "s_name": "right_index_finger_button_r1",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u1",
+            "s_name": "padding_or_not_found_out_yet",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u1",
+            "s_name": "center_meta1_button",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u1",
+            "s_name": "face_button_bottom",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u1",
+            "s_name": "face_button_right",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u1",
+            "s_name": "face_button_left",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u1",
+            "s_name": "face_button_top",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u8",
+            "s_name": "left_middle_finger_button_l2",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u8",
+            "s_name": "right_middle_finger_button_r2",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "i16",
+            "s_name": "left_stick_x_axis",
+            "v_o_input_sensor_value": {
+              "I16": 0
+            },
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "i16",
+            "s_name": "left_stick_y_axis",
+            "v_o_input_sensor_value": {
+              "I16": 0
+            },
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "i16",
+            "s_name": "right_stick_x_axis",
+            "v_o_input_sensor_value": {
+              "I16": 0
+            },
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "i16",
+            "s_name": "right_stick_y_axis",
+            "v_o_input_sensor_value": {
+              "I16": 0
+            },
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          }
+        ]
+      }, 
+      {
+        "s_name": "Sony Corp. DualShock 4 [CUH-ZCT1x]",
+        "n_id_vendor": 1356,
+        "n_id_product": 1476,
+        "a_o_input_sensor": [
+          {
+            "s_type": "u8",
+            "s_name": "padding_or_not_found_out_yet",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u8",
+            "s_name": "left_stick_x_axis",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u8",
+            "s_name": "left_stick_y_axis",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u8",
+            "s_name": "right_stick_x_axis",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u8",
+            "s_name": "right_stick_y_axis",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u4",
+            "s_name": "direction_pad_values",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [
+              {
+                "n": 0,
+                "a_s_name": ["direction_pad_up"],
+                "s_comment": ""
+              },
+              {
+                "n": 1,
+                "a_s_name": ["direction_pad_up", "direction_pad_right"],
+                "s_comment": ""
+              },
+              {
+                "n": 2,
+                "a_s_name": ["direction_pad_right"],
+                "s_comment": ""
+              },
+              {
+                "n": 3,
+                "a_s_name": ["direction_pad_right", "direction_pad_down"],
+                "s_comment": ""
+              },
+              {
+                "n": 4,
+                "a_s_name": ["direction_pad_down"],
+                "s_comment": ""
+              },
+              {
+                "n": 5,
+                "a_s_name": ["direction_pad_down", "direction_pad_left"],
+                "s_comment": ""
+              },
+              {
+                "n": 6,
+                "a_s_name": ["direction_pad_left"],
+                "s_comment": ""
+              },
+              {
+                "n": 7,
+                "a_s_name": ["direction_pad_left", "direction_pad_up"],
+                "s_comment": ""
+              },
+              {
+                "n": 8,
+                "a_s_name": ["none"],
+                "s_comment": ""
+              }
+            ],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u1",
+            "s_name": "face_button_left",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u1",
+            "s_name": "face_button_bottom",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u1",
+            "s_name": "face_button_right",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u1",
+            "s_name": "face_button_top",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u1",
+            "s_name": "left_index_finger_button_l1",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u1",
+            "s_name": "right_index_finger_button_r1",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u1",
+            "s_name": "left_middle_finger_button_l2",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u1",
+            "s_name": "right_middle_finger_button_r2",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u1",
+            "s_name": "left_meta1_button",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u1",
+            "s_name": "right_meta1_button",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u1",
+            "s_name": "left_stick_button_l3",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u1",
+            "s_name": "right_stick_button_r3",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u1",
+            "s_name": "center_meta1_button",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u1",
+            "s_name": "touchpad_button",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u6",
+            "s_name": "padding_or_not_found_out_yet",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u8",
+            "s_name": "left_middle_finger_button_l2",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u8",
+            "s_name": "right_middle_finger_button_r2",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u32",
+            "s_name": "padding_or_not_found_out_yet",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u32",
+            "s_name": "padding_or_not_found_out_yet",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u32",
+            "s_name": "padding_or_not_found_out_yet",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u8",
+            "s_name": "padding_or_not_found_out_yet",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u8",
+            "s_name": "gyroscope_axis",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          }
+          
+
+        ]
+      },
+      {
+        "s_name": "Microsoft Corp. Xbox One S Controller",
+        "n_id_vendor": 1118,
+        "n_id_product": 746,
+        "a_o_input_sensor": [
+          {
+            "s_type": "u8",
+            "s_name": "padding_or_not_found_out_yet",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          }, 
+          {
+            "s_type": "u8",
+            "s_name": "padding_or_not_found_out_yet",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u8",
+            "s_name": "input_count",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u8",
+            "s_name": "padding_or_not_found_out_yet",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          { 
+            "s_type": "u1",
+            "s_name": "pairing_button",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          }, 
+          { 
+            "s_type": "u1",
+            "s_name": "padding_or_not_found_out_yet",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          }, 
+          { 
+            "s_type": "u1",
+            "s_name": "right_meta1_button",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          { 
+            "s_type": "u1",
+            "s_name": "left_meta1_button",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          { 
+            "s_type": "u4",
+            "s_name": "padding_or_not_found_out_yet",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          { 
+            "s_type": "u1",
+            "s_name": "direction_pad_up",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          { 
+            "s_type": "u1",
+            "s_name": "direction_pad_down",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          { 
+            "s_type": "u1",
+            "s_name": "direction_pad_left",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          { 
+            "s_type": "u1",
+            "s_name": "direction_pad_right",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          { 
+            "s_type": "u1",
+            "s_name": "left_index_finger_button_l1",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          { 
+            "s_type": "u1",
+            "s_name": "right_index_finger_button_r1",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          { 
+            "s_type": "u1",
+            "s_name": "left_stick_button_l3",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          { 
+            "s_type": "u1",
+            "s_name": "right_stick_button_r3",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          { 
+            "s_type": "u10",
+            "s_name": "left_middle_finger_button_l2",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          { 
+            "s_type": "u6",
+            "s_name": "padding_or_not_found_out_yet",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          { 
+            "s_type": "u10",
+            "s_name": "right_middle_finger_button_r2",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          { 
+            "s_type": "u6",
+            "s_name": "padding_or_not_found_out_yet",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          { 
+            "s_type": "i16",
+            "s_name": "left_stick_x_axis",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          { 
+            "s_type": "i16",
+            "s_name": "left_stick_y_axis",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          { 
+            "s_type": "i16",
+            "s_name": "right_stick_x_axis",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          { 
+            "s_type": "i16",
+            "s_name": "right_stick_y_axis",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          }
+        ]
+      }, 
+
+      {
+        "s_name": "Sony Corp. Wireless Controller (DualSense)",
+        "n_id_vendor": 1356,
+        "n_id_product": 3302,
+        "a_o_input_sensor": [
+          { 
+            "s_type": "u8",
+            "s_name": "padding_or_not_found_out_yet",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          { 
+            "s_type": "u8",
+            "s_name": "left_stick_x_axis",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          { 
+            "s_type": "u8",
+            "s_name": "left_stick_y_axis",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          { 
+            "s_type": "u8",
+            "s_name": "right_stick_x_axis",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          { 
+            "s_type": "u8",
+            "s_name": "right_stick_y_axis",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          }, 
+          { 
+            "s_type": "u8",
+            "s_name": "left_middle_finger_button_l2",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          }, 
+          { 
+            "s_type": "u8",
+            "s_name": "right_middle_finger_button_r2",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          }, 
+          { 
+            "s_type": "u8",
+            "s_name": "padding_or_not_found_out_yet",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          }, 
+          {
+            "s_type": "u4",
+            "s_name": "direction_pad_values",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [
+              {
+                "n": 0,
+                "a_s_name": ["direction_pad_up"],
+                "s_comment": ""
+              },
+              {
+                "n": 1,
+                "a_s_name": ["direction_pad_up", "direction_pad_right"],
+                "s_comment": ""
+              },
+              {
+                "n": 2,
+                "a_s_name": ["direction_pad_right"],
+                "s_comment": ""
+              },
+              {
+                "n": 3,
+                "a_s_name": ["direction_pad_right", "direction_pad_down"],
+                "s_comment": ""
+              },
+              {
+                "n": 4,
+                "a_s_name": ["direction_pad_down"],
+                "s_comment": ""
+              },
+              {
+                "n": 5,
+                "a_s_name": ["direction_pad_down", "direction_pad_left"],
+                "s_comment": ""
+              },
+              {
+                "n": 6,
+                "a_s_name": ["direction_pad_left"],
+                "s_comment": ""
+              },
+              {
+                "n": 7,
+                "a_s_name": ["direction_pad_left", "direction_pad_up"],
+                "s_comment": ""
+              },
+              {
+                "n": 8,
+                "a_s_name": ["none"],
+                "s_comment": ""
+              }
+            ],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u1",
+            "s_name": "face_button_left",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u1",
+            "s_name": "face_button_bottom",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u1",
+            "s_name": "face_button_right",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u1",
+            "s_name": "face_button_top",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u1",
+            "s_name": "left_index_finger_button_l1",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u1",
+            "s_name": "right_index_finger_button_r1",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u1",
+            "s_name": "left_middle_finger_button_l2",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u1",
+            "s_name": "right_middle_finger_button_r2",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u1",
+            "s_name": "left_meta1_button",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u1",
+            "s_name": "right_meta1_button",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u1",
+            "s_name": "left_stick_button_l3",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u1",
+            "s_name": "right_stick_button_r3",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u1",
+            "s_name": "left_meta1_button",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u1",
+            "s_name": "touchpad_button",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          },
+          {
+            "s_type": "u1",
+            "s_name": "microphone_button",
+            "v_o_input_sensor_value": null,
+            "a_o_num_str_value": [],
+            "v_o_num_str_value": null,
+            "n_nor": 0.0,
+            "n_nor__last": 0.0
+          }
+
+        ]
+      }
+
+    ]
+}

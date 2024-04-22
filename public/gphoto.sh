@@ -1,0 +1,1 @@
+gphoto2 --stdout --capture-movie | ffmpeg -i - -c:v libx264 -crf 23 -preset veryfast -g 60 -sc_threshold 0 -f hls -hls_time 2 -hls_playlist_type event stream.m3u8
