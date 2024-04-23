@@ -48,6 +48,7 @@ use classes::{
     ControlCommand, O_input_device, SendData
 };
 
+use gethostname::gethostname;
 
 fn f_usb_read_thread(
     o_tx_control_usb: mpsc::Sender<SendData>,
@@ -316,7 +317,19 @@ async fn main() {
         })
         .or(warp::fs::dir("public"));
 
-    tokio::spawn(warp::serve(routes).run(([127, 0, 0, 1], 3030)));
+    let mut a_n_ip = [127,0,0,1];
+    let s_hostname = gethostname();
+    if(s_hostname == "raspi-desktop"){
+        a_n_ip = [192,168,1,105];
+    }
+    tokio::spawn(
+        warp::serve(routes)
+        .tls()
+        // RSA
+        .cert_path("cert.pem")
+        .key_path("key.pem")
+        .run((a_n_ip, 3030))
+    );
     println!("webserver running at http://127.0.0.1:3030/");
     println!("websocket running at ws://127.0.0.1:3030/ws");
 

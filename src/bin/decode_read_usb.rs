@@ -84,7 +84,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         n_address_endpoint_in = endpoint_desc.address();
                         let n = endpoint_desc.interval() as f32;
                         n_interface = interface.number();
-                        o_timeout = Duration::from_millis((n*5.00) as u64);// account for overhead and ensure reliability
+                        o_timeout = Duration::from_millis((n*8.00) as u64);// account for overhead and ensure reliability
                         n_len_a_n_u8__readout = endpoint_desc.max_packet_size();
                     }
                 }

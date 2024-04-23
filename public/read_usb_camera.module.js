@@ -471,9 +471,9 @@ async function startWebcam() {
           o_state.b_render__o_js__gamepad_controls
           if(v_o_l2?.n_nor == 1.0){
             //layer 2 camera control
-            o_state.n_x_trn_nor+=f_n_signed_nor_with_threshhold( "right_stick_x_axis", 0.09)*0.02;
-            o_state.n_y_trn_nor+=f_n_signed_nor_with_threshhold( "right_stick_y_axis", 0.09)*-0.02;
-            o_state.n_factor_scale+=f_n_signed_nor_with_threshhold( "left_stick_y_axis", 0.09)*0.02;
+            o_state.n_x_trn_nor+=f_n_signed_nor_with_threshhold( "right_stick_x_axis", 0.1)*0.02;
+            o_state.n_y_trn_nor+=f_n_signed_nor_with_threshhold( "right_stick_y_axis", 0.1)*-0.02;
+            o_state.n_factor_scale+=f_n_signed_nor_with_threshhold( "left_stick_y_axis", 0.1)*0.02;
             o_state.n_factor_contrast-=f_n_grouped_value("direction_pad_down")*0.02;
             o_state.n_factor_contrast+=f_n_grouped_value("direction_pad_up")*0.02;
             o_state.n_factor_gamma+=f_n_grouped_value("direction_pad_right")*0.02;
@@ -622,7 +622,7 @@ if(o_e.key == ' '){
 
 })
 // Replace 'ws://example.com/socket' with the URL of your WebSocket server
-const o_ws = new WebSocket(`ws://${location.hostname}:${location.port}/ws`);
+const o_ws = new WebSocket(`ws${(location.protocol == 'https:')?"s":''}://${location.hostname}:${location.port}/ws`);
 
 
 // Connection opened
