@@ -169,7 +169,7 @@ fn f_usb_read_thread(
             // println!("readout?");
             let mut a_n_u8__readout = vec![0u8; n_len_a_n_u8__readout as usize];
             if let Some(ref mut o_device_handle) = o_device_handle_option{
-                println!("readout?");
+                // println!("readout?");
                 match o_device_handle.read_interrupt(n_address_endpoint_in, &mut a_n_u8__readout, o_timeout) {
                     Ok(n_bytes_read) => {
                         let mut v_o_input_device_cloned = None;
@@ -179,8 +179,8 @@ fn f_usb_read_thread(
                                 o_input_device, 
                                 &a_n_u8__readout
                             );
-                            print!("\x1B[2J\x1B[H"); // Clear the screen and move the cursor to the top-left
-                            io::stdout().flush().unwrap();
+                            // print!("\x1B[2J\x1B[H"); // Clear the screen and move the cursor to the top-left
+                            // io::stdout().flush().unwrap();
                         
                             for o_input_sensor in &o_input_device.a_o_input_sensor{
 
