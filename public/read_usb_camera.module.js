@@ -43,6 +43,7 @@ let a_s_image_mode = [
   'edge_detection'
 ]
 let o_state = {
+  o_config: {},
   n_idx_a_s_image_mode: 5,
   a_s_image_mode: a_s_image_mode,
   n_fps: 24,
@@ -276,29 +277,20 @@ let o_gpu_gateway = await f_o_gpu_gateway(
     uniform vec2 o_scl_canvas;
     uniform sampler2D image_from_video;
 
-    
-
     void main() {
       //o_trn_nor_pixel normalized pixel coordinates from -1.0 -1.0 to 1.0 1.0
       
       vec2 o_trn = o_trn_nor_pixel * n_factor_scale + vec2(n_x_trn_nor, n_y_trn_nor);
       vec2 o_trn2 = ((o_trn)+.5);
       o_trn2.y = 1.-o_trn2.y;
+      
       vec4 o_pixel_value_image_from_video = texture(image_from_video, o_trn2); 
-      o_pixel_value_image_from_video *= n_factor_brightness;
-
-      o_pixel_value_image_from_video.rgb = ((o_pixel_value_image_from_video.rgb - 0.5) * n_factor_contrast + 0.5);
-
-      o_pixel_value_image_from_video.rgb = pow(o_pixel_value_image_from_video.rgb, vec3(1.0 / n_factor_gamma));
-
-
-      fragColor = o_pixel_value_image_from_video;
-
+      fragColor =o_pixel_value_image_from_video;
       if(n_idx_a_s_image_mode == ${(o_state.a_s_image_mode.indexOf("rgba_normal"))}.){
-        // do nothing
+        // do nothing 
       }
       if(n_idx_a_s_image_mode == ${(o_state.a_s_image_mode.indexOf("rgba_inverted"))}.){
-        fragColor = vec4(vec3(1.)-o_pixel_value_image_from_video.rgb, 1.);
+        fragColor = vec4(vec3(1.)-fragColor.rgb, 1.);
       }
       if(n_idx_a_s_image_mode == ${(o_state.a_s_image_mode.indexOf("red_channel_only"))}.){
         fragColor *= vec4(1., 0., 0., 1.);
@@ -364,6 +356,13 @@ let o_gpu_gateway = await f_o_gpu_gateway(
         // fragColor = (fragColor);
         // fragColor = vec4(length(o_prod_sobel_x.x+o_prod_sobel_y.x));
       }
+
+      // apply the image styles at the end 
+      fragColor *= n_factor_brightness;
+      fragColor.rgb = ((fragColor.rgb - 0.5) * n_factor_contrast + 0.5);
+      fragColor.rgb = pow(fragColor.rgb, vec3(1.0 / n_factor_gamma));
+      fragColor.rgb = fract(fragColor.rgb);
+
     }
     `,
 )
@@ -396,9 +395,16 @@ let f_n_grouped_value = function(
   s_name
 ){
   let n = 0;
+  let o_input_sensor = (o_state.v_o_input_device?.a_o_input_sensor?.find(o=>o.s_name == s_name));
+  if(o_input_sensor)
+  {
+    return o_input_sensor.n_nor;
+  }
+  // the value could also be enum like
   if(o_state.v_o_input_device?.a_o_input_sensor?.find(o=>o.s_name == 'direction_pad_values')?.v_o_num_str_value?.a_s_name.includes(s_name)){
     n = 1
   }
+
   return n
 }
 let f_n_signed_nor_with_threshhold = function(
@@ -472,8 +478,8 @@ async function startWebcam() {
           if(v_o_l2?.n_nor == 1.0){
             //layer 2 camera control
             o_state.n_x_trn_nor+=f_n_signed_nor_with_threshhold( "right_stick_x_axis", 0.1)*0.02;
-            o_state.n_y_trn_nor+=f_n_signed_nor_with_threshhold( "right_stick_y_axis", 0.1)*-0.02;
-            o_state.n_factor_scale+=f_n_signed_nor_with_threshhold( "left_stick_y_axis", 0.1)*0.02;
+            o_state.n_y_trn_nor+=f_n_signed_nor_with_threshhold( "right_stick_y_axis", 0.1)*0.02;
+            o_state.n_factor_scale+=f_n_signed_nor_with_threshhold( "left_stick_y_axis", 0.1)*-0.02;
             o_state.n_factor_contrast-=f_n_grouped_value("direction_pad_down")*0.02;
             o_state.n_factor_contrast+=f_n_grouped_value("direction_pad_up")*0.02;
             o_state.n_factor_gamma+=f_n_grouped_value("direction_pad_right")*0.02;
@@ -621,22 +627,112 @@ if(o_e.key == ' '){
 }
 
 })
+let f_r_ser_w_cli_o_config = async function(){
+  let o = await f_o_ws_response({s_name_function: "f_s_json_o_config"});
+  let o_config = JSON.parse(o.s_json_o_config);
+  o_state.o_config = o_config;
+
+  o_state?.o_js__a_o_usb_device._f_render()
+
+  await o
+}
+let f_r_ser_w_cli_a_o_usb_device = async function(){
+     
+  let o2 = await f_o_ws_response({s_name_function: "f_o_command", s_command: 'lsusb'});
+  // console.log(o2)
+  let b_new_device = false;
+  let a_o_usb_device = o2.s_stdout.split('\n').filter(s=>s.includes('Device ')).map(s=>{
+    let [
+      s_prop_bus,
+      s_n_val_bus, 
+      s_prop_device, 
+      s_n_val_device, 
+      s_prop_id, 
+      s_val_vendor_id_product_id, 
+    ] = s.split(' ');
+    if(!o_state.a_o_usb_device.find(o2=>o2?.s_val_vendor_id_product_id == s_val_vendor_id_product_id)){
+      b_new_device = true;
+    }
+    return {
+      s_prop_bus,
+      n_val_bus: parseInt(s_n_val_bus),
+      s_prop_device,
+      n_val_device: parseInt(s_n_val_device),
+      s_prop_id,
+      n_id_vendor : parseInt(`0x${s_val_vendor_id_product_id.split(":").shift()}`, 16),
+      n_id_product : parseInt(`0x${s_val_vendor_id_product_id.split(":").pop()}`, 16),
+      s_val_vendor_id_product_id, 
+      s_lsusbline: s,
+      s_name: s.split(' ').slice(6).join(' ')
+    }
+  })
+  // console.log(o_state.a_o_usb_device)
+  if(
+    b_new_device
+    || 
+    a_o_usb_device.length != o_state.a_o_usb_device.length //ugly and lazy way to check if usbdevice has been unplugged or plugged
+  ){
+    o_state.a_o_usb_device = a_o_usb_device
+    // console.log(o_state.a_o_usb_device)
+    o_state?.o_js__a_o_usb_device._f_render()
+  }
+}
 // Replace 'ws://example.com/socket' with the URL of your WebSocket server
 const o_ws = new WebSocket(`ws${(location.protocol == 'https:')?"s":''}://${location.hostname}:${location.port}/ws`);
 
 
 // Connection opened
-o_ws.addEventListener('open', function (event) {
+o_ws.addEventListener('open', async function (event) {
     console.log("WebSocket is open now.");
+    // let o = await f_o_ws_response({s_name_function: "hello"});
+    f_r_ser_w_cli_a_o_usb_device();
+    f_r_ser_w_cli_o_config().then(
+      ()=>{
+        console.log(o_state.o_config)
+        if(o_state.o_config.n_id_product && o_state.o_config.n_id_vendor){
+          o_ws.send(
+            JSON.stringify({
+              s_name_function: "f_switch_usb_device", 
+              n_id_vendor: o_state.o_config.n_id_vendor,
+              n_id_product: o_state.o_config.n_id_product,
+            })
+          )
+        }
+      }
+    );
+ 
+});
 
+let f_o_ws_response = async function(
+  o_request_data
+){
+  return new Promise((f_res)=>{
+
+    let s_uuid = crypto.randomUUID();
+
+    let f_socket_handler = (o_e)=>{
+      let v_o = null;
+      try {
+        v_o = JSON.parse(o_e.data);
+      } catch (error) {
+      }
+      if(v_o?.s_uuid == s_uuid){
+        o_ws.removeEventListener("message", f_socket_handler)
+        return f_res(v_o);
+      }
+    }
+  
+    o_ws.addEventListener("message", f_socket_handler);
+
+    console.log({s_uuid})
     o_ws.send(
       JSON.stringify({
-        s_name_function: "f_s_stdout_from_s_command", 
-        s_command: "lsusb"
+        s_uuid: s_uuid, 
+        ...o_request_data
       })
     );
-    
-});
+  })
+}
 
 // Listen for messages
 o_ws.addEventListener('message', function (event) {
@@ -647,48 +743,11 @@ o_ws.addEventListener('message', function (event) {
   } catch (error) {
     
   }
+
   if(v_o?.o_input_device){
     o_state.v_o_input_device = v_o.o_input_device;
   }
-  if(v_o?.s_stdout__lsusb){
-    // console.log(v_o)
-    let b_new_device = false;
-    let a_o_usb_device = v_o?.s_stdout__lsusb.split('\n').filter(s=>s.includes('Device ')).map(s=>{
-      let [
-        s_prop_bus,
-        s_n_val_bus, 
-        s_prop_device, 
-        s_n_val_device, 
-        s_prop_id, 
-        s_val_vendor_id_product_id, 
-      ] = s.split(' ');
-      if(!o_state.a_o_usb_device.find(o2=>o2?.s_val_vendor_id_product_id == s_val_vendor_id_product_id)){
-        b_new_device = true;
-      }
-      return {
-        s_prop_bus,
-        n_val_bus: parseInt(s_n_val_bus),
-        s_prop_device,
-        n_val_device: parseInt(s_n_val_device),
-        s_prop_id,
-        n_id_vendor : parseInt(`0x${s_val_vendor_id_product_id.split(":").shift()}`, 16),
-        n_id_product : parseInt(`0x${s_val_vendor_id_product_id.split(":").pop()}`, 16),
-        s_val_vendor_id_product_id, 
-        s_lsusbline: s,
-        s_name: s.split(' ').slice(6).join(' ')
-      }
-    })
-    // console.log(o_state.a_o_usb_device)
-    if(
-      b_new_device
-      || 
-      a_o_usb_device.length != o_state.a_o_usb_device.length //ugly and lazy way to check if usbdevice has been unplugged or plugged
-    ){
-      o_state.a_o_usb_device = a_o_usb_device
-      console.log(o_state.a_o_usb_device)
-      o_state?.o_js__a_o_usb_device._f_render()
-    }
-  }
+
     // console.log('Message from server ', event.data);
 });
 
@@ -739,6 +798,7 @@ window.addEventListener('resize',()=>{
 
 
 startWebcam();
+
 f_resize_canvas()
 
 
@@ -1089,15 +1149,25 @@ document.body.appendChild(
                                           n_id_product: o_usb_device.n_id_product,
                                         })
                                       )
+                                      o_state.o_config.n_id_vendor = o_usb_device.n_id_vendor
+                                      o_state.o_config.n_id_product = o_usb_device.n_id_product
+                                      let o = f_o_ws_response({
+                                        s_name_function: "f_b_write_s_json_o_config", 
+                                        s_json_o_config: JSON.stringify(o_state.o_config)
+                                      });
                                     }
                                   },
                                   a_o: [
                                       ...o_state.a_o_usb_device.map(o=>{
-                                        console.log(o)
                                           return {
                                               s_tag: "option",
                                               value: o.s_val_vendor_id_product_id, 
-                                              innerText: o.s_name
+                                              innerText: o.s_name, 
+                                              ...(
+                                                (  
+                                                o_state?.o_config?.n_id_product == o?.n_id_product
+                                                && o_state?.o_config?.n_id_vendor == o?.n_id_vendor
+                                              ) ? {selected: true} : {})
                                           }
                                       })
                                   ]
@@ -1110,7 +1180,6 @@ document.body.appendChild(
       }
   )
 );
-
 
 // await f_o_throw_notification(o_state.o_state__notifire,'Loading, please wait !', 'warning')
 // await f_clear_all_notifications(o_state.o_state__notifire);

@@ -11,9 +11,13 @@ use futures::{
 use std::{
     io::{
         self,
+        ErrorKind,
         Write
     },
-    fs,
+    fs::{
+        self, 
+        File
+    },
     time::{
         Duration
     },
@@ -24,7 +28,9 @@ use std::{
     thread
 };
 use serde_json::{
-    json
+    json, 
+    Map, 
+    Value
 };
 
 use rusb::{
@@ -66,6 +72,8 @@ fn f_usb_read_thread(
     let mut b_usb_readout_active = false;
     let mut n_id_vendor = 0;
     let mut n_id_product = 0;
+    let mut n_id_vendor_old = 0;
+    let mut n_id_product_old = 0;
     let mut o_timeout = Duration::from_millis(1000);
     let mut n_len_a_n_u8__readout = 32;
     let mut n_interface = 0;
@@ -89,7 +97,8 @@ fn f_usb_read_thread(
                     }
                     // release the old interface and attach the kernel driver
                 }
-
+                
+                
                 n_id_vendor = vid;
                 n_id_product = pid;
                 v_o_input_device = a_o_input_device
@@ -103,30 +112,60 @@ fn f_usb_read_thread(
                     Some(ref mut o_device_handle)=>{
                         b_usb_readout_active = true;
 
-                        // find a interface with a interrupt IN, mostly this will be index 0 but on dualsense for example it is 3
-                        println!("Changing from old vid:pid 0x{:02x}:0x{:02x} to vid:pid 0x{:02x}:0x{:02x}", n_id_vendor, n_id_product, vid, pid);
-                        
+                        let o_command_old = Command::new("lsusb")
+                                            .args(["-d", &format!("{:#02x}:{:#02x}", n_id_vendor_old, n_id_product_old)])
+                                            .output()
+                                            .expect("failed to execute process");
+                        let o_command_new = Command::new("lsusb")
+                                        .args(["-d", &format!("{:#02x}:{:#02x}", n_id_vendor, n_id_product)])
+                                        .output()
+                                        .expect("failed to execute process");
+                        n_id_vendor_old = vid;
+                        n_id_product_old = pid;
+                        println!(
+                            "switching usb device: 
+                            old: {:?}
+                            new: {}
+                        ",
+                        String::from_utf8_lossy(&o_command_old.stdout),
+                        String::from_utf8_lossy(&o_command_new.stdout)
+                        );
                         let o_config_descriptor = o_device_handle.device().active_config_descriptor().expect("Failed to get configuration descriptor");
                         let mut b_interface_found: bool = false;
+
                         for o_interface in o_config_descriptor.interfaces() {
-                    
                             for o_interface_descriptor in o_interface.descriptors() {
                                 for o_endpoint_descriptor in o_interface_descriptor.endpoint_descriptors() {
-                                    if o_endpoint_descriptor.direction() == Direction::In
-                                        && o_endpoint_descriptor.transfer_type() == TransferType::Interrupt
+                                    let n_dir = o_endpoint_descriptor.direction();
+                                    let n_tt = o_endpoint_descriptor.transfer_type();
+                                    let n_class = o_interface_descriptor.class_code();
+                                    let n_ifacenum = o_interface.number();
+                                    println!(
+                                        "n_dir:{:?}
+                                        n_tt:{:?}
+                                        n_ifacenum:{:?}
+                                        n_class:{:?}",
+                                        n_dir,
+                                        n_tt,
+                                        n_ifacenum, 
+                                        n_class
+                                    );
+                                    if n_dir == Direction::In
+                                        && n_tt == TransferType::Interrupt
                                     {
-                                        if(o_interface_descriptor.class_code() == n_class_code_human_interface_device){
-                    
-                                            println!("Found an IN endpoint: 0x{:02x}", o_endpoint_descriptor.address());
-                                            n_address_endpoint_in = o_endpoint_descriptor.address();
-                                            let n = o_endpoint_descriptor.interval() as f32;
-                                            n_interface = o_interface.number();
-                                            o_timeout = Duration::from_millis((n*5.00) as u64);// account for overhead and ensure reliability
-                                            n_len_a_n_u8__readout = o_endpoint_descriptor.max_packet_size();
+                
+                                        n_address_endpoint_in = o_endpoint_descriptor.address();
+                                        let n = o_endpoint_descriptor.interval() as f32;
+                                        n_interface = o_interface.number();
+                                        o_timeout = Duration::from_millis((n*5.00) as u64);// account for overhead and ensure reliability
+                                        n_len_a_n_u8__readout = o_endpoint_descriptor.max_packet_size();
+                                        if(
+                                            n_class == n_class_code_human_interface_device
+                                        ){
                                             b_interface_found = true;
-                                            
                                         }
-                                        if(b_interface_found){break;}
+                                        // some devices have 255 which is 0xff usb class code FFh Both Vendor Specific
+                                            
                                     }
                                     if(b_interface_found){break;}
                                 }
@@ -150,7 +189,9 @@ fn f_usb_read_thread(
 
                         // if no suitable interface is found the 'default' values will be used
                             let _ = o_device_handle.set_auto_detach_kernel_driver(true).expect("cannot set auto a- de- tach of the kernel driver");
-                            let _ = o_device_handle.claim_interface(n_interface).expect("Cannot claim interface");
+                            let _ = o_device_handle.claim_interface(n_interface).expect(
+                                &format!("Cannot claim interface, {}", n_interface)
+                            );
                     }
                     None =>{
                         println!("cannot open usb device, is it connected and are you root?");
@@ -208,6 +249,29 @@ fn f_usb_read_thread(
     }
 }
 
+const s_path_file_abs__config: &'static str = "./o_config.json";
+
+fn f_b_write_s_json_o_config(s_str: &str) -> bool{
+    let mut file = File::create(s_path_file_abs__config).expect("Failed to create file");
+
+    file.write_all(s_str.as_bytes()).expect("Failed to write to file");
+    return true;
+    // println!("Data written to {}", s_path_file_abs__config);
+}
+
+fn f_s_json_o_config() -> String {
+    match fs::read_to_string(s_path_file_abs__config) {
+        Ok(s_content) => s_content,
+        Err(e) => {
+            if let ErrorKind::NotFound = e.kind() {
+                "{}".to_string() // Return an empty string if the file is not found
+            } else {
+                panic!("Failed to read file: {:?}", e) // Panic for other errors
+            }
+        }
+    }
+}
+
 async fn f_websocket_thread(
     mut o_websocket: WebSocket,
     mut o_rx_receiver: broadcast::Receiver<String>, 
@@ -237,35 +301,70 @@ async fn f_websocket_thread(
                 println!("websocket received message");
                 if let Ok(v_json_parsed) = serde_json::from_str::<serde_json::Value>(text) {
 
+                    // s_name_function must be present as it is an identifier of what to do on the server
                     if let Some(s_name_function) = v_json_parsed.get("s_name_function").and_then(|v: &serde_json::Value| v.as_str()) {
+                        // if 's_uuid' is present the response json should also contain it since the client expects it as a response
+                        if let Some(s_uuid) = v_json_parsed.get("s_uuid").and_then(|v: &serde_json::Value| v.as_str()) {
+                            let mut o_response = Map::new();                                
+                                
+                            if(s_name_function == "hello"){
+                                o_response.insert("s_res".to_string(), json!("World !"));
+                                o_response.insert("o_child".to_string(), json!({ "s_stdout__lsusb": "yes" }));
+                            }
+
+                            if(s_name_function == "f_s_json_o_config"){
+                                o_response.insert("s_json_o_config".to_string(), json!(f_s_json_o_config()));
+                            }
+
+                            if(s_name_function == "f_b_write_s_json_o_config"){
+                                if let Some(s_json) = v_json_parsed.get("s_json_o_config").and_then(|v: &serde_json::Value| v.as_str()) {
+                                    f_b_write_s_json_o_config(s_json);
+                                    o_response.insert("b".to_string(), json!(true));
+                                }
+                            }
+
+                            if(s_name_function == "f_o_command"){
+                                if let Some(s_command) = v_json_parsed.get("s_command").and_then(|v: &serde_json::Value| v.as_str()) {
+
+                                    let a_s_arg :Vec<&str> = s_command.split_whitespace().collect();
+                                    let a_s_command_allowed = ["lsusb", "touch lol_test"];
+                                    if !a_s_command_allowed.contains(&s_command) {
+                                        let sresp = format!("command '{}' not allowed, allowed are {:?}", s_command, a_s_command_allowed);
+                                        o_tx_sender_clone.send(sresp);
+                                    }else{
+                                        let a_s_arg2 = if a_s_arg.len() > 1 { &a_s_arg[1..] } else { &[] };
+                                        let o_command = Command::new(a_s_arg[0])
+                                            .args(a_s_arg2)
+                                            .output()
+                                            .expect("failed to execute process");
+                                        // println!("s_out {:?}", o_command);
+                
+                                        // Convert output to a string and send it back
+                                        let s_stdout = String::from_utf8_lossy(&o_command.stdout);
+                                        let s_stderr = String::from_utf8_lossy(&o_command.stderr);
+                                        let o_status = o_command.status;
+                                        o_response.insert("n_return_code".to_string(), json!(o_status.code()));
+                                        o_response.insert("s_stdout".to_string(), json!(s_stdout));
+                                        o_response.insert("s_stderr".to_string(), json!(s_stderr));
+
+                                        // println!("message {:?}", sdev);
+                                        // i want to be able to send data here... 
+                                    }
+                                }
+                            }
+
+                            
+                            o_response.insert("s_uuid".to_string(), json!(s_uuid));
+                            o_tx_sender_clone.send(
+                                serde_json::to_string(&Value::Object(o_response)).unwrap()
+                            );
+                        }
+                        
                         println!("received s_name_function {}", s_name_function);
                         o_tx_sender_clone.send(String::from("message received, heres a new one sent!"));
 
-                        if(s_name_function == "f_s_stdout_from_s_command"){
-                            if let Some(s_command) = v_json_parsed.get("s_command").and_then(|v: &serde_json::Value| v.as_str()) {
 
-                                let a_s_arg :Vec<&str> = s_command.split_whitespace().collect();
-                                let a_s_command_allowed = ["lsusb", "touch lol_test"];
-                                if !a_s_command_allowed.contains(&s_command) {
-                                    let sresp = format!("command '{}' not allowed, allowed are {:?}", s_command, a_s_command_allowed);
-                                    o_tx_sender_clone.send(sresp);
-                                }else{
-                                    let a_s_arg2 = if a_s_arg.len() > 1 { &a_s_arg[1..] } else { &[] };
-                                    let s_out = Command::new(a_s_arg[0])
-                                        .args(a_s_arg2)
-                                        .output()
-                                        .expect("failed to execute process");
-                                    println!("s_out {:?}", s_out);
-            
-                                    // Convert output to a string and send it back
-                                    let s_stdout = String::from_utf8_lossy(&s_out.stdout);
 
-                                    o_tx_sender_clone.send(json!({ "s_stdout__lsusb": s_stdout }).to_string());
-                                            // println!("message {:?}", sdev);
-                                    // i want to be able to send data here... 
-                                }
-                            }
-                        }
                         if(s_name_function == "f_switch_usb_device"){
 
                             let n_id_vendor = v_json_parsed.get("n_id_vendor").unwrap().as_i64().expect("value has to be number");

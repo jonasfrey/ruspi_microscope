@@ -133,7 +133,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 let mut n_c = 0;
                 for n_u8 in &a_n_u8__readout{
                     n_c+=1;
-                    if(n_c % 4 == 0){
+                    if(n_c % 8 == 0){
                         print!("\n")
                     }
                     print!("{:#010b},", n_u8);
