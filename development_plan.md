@@ -85,6 +85,29 @@
 
 3. user can controll microscope stage with controller 
 
+## image preview software
+1. instead of using OBS or guvcview a customized microscope camera image preview software can be used, it is featuring the following functionialities:
+    - image manipulation:
+        - translate x y  (digital) 
+        - zoom (digital)
+        - brightness + - 
+        - contrast + -
+        - gamma + -
+        - show only red / green / blue channel 
+        - color intensity (saturation)
+        - advanced filters such as 
+            - edge detection (sobel)
+            - deconvolution 
+            - sharpening
+    - ai help 
+        - ask ai what can generally be seen on image
+        - select a certain area and ask what it is
+        - get a corse guess what the size of the image could be 
+    - measurement 
+        - first configure the distance, then draw a line/circle/rectangle to measure the distance 
+        - draw a line to measure distance
+    
+
 
 # requirements 
 
