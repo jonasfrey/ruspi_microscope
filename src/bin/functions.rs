@@ -4,8 +4,36 @@ use crate::classes::{
     O_input_sensor_value,
     O_num_str_value
 };
+use rppal::gpio::Gpio;
+use std::{
+    self, 
+    sync::{
+        Arc, 
+        Mutex
+    },
+    time::{
+        Instant,
+        Duration
+    },
+    thread
+};
+use super::classes::A_o_name_synonym;
+use crate::classes::O_stepper_28BYJ_48;
 
-use crate::classes::A_o_name_synonym;
+
+fn f_n_u8_sum_wrap(
+    n_u8: u8, 
+    n_u8_idx_max: u8, 
+    n_i8_summand : i8,  
+    // max = 4, summand = +1 -> 0, 1, 2, 3, 0, 1, 2, 3, 0...
+    // max = 4, summand = -1 -> 0, 3, 2, 1, 0, 3, 2, 1, 0...
+) -> u8 {
+    let n_res = n_u8 as i16 + n_i8_summand as i16;
+    if(n_res < 0){
+        return n_u8_idx_max-1;
+    } 
+    return (n_res % n_u8_idx_max as i16).try_into().unwrap()
+}
 
 fn f_n_from_string(s: &str) -> u32 {
     s.replace(|c: char| !c.is_digit(10), "").parse::<u32>().unwrap_or(0)
@@ -194,6 +222,177 @@ pub fn f_n_extracted_unsigned(
     }
 
     n_res
+}
+
+pub fn f_substep_o_stepper(
+    o_stepper: &mut O_stepper_28BYJ_48
+){
+    let n_dir = if(o_stepper.b_direction){ 1 }else{ -1};
+
+    let n_len_a_o_pin = o_stepper.a_o_pin.len(); 
+    o_stepper.n_idx_substep = f_n_u8_sum_wrap(
+        o_stepper.n_idx_substep,
+        ((n_len_a_o_pin as u32 * o_stepper.n_substeps_per_step)).try_into().unwrap(),
+        n_dir as i8);   
+    // println!("n_idx_substep {}", o_stepper.n_idx_substep);                    
+    // next sub step
+
+    o_stepper.n_micsec_ts_last_step = o_stepper.o_instant.elapsed().as_micros();;
+    o_stepper.n_substeps+=1;
+
+    let mut n_idx_a_o_pin = (o_stepper.n_idx_substep as f32 / o_stepper.n_substeps_per_step as f32) as usize; 
+    {
+        let mut o_pin = &mut o_stepper.a_o_pin[n_idx_a_o_pin];
+        o_pin.set_high();
+    }
+    let n_mod = if(n_dir == 1) { 1} else {0};
+    if(o_stepper.n_idx_substep % o_stepper.n_substeps_per_step as u8 == n_mod){
+        let mut o_pin_last = &mut o_stepper.a_o_pin[
+            f_n_u8_sum_wrap(
+                n_idx_a_o_pin.try_into().unwrap(),
+                n_len_a_o_pin.try_into().unwrap(),
+                n_dir*-1
+            ) as usize
+        ];
+        o_pin_last.set_low();
+    }
+    // println!("n_idx_a_o_pin {}", n_idx_a_o_pin);                    
+    
+
+    // 2 substeps
+    // 1 0 0 0 
+    // 1 1 0 0
+    // 0 1 0 0
+    // 0 1 1 0
+    // 0 0 1 0 
+    // 0 0 1 1
+    // 0 0 0 1
+    // 1 0 0 1 
+    // 1 0 0 0
+}
+
+pub fn f_o_mutex_arc_o_stepper_28BYJ_48(
+    a_n_pin: [u8;4]
+)-> (Arc<Mutex<O_stepper_28BYJ_48>>, thread::JoinHandle<()>){
+
+    // Obtain the GPIO instance
+    let o_gpio = Gpio::new().expect("cannot instaniate GPIO is this programm running on a raspberry pi ?");
+    let o_instant = Instant::now();
+
+    let mut o_stepper = O_stepper_28BYJ_48{
+
+        a_o_pin : vec![
+            o_gpio.get(a_n_pin[0]).expect("cannot get pin").into_output(),
+            o_gpio.get(a_n_pin[1]).expect("cannot get pin").into_output(),
+            o_gpio.get(a_n_pin[2]).expect("cannot get pin").into_output(),
+            o_gpio.get(a_n_pin[3]).expect("cannot get pin").into_output()
+        ],
+        n_rpm_nor : 0.01,
+        n_rpm_max : 15.,
+        b_direction : true,
+        n_substeps: 1,
+        n_idx_substep: 0,
+        n_radians : 0.0,
+        n_fullsteps_per_round : 2048,
+        n_substeps_per_step: 2,//1,//2, // 2 half stepping
+        n_micsec_sleep_between_fullstep: 0.0, 
+        n_micsec_ts_last_step: o_instant.elapsed().as_micros(),
+        o_instant: o_instant
+    };
+    // Wrap your struct in a Mutex and then an Arc
+    let o_mutex_arc = Arc::new(Mutex::new(o_stepper));
+
+    // Clone the Arc to move it into the thread
+    let o_mutex_arc_clone = o_mutex_arc.clone();
+
+    let n_micsec_sleep_probe = 100. as f64;
+    let mut n_micsec_last: u128 = o_instant.elapsed().as_micros();
+    
+
+    // Spawn a new thread
+    let o_thread_handle = thread::spawn(move || {
+        
+        loop{
+            let mut o_stepper = o_mutex_arc_clone.lock().unwrap();
+            // println!("probe");
+            let n_micsec_now = o_instant.elapsed().as_micros();
+            let n_micsec_delta = (n_micsec_now - n_micsec_last) as f64;
+            // println!("micsec delta {}", n_micsec_delta);
+    
+            f_check_mic_sec_delta_and_potentially_step(&mut o_stepper);
+    
+            let n_micsec_probe_diff = n_micsec_sleep_probe - n_micsec_delta;
+            // println!("probe sleep {}", n_micsec_probe_diff);
+            if(n_micsec_probe_diff > 0.){
+                thread::sleep(Duration::from_micros(
+                    (n_micsec_probe_diff as u128).try_into().unwrap()
+                ));   
+            }
+            n_micsec_last = n_micsec_now;
+    
+        }
+
+    });
+
+    return (o_mutex_arc, o_thread_handle);
+
+
+}
+pub fn f_update_o_stepper_recalculate_micsecs(
+    o_stepper: &mut O_stepper_28BYJ_48, 
+){
+
+    let n_rpm = o_stepper.n_rpm_nor.abs() * o_stepper.n_rpm_max;
+    let n_fullsteps_per_minute = o_stepper.n_fullsteps_per_round as f64 * n_rpm; 
+    o_stepper.n_micsec_sleep_between_fullstep = (60*1000*1000) as f64 / n_fullsteps_per_minute;
+
+
+}
+
+pub fn f_check_mic_sec_delta_and_potentially_step(
+    o_stepper: &mut O_stepper_28BYJ_48
+){
+
+    let n_micsec_between_substep = (o_stepper.n_micsec_sleep_between_fullstep as f64) / o_stepper.n_substeps_per_step as f64;
+    let n_micsec_ts_now = o_stepper.o_instant.elapsed().as_micros();
+    f_update_o_stepper_recalculate_micsecs(o_stepper);
+    // println!("micsec elapsed {}", n_micsec_ts_now);
+    // println!("micsec delta {}", n_micsec_ts_now - o_stepper.n_micsec_ts_last_step);
+    if((n_micsec_ts_now - o_stepper.n_micsec_ts_last_step) > n_micsec_between_substep as u128){
+        f_substep_o_stepper(o_stepper);
+        
+    }
+    // println!("o_stepper.n_substeps_per_step {}", o_stepper.n_substeps_per_step);                    
+    println!("n_micsec_between_substep {}", n_micsec_between_substep);                    
+    // println!("n_rpm {}", n_rpm);                    
+    // println!("{:?}", o_stepper);                    
+}
+
+pub fn f_step_degrees_nor(
+    o_stepper: &mut O_stepper_28BYJ_48, 
+    n_degrees_nor: f32
+){
+    let n_substeps = o_stepper.n_fullsteps_per_round as f32 * (o_stepper.n_substeps_per_step as f32) * n_degrees_nor;
+     
+    let o_instant = Instant::now();
+    let n_rpm_max = 10.;
+    
+    f_update_o_stepper_recalculate_micsecs(o_stepper);
+
+    let n_micsec_between_substep = (o_stepper.n_micsec_sleep_between_fullstep as f64) / o_stepper.n_substeps_per_step as f64;
+
+    for n in 0..(n_substeps as i32){
+
+        f_substep_o_stepper(o_stepper);
+
+        // we hope that the thread sleep function is accurate, for a 
+        // byj28 stepper 
+        thread::sleep(Duration::from_micros(
+            (n_micsec_between_substep as u64).try_into().unwrap()
+        ));
+
+    }
+
 }
 
 // println!("{:?}", o_input_sensor);

@@ -31,19 +31,7 @@ use image::load_from_memory;
 
 pub mod runtimedata; 
 use runtimedata::f_a_o_input_device;
-fn f_n_u8_sum_wrap(
-    n_u8: u8, 
-    n_u8_idx_max: u8, 
-    n_i8_summand : i8,  
-    // max = 4, summand = +1 -> 0, 1, 2, 3, 0, 1, 2, 3, 0...
-    // max = 4, summand = -1 -> 0, 3, 2, 1, 0, 3, 2, 1, 0...
-) -> u8 {
-    let n_res = n_u8 as i16 + n_i8_summand as i16;
-    if(n_res < 0){
-        return n_u8_idx_max-1;
-    } 
-    return (n_res % n_u8_idx_max as i16).try_into().unwrap()
-}
+
 
 fn f_s_first_letter_uppercase(s: &str) -> String {
     s.char_indices()
