@@ -96,7 +96,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut a_o_input_device: A_o_input_device = serde_json::from_value(v.get("a_o_input_device").expect("json must have a_o_input_device").clone()).expect("cannot decode json");
     let mut a_o_name_synonym: A_o_name_synonym = serde_json::from_value(v.get("a_o_name_synonym").expect("json must have a_o_name_synonym").clone()).expect("cannot decode json");
     println!("a_o_input_device {:?}", a_o_input_device);
-    let mut o_input_device = a_o_input_device.iter_mut().find(|o| o.n_id_vendor == n_id_vendor && o.n_id_product == n_id_product).expect("cannot find json definition for input device, you have to decode its endpoint input bytes and add a definition in .json file");
+    let mut o_input_device = a_o_input_device.iter_mut().find(|o| o.n_id_vendor == n_id_vendor && o.n_id_product == n_id_product)
+        .expect("cannot find json definition for input device, you have to decode its endpoint input bytes and add a definition in .json file")
+        .clone();
     
     let o_mutex_arc_o_input_device = Arc::new(Mutex::new(o_input_device));
     let o_mutex_arc_o_input_device_clone = o_mutex_arc_o_input_device.clone();
