@@ -3,11 +3,6 @@ mod functions;
 
 use rusb::{DeviceHandle, GlobalContext, open_device_with_vid_pid, Direction, TransferType};
 use std::ptr::null;
-use std::sync::{mpsc, Arc, Mutex};
-use std::thread;
-use std::time::Duration;
-use std::fs;
-use serde_json;
 use classes::A_o_input_device;
 use classes::A_o_name_synonym;
 use crate::functions::f_b_bool_button_down;
@@ -15,57 +10,29 @@ use std::io;
 use std::io::Write;
 use std::process::Command;
 use crate::functions::f_update_o_input_device;
-use crate::functions::f_o_mutex_arc_o_stepper_28BYJ_48;
+use crate::functions::f_o_stepper_28BYJ_48;
 use functions::f_o_input_sensor_from_s_name;
+use std::time::Instant;
+use crate::functions::f_check_mic_sec_delta_and_potentially_step;
+use crate::functions::f_o_sender_tx_spawn_thread_with_event_listener_for_stepper;
+use std::{
+    fs,
+    thread, 
+    time::{
+        Duration
+    },
+    sync::{
+        mpsc
+    }
+};
+use serde_json::{
+    json, 
+    Value
+};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
-    // prepare the stepper motors
-
-    let o_instant = std::time::Instant::now();
-    let n_rpm_max = 10.;
-
-        //raspi pinout pin layout 
-    // |----------------------|----------------------|
-    // |_   3v3 power         |_   5v power          |
-    // |_   GPIO 2 (SDA)      |_   5v power          |
-    // |_   GPIO 3 (SCL)      |_   Ground            |
-    // |_   GPIO 4 (GPCLK0)   |_   GPIO 14 (TXD)     |
-    // |_   Ground            |_   GPIO 15 (RXD)     |
-    // |_   GPIO 17           |_   GPIO 18 (PCM_CLK) |
-    // |_   GPIO 27           |_   Ground            |
-    // |_   GPIO 22           |_   GPIO 23           |
-    // |_   3v3 power         |_   GPIO 24           |
-    // |_   GPIO 10 (MOSI)    |_   Ground            |
-    // |_   GPIO 9 (MISO)     |_   GPIO 25           |
-    // |_   GPIO 11 (SCLK)    |_   GPIO 8 (CEO)      |
-    // |_   Ground            |_   GPIO 7 (CE1)      |
-    // |_   GPIO 0 (ID_SD)    |_   GPIO 1 (ID_SD)    |
-    // |_   GPIO 5            |_   Ground            |
-    // |_   GPIO 6            |_   GPIO 12 (PWM0)    |
-    // |_   GPIO 13 (PWM1)    |_   Ground            |
-    // |_   GPIO 19 (PCM_FS)  |_   GPIO 16           |
-    // |_   GPIO 26           |_   GPIO 20 (PCM_DIN) |
-    // |_   Ground            |_   GPIO 21 (PCM_DOUT)|
-    // |----------------------|----------------------|
-
-
-    let (o_mutex_arc_clone_x, o_thread_handle_x) = f_o_mutex_arc_o_stepper_28BYJ_48([2,3,4,17]);
-    let (o_mutex_arc_clone_y, o_thread_handle_y) = f_o_mutex_arc_o_stepper_28BYJ_48([27,22,10,9]);
-    let (o_mutex_arc_clone_z, o_thread_handle_z) = f_o_mutex_arc_o_stepper_28BYJ_48([11,0,5,6]);
-    // to update the stepper we have to create a scope
-    {
-        let mut o_stepper_28BYJ_48_x = o_mutex_arc_clone_x.lock().unwrap();    
-        o_stepper_28BYJ_48_x.b_direction = true; 
-        o_stepper_28BYJ_48_x.n_rpm_nor = 0.5;
-        let mut o_stepper_28BYJ_48_y = o_mutex_arc_clone_y.lock().unwrap();    
-        o_stepper_28BYJ_48_y.b_direction = true; 
-        o_stepper_28BYJ_48_y.n_rpm_nor = 0.5;
-        let mut o_stepper_28BYJ_48_z = o_mutex_arc_clone_z.lock().unwrap();    
-        o_stepper_28BYJ_48_z.b_direction = true; 
-        o_stepper_28BYJ_48_z.n_rpm_nor = 0.5;
-    }
 
 
 
@@ -97,133 +64,160 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut a_o_name_synonym: A_o_name_synonym = serde_json::from_value(v.get("a_o_name_synonym").expect("json must have a_o_name_synonym").clone()).expect("cannot decode json");
     println!("a_o_input_device {:?}", a_o_input_device);
     let mut o_input_device = a_o_input_device.iter_mut().find(|o| o.n_id_vendor == n_id_vendor && o.n_id_product == n_id_product)
-        .expect("cannot find json definition for input device, you have to decode its endpoint input bytes and add a definition in .json file")
-        .clone();
-    
-    let o_mutex_arc_o_input_device = Arc::new(Mutex::new(o_input_device));
-    let o_mutex_arc_o_input_device_clone = o_mutex_arc_o_input_device.clone();
+        .expect("cannot find json definition for input device, you have to decode its endpoint input bytes and add a definition in .json file");
 
-    
-    thread::spawn(
-        move || 
-        {
-            loop{
-                match o_device_handle.read_interrupt(
-                    n_endpiont_read_in_interrupt,
-                    &mut a_n_u8__readout,
-                    Duration::from_millis(n_millis_timeout),
-                    //  o_timeout
-                ) {
-                    Ok(n_bytes_read) => {
-                        // a_n_u8__readout.truncate(n_bytes_read);
-                        println!("Read from USB device success, bytes read: {:?}", a_n_u8__readout);
-                        let mut n_c = 0;
-                        for n_u8 in &a_n_u8__readout{
-                            n_c+=1;
-                            if(n_c % 8 == 0){
-                                print!("\n")
-                            }
-                            print!("{:#010b},", n_u8);
-                        }
-                        // {
-                            let mut o_input_device = o_mutex_arc_o_input_device_clone.lock().unwrap();
-                            // f_update_o_input_device(
-                            //     o_input_device, 
-                            //     &a_n_u8__readout
-                            // );
-    
-                            for o_input_sensor in &o_input_device.a_o_input_sensor{
-                                println!("{:?}:{:?} {:?}", o_input_sensor.s_name, o_input_sensor.n_nor, o_input_sensor.v_o_num_str_value);
-                            }
-                        // }
-        
-        
-                        // Send data to the main application if needed
-                    },
-                    Err(e) => {
-                        eprintln!("USB read error: {:?}", e);
+
+    // prepare the stepper motors
+
+
+
+        //raspi pinout pin layout 
+    // |----------------------|----------------------|
+    // |_   3v3 power         |_   5v power          |
+    // |_   GPIO 2 (SDA)      |_   5v power          |
+    // |_   GPIO 3 (SCL)      |_   Ground            |
+    // |_   GPIO 4 (GPCLK0)   |_   GPIO 14 (TXD)     |
+    // |_   Ground            |_   GPIO 15 (RXD)     |
+    // |_   GPIO 17           |_   GPIO 18 (PCM_CLK) |
+    // |_   GPIO 27           |_   Ground            |
+    // |_   GPIO 22           |_   GPIO 23           |
+    // |_   3v3 power         |_   GPIO 24           |
+    // |_   GPIO 10 (MOSI)    |_   Ground            |
+    // |_   GPIO 9 (MISO)     |_   GPIO 25           |
+    // |_   GPIO 11 (SCLK)    |_   GPIO 8 (CEO)      |
+    // |_   Ground            |_   GPIO 7 (CE1)      |
+    // |_   GPIO 0 (ID_SD)    |_   GPIO 1 (ID_SD)    |
+    // |_   GPIO 5            |_   Ground            |
+    // |_   GPIO 6            |_   GPIO 12 (PWM0)    |
+    // |_   GPIO 13 (PWM1)    |_   Ground            |
+    // |_   GPIO 19 (PCM_FS)  |_   GPIO 16           |
+    // |_   GPIO 26           |_   GPIO 20 (PCM_DIN) |
+    // |_   Ground            |_   GPIO 21 (PCM_DOUT)|
+    // |----------------------|----------------------|
+
+    let mut o_sender_tx_stepper_28BYJ_48_x = f_o_sender_tx_spawn_thread_with_event_listener_for_stepper([2,3,4,17]);
+    let mut o_sender_tx_stepper_28BYJ_48_y = f_o_sender_tx_spawn_thread_with_event_listener_for_stepper([27,22,10,9]);
+    let mut o_sender_tx_stepper_28BYJ_48_z = f_o_sender_tx_spawn_thread_with_event_listener_for_stepper([11,0,5,6]);
+
+
+    loop{
+        match o_device_handle.read_interrupt(
+            n_endpiont_read_in_interrupt,
+            &mut a_n_u8__readout,
+            Duration::from_millis(n_millis_timeout),
+            //  o_timeout
+        ) {
+            Ok(n_bytes_read) => {
+                // a_n_u8__readout.truncate(n_bytes_read);
+                println!("Read from USB device success, bytes read: {:?}", a_n_u8__readout);
+                let mut n_c = 0;
+                for n_u8 in &a_n_u8__readout{
+                    n_c+=1;
+                    if(n_c % 8 == 0){
+                        print!("\n")
                     }
+                    print!("{:#010b},", n_u8);
                 }
+                f_update_o_input_device(
+                    o_input_device, 
+                    &a_n_u8__readout
+                );
 
+                // for o_input_sensor in &o_input_device.a_o_input_sensor{
+                //     println!("{:?}:{:?} {:?}", o_input_sensor.s_name, o_input_sensor.n_nor, o_input_sensor.v_o_num_str_value);
+                // }
+
+                let o_left_stick_x_axis = f_o_input_sensor_from_s_name(&o_input_device, "left_stick_x_axis").unwrap();
+                let o_left_stick_y_axis = f_o_input_sensor_from_s_name(&o_input_device, "left_stick_y_axis").unwrap();
+                let o_right_stick_x_axis = f_o_input_sensor_from_s_name(&o_input_device, "right_stick_x_axis").unwrap();
+                let o_right_stick_y_axis = f_o_input_sensor_from_s_name(&o_input_device, "right_stick_y_axis").unwrap();
+
+                let mut n_l_x = (o_left_stick_y_axis.n_nor-0.5)*2.;
+                let mut n_l_y = (o_left_stick_x_axis.n_nor-0.5)*2.;
+                let mut n_r_x = (o_right_stick_x_axis.n_nor-0.5)*2.;
+                let mut n_r_y = (o_right_stick_y_axis.n_nor-0.5)*2.;
+
+                n_l_x = if(n_l_x.abs() > 0.05){n_l_x} else{0.0};
+                n_l_y = if(n_l_y.abs() > 0.05){n_l_y} else{0.0};
+                n_r_x = if(n_r_x.abs() > 0.05){n_r_x} else{0.0};
+                n_r_y = if(n_r_y.abs() > 0.05){n_r_y} else{0.0};
+                println!("n_r_x,n_r_y,n_l_x,n_l_y {},{},{},{}", n_r_x,n_r_y,n_l_x,n_l_y);
+
+                // println!("micsec delta {}", n_micsec_delta);
+                o_sender_tx_stepper_28BYJ_48_x.send(
+                    json!({ 
+                        "n_rpm_nor": n_r_x.abs(),
+                        "b_direction": if(n_r_x>0.0){true}else{false}
+                    }).to_string()
+                ).unwrap();
+                o_sender_tx_stepper_28BYJ_48_y.send(
+                    json!({ 
+                        "n_rpm_nor": n_r_y.abs(),
+                        "b_direction": if(n_r_y>0.0){true}else{false}
+                    }).to_string()
+                ).unwrap();
+                o_sender_tx_stepper_28BYJ_48_z.send(
+                    json!({ 
+                        "n_rpm_nor": n_l_y.abs(),
+                        "b_direction": if(n_l_y>0.0){true}else{false}
+                    }).to_string()
+                ).unwrap();
+
+            },
+            Err(e) => {
+                eprintln!("USB read error: {:?}", e);
             }
         }
 
-    );
+    }
 
     // loop{
-    //     match o_device_handle.read_interrupt(
-    //         n_endpiont_read_in_interrupt,
-    //         &mut a_n_u8__readout,
-    //         Duration::from_millis(n_millis_timeout),
-    //         //  o_timeout
-    //     ) {
-    //         Ok(n_bytes_read) => {
-    //             // a_n_u8__readout.truncate(n_bytes_read);
-    //             println!("Read from USB device success, bytes read: {:?}", a_n_u8__readout);
-    //             let mut n_c = 0;
-    //             for n_u8 in &a_n_u8__readout{
-    //                 n_c+=1;
-    //                 if(n_c % 8 == 0){
-    //                     print!("\n")
-    //                 }
-    //                 print!("{:#010b},", n_u8);
-    //             }
 
-    //             if let Some(ref mut o_input_device) = v_o_input_device{
+    //     let mut o_input_device = o_mutex_arc_o_input_device.lock().unwrap();
 
-    //                 f_update_o_input_device(
-    //                     o_input_device, 
-    //                     &a_n_u8__readout
-    //                 );
-    //                 // for o_input_sensor in &o_input_device.a_o_input_sensor{
+    //     let o_left_stick_x_axis = f_o_input_sensor_from_s_name(&o_input_device, "left_stick_x_axis").unwrap();
+    //     let o_left_stick_y_axis = f_o_input_sensor_from_s_name(&o_input_device, "left_stick_y_axis").unwrap();
+    //     let o_right_stick_x_axis = f_o_input_sensor_from_s_name(&o_input_device, "right_stick_x_axis").unwrap();
+    //     let o_right_stick_y_axis = f_o_input_sensor_from_s_name(&o_input_device, "right_stick_y_axis").unwrap();
 
-    //                 //     println!("{:?}:{:?} {:?}", o_input_sensor.s_name, o_input_sensor.n_nor, o_input_sensor.v_o_num_str_value);
-    //                 // }
+    //     let mut n_l_x = (o_left_stick_y_axis.n_nor-0.5)*2.;
+    //     let mut n_l_y = (o_left_stick_x_axis.n_nor-0.5)*2.;
+    //     let mut n_r_x = (o_right_stick_x_axis.n_nor-0.5)*2.;
+    //     let mut n_r_y = (o_right_stick_y_axis.n_nor-0.5)*2.;
+
+    //     n_l_x = if(n_l_x.abs() > 0.05){n_l_x} else{n_l_x};
+    //     n_l_y = if(n_l_y.abs() > 0.05){n_l_y} else{n_l_y};
+    //     n_r_x = if(n_r_x.abs() > 0.05){n_r_x} else{n_r_x};
+    //     n_r_y = if(n_r_y.abs() > 0.05){n_r_y} else{n_r_y};
+    //     // println!("n_r_x,n_r_y,n_l_x,n_l_y {},{},{},{}", n_r_x,n_r_y,n_l_x,n_l_y);
+
+    //     let n_micsec_now = o_instant.elapsed().as_micros();
+    //     let n_micsec_delta = (n_micsec_now - n_micsec_last) as f64;
+    //     // println!("micsec delta {}", n_micsec_delta);
+        
+
+    //     o_stepper_28BYJ_48_x.b_direction = if(n_r_x>0.0){true}else{false}; 
+    //     o_stepper_28BYJ_48_x.n_rpm_nor = n_r_x.abs();
+    //     o_stepper_28BYJ_48_y.b_direction = if(n_r_y>0.0){true}else{false}; 
+    //     o_stepper_28BYJ_48_y.n_rpm_nor = n_r_y.abs();
+    //     o_stepper_28BYJ_48_z.b_direction = if(n_r_y>0.0){true}else{false}; 
+    //     o_stepper_28BYJ_48_z.n_rpm_nor = n_r_y.abs();
                     
-    //                 let o_left_stick_x_axis = f_o_input_sensor_from_s_name(o_input_device, "left_stick_x_axis").unwrap();
-    //                 let o_left_stick_y_axis = f_o_input_sensor_from_s_name(o_input_device, "left_stick_y_axis").unwrap();
-    //                 let o_right_stick_x_axis = f_o_input_sensor_from_s_name(o_input_device, "right_stick_x_axis").unwrap();
-    //                 let o_right_stick_y_axis = f_o_input_sensor_from_s_name(o_input_device, "right_stick_y_axis").unwrap();
 
-    //                 let n_l_x = (o_left_stick_y_axis.n_nor-0.5)*2.;
-    //                 let n_l_y = (o_left_stick_x_axis.n_nor-0.5)*2.;
-    //                 let n_r_x = (o_right_stick_x_axis.n_nor-0.5)*2.;
-    //                 let n_r_y = (o_right_stick_y_axis.n_nor-0.5)*2.;
+    //     f_check_mic_sec_delta_and_potentially_step(&mut o_stepper_28BYJ_48_x);
+    //     f_check_mic_sec_delta_and_potentially_step(&mut o_stepper_28BYJ_48_y);
+    //     f_check_mic_sec_delta_and_potentially_step(&mut o_stepper_28BYJ_48_z);
 
-    //                 // println!("n_r_x,n_r_y,n_l_x,n_l_y {},{},{},{}", n_r_x,n_r_y,n_l_x,n_l_y);
-
-    //                 {
-    //                     let mut o_stepper_28BYJ_48_x = o_mutex_arc_clone_x.lock().unwrap();    
-    //                     o_stepper_28BYJ_48_x.b_direction = if(n_r_x>0.0){true}else{false}; 
-    //                     o_stepper_28BYJ_48_x.n_rpm_nor = n_r_x.abs();
-    //                 }
-    //                 {
-    //                     let mut o_stepper_28BYJ_48_y = o_mutex_arc_clone_y.lock().unwrap();    
-    //                     o_stepper_28BYJ_48_y.b_direction = if(n_r_y>0.0){true}else{false}; 
-    //                     o_stepper_28BYJ_48_y.n_rpm_nor = n_r_y.abs();
-    //                 }
-    //                 {
-    //                     let mut o_stepper_28BYJ_48_z = o_mutex_arc_clone_z.lock().unwrap();    
-    //                     o_stepper_28BYJ_48_z.b_direction = if(n_r_y>0.0){true}else{false}; 
-    //                     o_stepper_28BYJ_48_z.n_rpm_nor = n_r_y.abs();
-    //                 }
-
-
-    //             }
-
-
-    //             // Send data to the main application if needed
-    //         },
-    //         Err(e) => {
-    //             eprintln!("USB read error: {:?}", e);
-    //         }
+    //     let n_micsec_probe_diff = n_micsec_sleep_probe - n_micsec_delta;
+    //     // println!("probe sleep {}", n_micsec_probe_diff);
+    //     if(n_micsec_probe_diff > 0.){
+    //         thread::sleep(Duration::from_micros(
+    //             (n_micsec_probe_diff as u128).try_into().unwrap()
+    //         ));   
     //     }
-    //     thread::sleep(Duration::from_millis(
-    //         16000
-    //     ));  
+    //     n_micsec_last = n_micsec_now;
+
     // }
-    // // Use the device handle as needed
-    // println!("Device opened successfully!");
 
     Ok(())
 }

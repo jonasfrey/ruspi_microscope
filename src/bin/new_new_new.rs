@@ -47,8 +47,11 @@ use classes::A_o_name_synonym;
 pub mod classes;
 pub mod functions;
 
+
 use functions::{
-    f_update_o_input_device
+    f_update_o_input_device,
+    f_o_mutex_arc_o_stepper_28BYJ_48,
+    f_o_input_sensor_from_s_name
 };
 use classes::{
     ControlCommand, O_input_device, SendData
@@ -223,10 +226,10 @@ fn f_usb_read_thread(
                             // print!("\x1B[2J\x1B[H"); // Clear the screen and move the cursor to the top-left
                             // io::stdout().flush().unwrap();
                         
-                            for o_input_sensor in &o_input_device.a_o_input_sensor{
+                            // for o_input_sensor in &o_input_device.a_o_input_sensor{
 
-                                println!("{:?}:{:?} {:?}", o_input_sensor.s_name, o_input_sensor.n_nor, o_input_sensor.v_o_num_str_value);
-                            }
+                            //     println!("{:?}:{:?} {:?}", o_input_sensor.s_name, o_input_sensor.n_nor, o_input_sensor.v_o_num_str_value);
+                            // }
                         }
                         // println!("Read from USB device success, bytes read: {:?}", a_n_u8__readout);
                         o_tx_control_usb.send(SendData{
@@ -435,6 +438,49 @@ async fn main() {
 
     // 
 
+
+    //raspi pinout pin layout 
+    // |----------------------|----------------------|
+    // |_   3v3 power         |_   5v power          |
+    // |_   GPIO 2 (SDA)      |_   5v power          |
+    // |_   GPIO 3 (SCL)      |_   Ground            |
+    // |_   GPIO 4 (GPCLK0)   |_   GPIO 14 (TXD)     |
+    // |_   Ground            |_   GPIO 15 (RXD)     |
+    // |_   GPIO 17           |_   GPIO 18 (PCM_CLK) |
+    // |_   GPIO 27           |_   Ground            |
+    // |_   GPIO 22           |_   GPIO 23           |
+    // |_   3v3 power         |_   GPIO 24           |
+    // |_   GPIO 10 (MOSI)    |_   Ground            |
+    // |_   GPIO 9 (MISO)     |_   GPIO 25           |
+    // |_   GPIO 11 (SCLK)    |_   GPIO 8 (CEO)      |
+    // |_   Ground            |_   GPIO 7 (CE1)      |
+    // |_   GPIO 0 (ID_SD)    |_   GPIO 1 (ID_SD)    |
+    // |_   GPIO 5            |_   Ground            |
+    // |_   GPIO 6            |_   GPIO 12 (PWM0)    |
+    // |_   GPIO 13 (PWM1)    |_   Ground            |
+    // |_   GPIO 19 (PCM_FS)  |_   GPIO 16           |
+    // |_   GPIO 26           |_   GPIO 20 (PCM_DIN) |
+    // |_   Ground            |_   GPIO 21 (PCM_DOUT)|
+    // |----------------------|----------------------|
+
+
+    let (o_mutex_arc_clone_x, o_thread_handle_x) = f_o_mutex_arc_o_stepper_28BYJ_48([2,3,4,17]);
+    let (o_mutex_arc_clone_y, o_thread_handle_y) = f_o_mutex_arc_o_stepper_28BYJ_48([27,22,10,9]);
+    let (o_mutex_arc_clone_z, o_thread_handle_z) = f_o_mutex_arc_o_stepper_28BYJ_48([11,0,5,6]);
+    // to update the stepper we have to create a scope
+    {
+        let mut o_stepper_28BYJ_48_x = o_mutex_arc_clone_x.lock().unwrap();    
+        o_stepper_28BYJ_48_x.b_direction = true; 
+        o_stepper_28BYJ_48_x.n_rpm_nor = 0.5;
+        let mut o_stepper_28BYJ_48_y = o_mutex_arc_clone_y.lock().unwrap();    
+        o_stepper_28BYJ_48_y.b_direction = true; 
+        o_stepper_28BYJ_48_y.n_rpm_nor = 0.5;
+        let mut o_stepper_28BYJ_48_z = o_mutex_arc_clone_z.lock().unwrap();    
+        o_stepper_28BYJ_48_z.b_direction = true; 
+        o_stepper_28BYJ_48_z.n_rpm_nor = 0.5;
+    }
+
+
     while let Ok(o) = o_rx_control_usb2.recv() {
         // println!("Received data: {:?}", data.a_n_u8_usb_read_result);
     
@@ -445,6 +491,31 @@ async fn main() {
                     "o_input_device": o_input_device  // Embed the struct within the outer property
                 })
             ).expect("failed to convert to json"));
+            println!("update");
+            let o_left_stick_x_axis = f_o_input_sensor_from_s_name(&o_input_device, "left_stick_x_axis").unwrap();
+            let o_left_stick_y_axis = f_o_input_sensor_from_s_name(&o_input_device, "left_stick_y_axis").unwrap();
+            let o_right_stick_x_axis = f_o_input_sensor_from_s_name(&o_input_device, "right_stick_x_axis").unwrap();
+            let o_right_stick_y_axis = f_o_input_sensor_from_s_name(&o_input_device, "right_stick_y_axis").unwrap();
+    
+            let n_l_x = (o_left_stick_y_axis.n_nor-0.5)*2.;
+            let n_l_y = (o_left_stick_x_axis.n_nor-0.5)*2.;
+            let n_r_x = (o_right_stick_x_axis.n_nor-0.5)*2.;
+            let n_r_y = (o_right_stick_y_axis.n_nor-0.5)*2.;
+    
+            println!("n_r_x,n_r_y,n_l_x,n_l_y {},{},{},{}", n_r_x,n_r_y,n_l_x,n_l_y);
+    
+            {
+                let mut o_stepper_28BYJ_48_x = o_mutex_arc_clone_x.lock().unwrap();    
+                o_stepper_28BYJ_48_x.b_direction = if(n_r_x>0.0){true}else{false}; 
+                o_stepper_28BYJ_48_x.n_rpm_nor = n_r_x.abs();
+                let mut o_stepper_28BYJ_48_y = o_mutex_arc_clone_y.lock().unwrap();    
+                o_stepper_28BYJ_48_y.b_direction = if(n_r_y>0.0){true}else{false}; 
+                o_stepper_28BYJ_48_y.n_rpm_nor = n_r_y.abs();
+                let mut o_stepper_28BYJ_48_z = o_mutex_arc_clone_z.lock().unwrap();    
+                o_stepper_28BYJ_48_z.b_direction = if(n_r_y>0.0){true}else{false}; 
+                o_stepper_28BYJ_48_z.n_rpm_nor = n_r_y.abs();
+            }
+
         }
 
         // tx_clone.send(data.a_n_u8_usb_read_result.unwrap());

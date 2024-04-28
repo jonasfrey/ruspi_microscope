@@ -85,3 +85,10 @@ pub struct SendData{
     pub a_n_u8_usb_read_result: Option<Vec<u8>>,
     pub v_o_input_device: Option<O_input_device>
 }
+
+
+#[derive(Clone)]
+pub struct O_stepper_28BYJ_48_control_data{
+    pub s_prop_name__string_value: String,
+    pub v_string_value: String,
+}

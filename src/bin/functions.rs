@@ -9,14 +9,22 @@ use std::{
     self, 
     sync::{
         Arc, 
-        Mutex
+        Mutex, 
+        mpsc, 
     },
+    
     time::{
         Instant,
         Duration
     },
     thread
 };
+use serde::{
+    Deserialize,
+    Serialize
+};
+use serde_json::Value;
+
 use super::classes::A_o_name_synonym;
 use crate::classes::O_stepper_28BYJ_48;
 
@@ -267,11 +275,11 @@ pub fn f_substep_o_stepper(
         ];
         o_pin_last.set_low();
     }
-    // debug stepping
-    println!("a_o_pin");
-    for o_pin in  o_stepper.a_o_pin.iter(){
-        print!("{:?}", if(o_pin.is_set_low()){0}else{1})
-    }
+    // // debug stepping
+    // println!("a_o_pin");
+    // for o_pin in  o_stepper.a_o_pin.iter(){
+    //     print!("{:?}", if(o_pin.is_set_low()){0}else{1})
+    // }
     
     
 
@@ -285,6 +293,39 @@ pub fn f_substep_o_stepper(
     // 0 0 0 1
     // 1 0 0 1 
     // 1 0 0 0
+}
+
+pub fn f_o_stepper_28BYJ_48(
+    a_n_pin: [u8;4],
+)->O_stepper_28BYJ_48{
+
+    let o_gpio = Gpio::new().expect("cannot instaniate GPIO is this programm running on a raspberry pi ?");
+    let o_instant = Instant::now();
+
+    let mut o_stepper = O_stepper_28BYJ_48{
+
+        a_o_pin : vec![
+            o_gpio.get(a_n_pin[0]).expect("cannot get pin").into_output(),
+            o_gpio.get(a_n_pin[1]).expect("cannot get pin").into_output(),
+            o_gpio.get(a_n_pin[2]).expect("cannot get pin").into_output(),
+            o_gpio.get(a_n_pin[3]).expect("cannot get pin").into_output()
+        ],
+        b_depower_if_rpm_zero: true,
+        n_rpm_nor : 0.5,
+        n_rpm_nor_last : 0.5,
+        n_rpm_max : 15.,
+        b_direction : true,
+        n_substeps: 1,
+        n_idx_substep: 0,
+        n_radians : 0.0,
+        n_fullsteps_per_round : 2048,
+        n_substeps_per_step: 2,//1,//2, // 2 half stepping
+        n_micsec_sleep_between_fullstep: 0.0, 
+        n_micsec_ts_last_step: o_instant.elapsed().as_micros(),
+        o_instant: o_instant
+    };
+
+    return o_stepper
 }
 
 pub fn f_o_mutex_arc_o_stepper_28BYJ_48(
@@ -317,13 +358,21 @@ pub fn f_o_mutex_arc_o_stepper_28BYJ_48(
         n_micsec_ts_last_step: o_instant.elapsed().as_micros(),
         o_instant: o_instant
     };
+    // the stepper could be driven even faster
+    let n_rpm_absolute_max = 22.;
+    let mut n_micsec_sleep_probe = (1000.0*1000.0*60.0)/ (n_rpm_absolute_max * o_stepper.n_substeps_per_step as f64 * o_stepper.n_fullsteps_per_round as f64);
+    // there is a law that we need 2 samples per sample or so 
+    n_micsec_sleep_probe = n_micsec_sleep_probe/2.;
+    
+    // println!("n_micsec_sleep_probe {}", n_micsec_sleep_probe);
+    // std::process::exit(0);
+
     // Wrap your struct in a Mutex and then an Arc
     let o_mutex_arc = Arc::new(Mutex::new(o_stepper));
 
     // Clone the Arc to move it into the thread
     let o_mutex_arc_clone = o_mutex_arc.clone();
 
-    let n_micsec_sleep_probe = 100. as f64;
     let mut n_micsec_last: u128 = o_instant.elapsed().as_micros();
     
 
@@ -354,8 +403,112 @@ pub fn f_o_mutex_arc_o_stepper_28BYJ_48(
 
     return (o_mutex_arc, o_thread_handle);
 
+}
+
+pub fn f_o_sender_tx_spawn_thread_with_event_listener_for_stepper(
+    a_n_pin: [u8;4]
+)->mpsc::Sender::<String>{
+
+    let (o_sender_tx, o_receiver_rx) = mpsc::channel::<String>();
+
+    // Obtain the GPIO instance
+    let o_gpio = Gpio::new().expect("cannot instaniate GPIO is this programm running on a raspberry pi ?");
+    let o_instant = Instant::now();
+
+    let mut o_stepper = O_stepper_28BYJ_48{
+
+        a_o_pin : vec![
+            o_gpio.get(a_n_pin[0]).expect("cannot get pin").into_output(),
+            o_gpio.get(a_n_pin[1]).expect("cannot get pin").into_output(),
+            o_gpio.get(a_n_pin[2]).expect("cannot get pin").into_output(),
+            o_gpio.get(a_n_pin[3]).expect("cannot get pin").into_output()
+        ],
+        b_depower_if_rpm_zero: true,
+        n_rpm_nor : 0.5,
+        n_rpm_nor_last : 0.5,
+        n_rpm_max : 15.,
+        b_direction : true,
+        n_substeps: 1,
+        n_idx_substep: 0,
+        n_radians : 0.0,
+        n_fullsteps_per_round : 2048,
+        n_substeps_per_step: 2,//1,//2, // 2 half stepping
+        n_micsec_sleep_between_fullstep: 0.0, 
+        n_micsec_ts_last_step: o_instant.elapsed().as_micros(),
+        o_instant: o_instant
+    };
+    // the stepper could be driven even faster
+    let n_rpm_absolute_max = 22.;
+    let mut n_micsec_sleep_probe = (1000.0*1000.0*60.0)/ (n_rpm_absolute_max * o_stepper.n_substeps_per_step as f64 * o_stepper.n_fullsteps_per_round as f64);
+    // there is a law that we need 2 samples per sample or so 
+    n_micsec_sleep_probe = n_micsec_sleep_probe/2.;
+    
+    // println!("n_micsec_sleep_probe {}", n_micsec_sleep_probe);
+    // std::process::exit(0);
+
+    let mut n_micsec_last: u128 = o_instant.elapsed().as_micros();
+    
+
+    // Spawn a new thread
+    let o_thread_handle = thread::spawn(move || {
+        loop {
+            match o_receiver_rx.try_recv() {
+                Ok(s_msg) => {
+                    let value: Value = serde_json::from_str(&s_msg).unwrap();
+                    if let Some(n_rpm) = value.get("n_rpm_nor") {
+                        let v = n_rpm.as_f64().unwrap();
+                        // println!("property found: {:?}", n);
+                        o_stepper.n_rpm_nor = v;
+                    }
+                    if let Some(n_rpm) = value.get("b_direction") {
+                        let v = n_rpm.as_bool().unwrap();
+                        o_stepper.b_direction = v;
+                    }
+                    if let Some(n_rpm) = value.get("n_rpm_max") {
+                        let v = n_rpm.as_f64().unwrap();
+                        o_stepper.n_rpm_max = v;
+                    }
+                    if let Some(n_rpm) = value.get("n_substeps_per_step") {
+                        let v = n_rpm.as_u64().unwrap();
+                        o_stepper.n_substeps_per_step = v as u32;
+                    }
+                    if let Some(n_rpm) = value.get("b_depower_if_rpm_zero") {
+                        let v = n_rpm.as_bool().unwrap();
+                        o_stepper.b_depower_if_rpm_zero = v;
+                    }
+                }
+                Err(e) => {
+                    // println!("Error or empty message,  receiving message: {:?}", e);
+                    // Handle the error or continue the loop
+                }
+            }
+        
+            // Rest of the loop
+
+            let n_micsec_now = o_instant.elapsed().as_micros();
+            let n_micsec_delta = (n_micsec_now - n_micsec_last) as f64;
+            // println!("micsec delta {}", n_micsec_delta);
+            
+            f_check_mic_sec_delta_and_potentially_step(&mut o_stepper);
+    
+            let n_micsec_probe_diff = n_micsec_sleep_probe - n_micsec_delta;
+            // println!("probe sleep {}", n_micsec_probe_diff);
+            if(n_micsec_probe_diff > 0.){
+                thread::sleep(Duration::from_micros(
+                    (n_micsec_probe_diff as u128).try_into().unwrap()
+                ));   
+            }
+            n_micsec_last = n_micsec_now;
+    
+        }
+
+
+    });
+
+    return o_sender_tx;
 
 }
+
 pub fn f_update_o_stepper_recalculate_micsecs(
     o_stepper: &mut O_stepper_28BYJ_48, 
 ){
