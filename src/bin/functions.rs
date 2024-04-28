@@ -424,7 +424,7 @@ pub fn f_o_sender_tx_spawn_thread_with_event_listener_for_stepper(
             o_gpio.get(a_n_pin[3]).expect("cannot get pin").into_output()
         ],
         b_depower_if_rpm_zero: true,
-        n_rpm_nor : 0.5,
+        n_rpm_nor : 0.0,
         n_rpm_nor_last : 0.5,
         n_rpm_max : 15.,
         b_direction : true,

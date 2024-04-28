@@ -137,10 +137,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 let mut n_r_x = (o_right_stick_x_axis.n_nor-0.5)*2.;
                 let mut n_r_y = (o_right_stick_y_axis.n_nor-0.5)*2.;
 
-                n_l_x = if(n_l_x.abs() > 0.05){n_l_x} else{0.0};
-                n_l_y = if(n_l_y.abs() > 0.05){n_l_y} else{0.0};
-                n_r_x = if(n_r_x.abs() > 0.05){n_r_x} else{0.0};
-                n_r_y = if(n_r_y.abs() > 0.05){n_r_y} else{0.0};
+                n_l_x = if(n_l_x.abs() > 0.05){n_l_x*0.5} else{0.0};
+                n_l_y = if(n_l_y.abs() > 0.05){n_l_y*0.5} else{0.0};
+                n_r_x = if(n_r_x.abs() > 0.05){n_r_x*0.5} else{0.0};
+                n_r_y = if(n_r_y.abs() > 0.05){n_r_y*0.5} else{0.0};
                 println!("n_r_x,n_r_y,n_l_x,n_l_y {},{},{},{}", n_r_x,n_r_y,n_l_x,n_l_y);
 
                 // println!("micsec delta {}", n_micsec_delta);

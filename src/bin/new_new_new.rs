@@ -50,7 +50,7 @@ pub mod functions;
 
 use functions::{
     f_update_o_input_device,
-    f_o_mutex_arc_o_stepper_28BYJ_48,
+    f_o_sender_tx_spawn_thread_with_event_listener_for_stepper,
     f_o_input_sensor_from_s_name
 };
 use classes::{
@@ -464,21 +464,9 @@ async fn main() {
     // |----------------------|----------------------|
 
 
-    let (o_mutex_arc_clone_x, o_thread_handle_x) = f_o_mutex_arc_o_stepper_28BYJ_48([2,3,4,17]);
-    let (o_mutex_arc_clone_y, o_thread_handle_y) = f_o_mutex_arc_o_stepper_28BYJ_48([27,22,10,9]);
-    let (o_mutex_arc_clone_z, o_thread_handle_z) = f_o_mutex_arc_o_stepper_28BYJ_48([11,0,5,6]);
-    // to update the stepper we have to create a scope
-    {
-        let mut o_stepper_28BYJ_48_x = o_mutex_arc_clone_x.lock().unwrap();    
-        o_stepper_28BYJ_48_x.b_direction = true; 
-        o_stepper_28BYJ_48_x.n_rpm_nor = 0.5;
-        let mut o_stepper_28BYJ_48_y = o_mutex_arc_clone_y.lock().unwrap();    
-        o_stepper_28BYJ_48_y.b_direction = true; 
-        o_stepper_28BYJ_48_y.n_rpm_nor = 0.5;
-        let mut o_stepper_28BYJ_48_z = o_mutex_arc_clone_z.lock().unwrap();    
-        o_stepper_28BYJ_48_z.b_direction = true; 
-        o_stepper_28BYJ_48_z.n_rpm_nor = 0.5;
-    }
+    let mut o_sender_tx_stepper_28BYJ_48_x = f_o_sender_tx_spawn_thread_with_event_listener_for_stepper([2,3,4,17]);
+    let mut o_sender_tx_stepper_28BYJ_48_y = f_o_sender_tx_spawn_thread_with_event_listener_for_stepper([27,22,10,9]);
+    let mut o_sender_tx_stepper_28BYJ_48_z = f_o_sender_tx_spawn_thread_with_event_listener_for_stepper([11,0,5,6]);
 
 
     while let Ok(o) = o_rx_control_usb2.recv() {
@@ -497,25 +485,37 @@ async fn main() {
             let o_right_stick_x_axis = f_o_input_sensor_from_s_name(&o_input_device, "right_stick_x_axis").unwrap();
             let o_right_stick_y_axis = f_o_input_sensor_from_s_name(&o_input_device, "right_stick_y_axis").unwrap();
     
-            let n_l_x = (o_left_stick_y_axis.n_nor-0.5)*2.;
-            let n_l_y = (o_left_stick_x_axis.n_nor-0.5)*2.;
-            let n_r_x = (o_right_stick_x_axis.n_nor-0.5)*2.;
-            let n_r_y = (o_right_stick_y_axis.n_nor-0.5)*2.;
+            let mut n_l_x = (o_left_stick_y_axis.n_nor-0.5)*2.;
+            let mut n_l_y = (o_left_stick_x_axis.n_nor-0.5)*2.;
+            let mut n_r_x = (o_right_stick_x_axis.n_nor-0.5)*2.;
+            let mut n_r_y = (o_right_stick_y_axis.n_nor-0.5)*2.;
     
+    
+            n_l_x = if(n_l_x.abs() > 0.05){n_l_x*0.5} else{0.0};
+            n_l_y = if(n_l_y.abs() > 0.05){n_l_y*0.5} else{0.0};
+            n_r_x = if(n_r_x.abs() > 0.05){n_r_x*0.5} else{0.0};
+            n_r_y = if(n_r_y.abs() > 0.05){n_r_y*0.5} else{0.0};
             println!("n_r_x,n_r_y,n_l_x,n_l_y {},{},{},{}", n_r_x,n_r_y,n_l_x,n_l_y);
-    
-            {
-                let mut o_stepper_28BYJ_48_x = o_mutex_arc_clone_x.lock().unwrap();    
-                o_stepper_28BYJ_48_x.b_direction = if(n_r_x>0.0){true}else{false}; 
-                o_stepper_28BYJ_48_x.n_rpm_nor = n_r_x.abs();
-                let mut o_stepper_28BYJ_48_y = o_mutex_arc_clone_y.lock().unwrap();    
-                o_stepper_28BYJ_48_y.b_direction = if(n_r_y>0.0){true}else{false}; 
-                o_stepper_28BYJ_48_y.n_rpm_nor = n_r_y.abs();
-                let mut o_stepper_28BYJ_48_z = o_mutex_arc_clone_z.lock().unwrap();    
-                o_stepper_28BYJ_48_z.b_direction = if(n_r_y>0.0){true}else{false}; 
-                o_stepper_28BYJ_48_z.n_rpm_nor = n_r_y.abs();
-            }
 
+            // println!("micsec delta {}", n_micsec_delta);
+            o_sender_tx_stepper_28BYJ_48_x.send(
+                json!({ 
+                    "n_rpm_nor": n_r_x.abs(),
+                    "b_direction": if(n_r_x>0.0){true}else{false}
+                }).to_string()
+            ).unwrap();
+            o_sender_tx_stepper_28BYJ_48_y.send(
+                json!({ 
+                    "n_rpm_nor": n_r_y.abs(),
+                    "b_direction": if(n_r_y>0.0){true}else{false}
+                }).to_string()
+            ).unwrap();
+            o_sender_tx_stepper_28BYJ_48_z.send(
+                json!({ 
+                    "n_rpm_nor": n_l_y.abs(),
+                    "b_direction": if(n_l_y>0.0){true}else{false}
+                }).to_string()
+            ).unwrap();
         }
 
         // tx_clone.send(data.a_n_u8_usb_read_result.unwrap());
