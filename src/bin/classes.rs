@@ -55,8 +55,10 @@ pub struct O_input_device {
 #[derive(Debug)]
 pub struct O_stepper_28BYJ_48 {
     pub a_o_pin: Vec<OutputPin>,
+    pub b_depower_if_rpm_zero: bool,
     pub n_rpm_max: f64,
     pub n_rpm_nor: f64, 
+    pub n_rpm_nor_last: f64, 
     pub b_direction: bool, 
     pub n_substeps: u64, 
     pub n_idx_substep: u8,

@@ -156,6 +156,16 @@ pub fn f_update_o_input_device(
         n_idx_bit_start += n_bits as usize;
     }
 }
+pub fn f_o_input_sensor_from_s_name<'a>(o_input_device: &'a O_input_device, s_name: &str) -> Option<&'a O_input_sensor> {
+    match o_input_device.a_o_input_sensor.iter().find(|o_input_sensor| o_input_sensor.s_name == s_name) {
+        Some(o_input_sensor) => Some(o_input_sensor),
+        None => {
+            println!("Error: o_input_sensor '{}' not found", s_name); // Print error message here
+            None
+        }
+    }
+}
+
 pub fn f_b_bool_button_down(
     o_input_device: &mut O_input_device,
     a_o_name_synonym: &A_o_name_synonym,
@@ -227,6 +237,7 @@ pub fn f_n_extracted_unsigned(
 pub fn f_substep_o_stepper(
     o_stepper: &mut O_stepper_28BYJ_48
 ){
+
     let n_dir = if(o_stepper.b_direction){ 1 }else{ -1};
 
     let n_len_a_o_pin = o_stepper.a_o_pin.len(); 
@@ -256,7 +267,12 @@ pub fn f_substep_o_stepper(
         ];
         o_pin_last.set_low();
     }
-    // println!("n_idx_a_o_pin {}", n_idx_a_o_pin);                    
+    // debug stepping
+    println!("a_o_pin");
+    for o_pin in  o_stepper.a_o_pin.iter(){
+        print!("{:?}", if(o_pin.is_set_low()){0}else{1})
+    }
+    
     
 
     // 2 substeps
@@ -287,7 +303,9 @@ pub fn f_o_mutex_arc_o_stepper_28BYJ_48(
             o_gpio.get(a_n_pin[2]).expect("cannot get pin").into_output(),
             o_gpio.get(a_n_pin[3]).expect("cannot get pin").into_output()
         ],
-        n_rpm_nor : 0.01,
+        b_depower_if_rpm_zero: true,
+        n_rpm_nor : 0.5,
+        n_rpm_nor_last : 0.5,
         n_rpm_max : 15.,
         b_direction : true,
         n_substeps: 1,
@@ -313,12 +331,12 @@ pub fn f_o_mutex_arc_o_stepper_28BYJ_48(
     let o_thread_handle = thread::spawn(move || {
         
         loop{
+            
             let mut o_stepper = o_mutex_arc_clone.lock().unwrap();
-            // println!("probe");
             let n_micsec_now = o_instant.elapsed().as_micros();
             let n_micsec_delta = (n_micsec_now - n_micsec_last) as f64;
             // println!("micsec delta {}", n_micsec_delta);
-    
+            
             f_check_mic_sec_delta_and_potentially_step(&mut o_stepper);
     
             let n_micsec_probe_diff = n_micsec_sleep_probe - n_micsec_delta;
@@ -356,14 +374,29 @@ pub fn f_check_mic_sec_delta_and_potentially_step(
     let n_micsec_between_substep = (o_stepper.n_micsec_sleep_between_fullstep as f64) / o_stepper.n_substeps_per_step as f64;
     let n_micsec_ts_now = o_stepper.o_instant.elapsed().as_micros();
     f_update_o_stepper_recalculate_micsecs(o_stepper);
-    // println!("micsec elapsed {}", n_micsec_ts_now);
+    
+    if(o_stepper.b_depower_if_rpm_zero){
+
+        if(o_stepper.n_rpm_nor == 0.0 && o_stepper.n_rpm_nor_last != 0.0){
+            for o_pin in  o_stepper.a_o_pin.iter_mut(){
+                o_pin.set_low()
+            }
+        }
+    }
+
+    if(o_stepper.n_rpm_nor == 0.0){
+        return;
+    }
+        // println!("micsec elapsed {}", n_micsec_ts_now);
     // println!("micsec delta {}", n_micsec_ts_now - o_stepper.n_micsec_ts_last_step);
-    if((n_micsec_ts_now - o_stepper.n_micsec_ts_last_step) > n_micsec_between_substep as u128){
+    if(
+        (n_micsec_ts_now - o_stepper.n_micsec_ts_last_step) > n_micsec_between_substep as u128
+    ){
         f_substep_o_stepper(o_stepper);
         
     }
     // println!("o_stepper.n_substeps_per_step {}", o_stepper.n_substeps_per_step);                    
-    println!("n_micsec_between_substep {}", n_micsec_between_substep);                    
+    // println!("n_micsec_between_substep {}", n_micsec_between_substep);                    
     // println!("n_rpm {}", n_rpm);                    
     // println!("{:?}", o_stepper);                    
 }
