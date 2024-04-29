@@ -280,8 +280,9 @@ let o_gpu_gateway = await f_o_gpu_gateway(
     void main() {
       //o_trn_nor_pixel normalized pixel coordinates from -1.0 -1.0 to 1.0 1.0
       float n_idx_a_s_image_mode_mutable = n_idx_a_s_image_mode;
-      vec2 o_trn = o_trn_nor_pixel + vec2(n_x_trn_nor, n_y_trn_nor);
-      vec2 o_trn2 = ((o_trn)+.5);
+      vec2 o_trn_nor = vec2(n_x_trn_nor, n_y_trn_nor);
+      vec2 o_trn2 = ((o_trn_nor_pixel)+.5);
+
       if(
         o_trn2.x > 1.
         || o_trn2.x < 0.
@@ -299,7 +300,11 @@ let o_gpu_gateway = await f_o_gpu_gateway(
         n_idx_a_s_image_mode_mutable = floor(o2.y);
         o_trn2 = o2f;
       }else{
+        o_trn2 -= .5;
         o_trn2 *= n_factor_scale;
+        o_trn2 += .5;
+        o_trn2 += o_trn_nor;
+
       }
       
       vec4 o_pixel_value_image_from_video = texture(image_from_video, o_trn2); 
@@ -322,7 +327,6 @@ let o_gpu_gateway = await f_o_gpu_gateway(
       if(n_idx_a_s_image_mode_mutable == ${(o_state.a_s_image_mode.indexOf("edge_detection"))}.){
         vec2 iResolution  = o_scl_canvas;
         vec2 fragCoord = o_trn2 * iResolution;
-        vec2 o_trn_nor = o_trn2;
         vec2 o_scl_krnl = vec2(3.);
         vec2 o_scl_krnl_half = floor(o_scl_krnl/2.);
         float n_elements_krnl = o_scl_krnl.x * o_scl_krnl.y;
@@ -383,8 +387,8 @@ let o_gpu_gateway = await f_o_gpu_gateway(
         n_idx_a_s_image_mode_mutable == n_idx_a_s_image_mode
         && b_image_modes_preview == 1.0 
       ){
-        vec2 o3 = o2f - vec2(0.5);
-        float n_dist_border = max(abs(o3.x), abs(o3.y))-.45;
+        vec2 o3 = (o2f - vec2(0.5) - o_trn_nor);
+        float n_dist_border = max(abs(o3.x), abs(o3.y))-.5*n_factor_scale;
         n_dist_border = smoothstep(0.0, 0.01, n_dist_border);
         n_dist_border = clamp(0.0, 1.0, n_dist_border);
         n_dist_border = sin(n_dist_border*3.);
