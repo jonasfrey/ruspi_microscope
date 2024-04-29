@@ -464,9 +464,9 @@ async fn main() {
     // |----------------------|----------------------|
 
 
-    let mut o_sender_tx_stepper_28BYJ_48_x = f_o_sender_tx_spawn_thread_with_event_listener_for_stepper([2,3,4,17]);
-    let mut o_sender_tx_stepper_28BYJ_48_y = f_o_sender_tx_spawn_thread_with_event_listener_for_stepper([27,22,10,9]);
-    let mut o_sender_tx_stepper_28BYJ_48_z = f_o_sender_tx_spawn_thread_with_event_listener_for_stepper([11,0,5,6]);
+    // let mut o_sender_tx_stepper_28BYJ_48_x = f_o_sender_tx_spawn_thread_with_event_listener_for_stepper([2,3,4,17]);
+    // let mut o_sender_tx_stepper_28BYJ_48_y = f_o_sender_tx_spawn_thread_with_event_listener_for_stepper([27,22,10,9]);
+    // let mut o_sender_tx_stepper_28BYJ_48_z = f_o_sender_tx_spawn_thread_with_event_listener_for_stepper([11,0,5,6]);
 
 
     while let Ok(o) = o_rx_control_usb2.recv() {
@@ -498,24 +498,24 @@ async fn main() {
             println!("n_r_x,n_r_y,n_l_x,n_l_y {},{},{},{}", n_r_x,n_r_y,n_l_x,n_l_y);
 
             // println!("micsec delta {}", n_micsec_delta);
-            o_sender_tx_stepper_28BYJ_48_x.send(
-                json!({ 
-                    "n_rpm_nor": n_r_x.abs(),
-                    "b_direction": if(n_r_x>0.0){true}else{false}
-                }).to_string()
-            ).unwrap();
-            o_sender_tx_stepper_28BYJ_48_y.send(
-                json!({ 
-                    "n_rpm_nor": n_r_y.abs(),
-                    "b_direction": if(n_r_y>0.0){true}else{false}
-                }).to_string()
-            ).unwrap();
-            o_sender_tx_stepper_28BYJ_48_z.send(
-                json!({ 
-                    "n_rpm_nor": n_l_y.abs(),
-                    "b_direction": if(n_l_y>0.0){true}else{false}
-                }).to_string()
-            ).unwrap();
+            // o_sender_tx_stepper_28BYJ_48_x.send(
+            //     json!({ 
+            //         "n_rpm_nor": n_r_x.abs(),
+            //         "b_direction": if(n_r_x>0.0){true}else{false}
+            //     }).to_string()
+            // ).unwrap();
+            // o_sender_tx_stepper_28BYJ_48_y.send(
+            //     json!({ 
+            //         "n_rpm_nor": n_r_y.abs(),
+            //         "b_direction": if(n_r_y>0.0){true}else{false}
+            //     }).to_string()
+            // ).unwrap();
+            // o_sender_tx_stepper_28BYJ_48_z.send(
+            //     json!({ 
+            //         "n_rpm_nor": n_l_y.abs(),
+            //         "b_direction": if(n_l_y>0.0){true}else{false}
+            //     }).to_string()
+            // ).unwrap();
         }
 
         // tx_clone.send(data.a_n_u8_usb_read_result.unwrap());

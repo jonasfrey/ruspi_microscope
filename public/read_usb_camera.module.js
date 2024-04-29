@@ -244,9 +244,9 @@ if(!o_el_canvas){
   o_el_canvas = document.createElement('canvas');
   o_div.appendChild(o_el_canvas)
   document.body.appendChild(o_div);
+  window.o_el_canvas = o_el_canvas
 }
-o_el_canvas.width = 1920;
-o_el_canvas.height= 1080;
+
 
 let n_len_a_o_trn = 50;
 let n_idx_a_o_trn = 0;
@@ -279,32 +279,49 @@ let o_gpu_gateway = await f_o_gpu_gateway(
 
     void main() {
       //o_trn_nor_pixel normalized pixel coordinates from -1.0 -1.0 to 1.0 1.0
-      
-      vec2 o_trn = o_trn_nor_pixel * n_factor_scale + vec2(n_x_trn_nor, n_y_trn_nor);
+      float n_idx_a_s_image_mode_mutable = n_idx_a_s_image_mode;
+      vec2 o_trn = o_trn_nor_pixel + vec2(n_x_trn_nor, n_y_trn_nor);
       vec2 o_trn2 = ((o_trn)+.5);
+      if(
+        o_trn2.x > 1.
+        || o_trn2.x < 0.
+        || o_trn2.y > 1.
+        || o_trn2.y < 0.
+      ){
+        fragColor = vec4(vec3(0.), 1.);
+        return;
+      }
       o_trn2.y = 1.-o_trn2.y;
+      vec2 o2 = (o_trn2 *${o_state.a_s_image_mode.length}.);
+      vec2 o2f = fract(o2);
+      float b_image_modes_preview = float(o2.x <= 1.0);
+      if(b_image_modes_preview == 1.0){
+        n_idx_a_s_image_mode_mutable = floor(o2.y);
+        o_trn2 = o2f;
+      }else{
+        o_trn2 *= n_factor_scale;
+      }
       
       vec4 o_pixel_value_image_from_video = texture(image_from_video, o_trn2); 
       fragColor =o_pixel_value_image_from_video;
-      if(n_idx_a_s_image_mode == ${(o_state.a_s_image_mode.indexOf("rgba_normal"))}.){
+      if(n_idx_a_s_image_mode_mutable == ${(o_state.a_s_image_mode.indexOf("rgba_normal"))}.){
         // do nothing 
       }
-      if(n_idx_a_s_image_mode == ${(o_state.a_s_image_mode.indexOf("rgba_inverted"))}.){
+      if(n_idx_a_s_image_mode_mutable == ${(o_state.a_s_image_mode.indexOf("rgba_inverted"))}.){
         fragColor = vec4(vec3(1.)-fragColor.rgb, 1.);
       }
-      if(n_idx_a_s_image_mode == ${(o_state.a_s_image_mode.indexOf("red_channel_only"))}.){
+      if(n_idx_a_s_image_mode_mutable == ${(o_state.a_s_image_mode.indexOf("red_channel_only"))}.){
         fragColor *= vec4(1., 0., 0., 1.);
       }
-      if(n_idx_a_s_image_mode == ${(o_state.a_s_image_mode.indexOf("green_channel_only"))}.){
+      if(n_idx_a_s_image_mode_mutable == ${(o_state.a_s_image_mode.indexOf("green_channel_only"))}.){
         fragColor *= vec4(0., 1., 0., 1.);
       }
-      if(n_idx_a_s_image_mode == ${(o_state.a_s_image_mode.indexOf("blue_channel_only"))}.){
+      if(n_idx_a_s_image_mode_mutable == ${(o_state.a_s_image_mode.indexOf("blue_channel_only"))}.){
         fragColor *= vec4(0., 0., 1., 1.);
       }
-      if(n_idx_a_s_image_mode == ${(o_state.a_s_image_mode.indexOf("edge_detection"))}.){
+      if(n_idx_a_s_image_mode_mutable == ${(o_state.a_s_image_mode.indexOf("edge_detection"))}.){
         vec2 iResolution  = o_scl_canvas;
         vec2 fragCoord = o_trn2 * iResolution;
-        // vec2 o_trn_nor = ( (fragCoord.xy - iResolution.xy*0.5) / iResolution.yy );
         vec2 o_trn_nor = o_trn2;
         vec2 o_scl_krnl = vec2(3.);
         vec2 o_scl_krnl_half = floor(o_scl_krnl/2.);
@@ -362,13 +379,24 @@ let o_gpu_gateway = await f_o_gpu_gateway(
       fragColor.rgb = ((fragColor.rgb - 0.5) * n_factor_contrast + 0.5);
       fragColor.rgb = pow(fragColor.rgb, vec3(1.0 / n_factor_gamma));
       fragColor.rgb = fract(fragColor.rgb);
-
+      if(
+        n_idx_a_s_image_mode_mutable == n_idx_a_s_image_mode
+        && b_image_modes_preview == 1.0 
+      ){
+        vec2 o3 = o2f - vec2(0.5);
+        float n_dist_border = max(abs(o3.x), abs(o3.y))-.45;
+        n_dist_border = smoothstep(0.0, 0.01, n_dist_border);
+        n_dist_border = clamp(0.0, 1.0, n_dist_border);
+        n_dist_border = sin(n_dist_border*3.);
+        fragColor += vec4(vec3(n_dist_border),1.);
+      }
     }
     `,
 )
 
 var a_o_trn = new Float32Array(new Array(n_len_a_o_trn*4).fill(0));
 var buffer = o_gpu_gateway.o_ctx.createBuffer();
+
 o_gpu_gateway.o_ctx.bindBuffer(o_gpu_gateway.o_ctx.ARRAY_BUFFER, buffer);
 o_gpu_gateway.o_ctx.bufferData(o_gpu_gateway.o_ctx.ARRAY_BUFFER, a_o_trn, o_gpu_gateway.o_ctx.STATIC_DRAW);
 var o_location_a_o_trn = o_gpu_gateway.o_ctx.getUniformLocation(o_gpu_gateway.o_shader__program, 'a_o_trn');
@@ -438,16 +466,14 @@ async function startWebcam() {
 
   let gl = o_gpu_gateway.o_ctx;
 
-  o_el_canvas.width = 1920;//o_el_vid?.videoWidth
-  o_el_canvas.height = 1080;//o_el_vid?.videoHeight
+
   let n_ms_delta_max = 1000/o_state.n_fps;
   let n_ms_last = 0;
   let n_c = 0;
     function updateTexture() {
       n_c +=1;
       if(n_c == 100){
-        o_el_canvas.width = o_el_vid?.videoWidth
-        o_el_canvas.height = o_el_vid?.videoWidth
+        f_resize_canvas()
       }
       let n_ms = window.performance.now();
       let n_ms_delta = n_ms - n_ms_last;
@@ -552,9 +578,10 @@ async function startWebcam() {
       requestAnimationFrame(updateTexture);
 
   }
-  f_resize_canvas()
-
+  
   updateTexture();
+  f_resize_canvas();
+  f_resize_canvas();
 }
 
 
@@ -579,6 +606,9 @@ window.addEventListener('keydown', async (o_e)=>{
     o_state[`o_js__${a_v[1]}`]._f_render()
   }
 })
+if(o_e.key == 'm'){
+  o_state.n_idx_a_s_image_mode = (o_state.n_idx_a_s_image_mode + 1)%o_state.a_s_image_mode.length;
+}
 if(o_e.key == ' '){
 
     await f_o_throw_notification(o_state.o_state__notifire,`image has been saved`, 'success')
@@ -782,8 +812,11 @@ o_state.f_captureAndSendImage = function() {
 }
 
 let f_resize_canvas = ()=>{
-  o_el_canvas.width = o_el_vid?.videoWidth
-  o_el_canvas.height = o_el_vid?.videoWidth
+  let n_dpr = window.devicePixelRatio || 1;
+  o_el_canvas.width = o_el_vid.videoWidth * n_dpr
+  o_el_canvas.height = o_el_vid.videoHeight * n_dpr
+  let gl = o_gpu_gateway.o_ctx;
+gl.viewport(0, 0, o_el_canvas.width, o_el_canvas.height);
   // f_update_data_in_o_gpu_gateway(
   //     {o_scl_canvas: [
   //         o_el_canvas.width,
@@ -792,13 +825,13 @@ let f_resize_canvas = ()=>{
   //     o_gpu_gateway, 
   // )
 }
+
 window.addEventListener('resize',()=>{
   f_resize_canvas()
 });
 
 
 startWebcam();
-
 f_resize_canvas()
 
 
