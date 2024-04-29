@@ -42,7 +42,25 @@ let a_s_image_mode = [
   'blue_channel_only', 
   'edge_detection'
 ]
+class O_keyboard_key{
+  constructor(
+    s_name,
+    n_ms_wpn_down, 
+    n_ms_wpn_up, 
+    b_down, 
+    b_down_last
+  ){
+    this.s_name = s_name,
+    this.n_ms_wpn_down = n_ms_wpn_down, 
+    this.n_ms_wpn_up = n_ms_wpn_up, 
+    this.b_down = b_down
+    this.b_down_last = b_down_last 
+  }
+}
+
+
 let o_state = {
+  a_o_keyboard_key: [],
   o_config: {},
   n_idx_a_s_image_mode: 5,
   a_s_image_mode: a_s_image_mode,
@@ -76,6 +94,28 @@ let o_state = {
 
   's_description' a general description of what can be seen on the image `
 }
+let f_keydown_or_keyup = function(o_e, b_down){
+  let v_o = o_state.a_o_keyboard_key.find(o=>o.s_name == o_e.key);
+  if(!v_o){
+    v_o = new O_keyboard_key(
+      o_e.key, 
+      0, 
+      0, 
+      0, 
+      false, 
+      false,
+    )
+    o_state.a_o_keyboard_key.push(v_o)
+  }
+  v_o.b_down_last = v_o.b_down
+  let n_ms_wpn = window.performance.now();
+  v_o[`n_ms_wpn_${(b_down) ? "down": "up"}`] = n_ms_wpn;
+  v_o.n_ms_wpn__last_down_or_up = window.performance.now();
+  v_o.b_down = b_down
+  console.log(b_down)
+}
+window.addEventListener('keydown', (o_e)=>{ f_keydown_or_keyup(o_e, true)})
+window.addEventListener('keyup', (o_e)=>{ f_keydown_or_keyup(o_e, false)})
 
 o_variables.n_rem_font_size_base = 1. // adjust font size, other variables can also be adapted before adding the css to the dom
 o_variables.n_rem_padding_interactive_elements = 0.5; // adjust padding for interactive elements 
@@ -496,6 +536,33 @@ async function startWebcam() {
           let v_o__left_meta1_button = (o_state?.v_o_input_device?.a_o_input_sensor?.find(o=> o.s_name == "left_meta1_button"));
           let v_o__left_meta1_button_last = (o_state?.v_o_input_device__last?.a_o_input_sensor?.find(o=> o.s_name == "left_meta1_button"));
 
+
+          for(let o_keyboard_key of o_state.a_o_keyboard_key){
+            let n_idx = [
+              'i', 'k',// x axis - +
+              'j', 'l',// y axis - +
+              'i', 'k',// z axis - +
+            ].indexOf(o_keyboard_key.s_name)
+            if(
+              n_idx == -1
+              ||
+              o_keyboard_key?.b_down == o_keyboard_key?.b_down_last
+              ){
+              continue
+            }
+            let o_js = {
+              s_name_function:'f_control_stepper_motor',
+              s_axis: ['x', 'y', 'z'][parseInt(n_idx/2)],
+              n_rpm_nor: (o_keyboard_key?.b_down) ? 0.3: 0.0 * (n_idx%2)*-1
+            }
+            console.log(o_js)
+            o_ws.send(JSON.stringify(o_js))
+            if(!o_keyboard_key?.b_down){
+              o_keyboard_key.b_down_last = false
+            }
+          }
+
+        
           if(
             v_o__right_meta1_button?.n_nor == 1.0
             && v_o__right_meta1_button_last?.n_nor == 0.0
@@ -610,6 +677,7 @@ window.addEventListener('keydown', async (o_e)=>{
     o_state[`o_js__${a_v[1]}`]._f_render()
   }
 })
+
 if(o_e.key == 'm'){
   o_state.n_idx_a_s_image_mode = (o_state.n_idx_a_s_image_mode + 1)%o_state.a_s_image_mode.length;
 }

@@ -49,6 +49,7 @@ pub mod functions;
 
 
 use functions::{
+    f_b_gpio_available,
     f_update_o_input_device,
     f_o_sender_tx_spawn_thread_with_event_listener_for_stepper,
     f_o_input_sensor_from_s_name
@@ -69,7 +70,7 @@ fn f_usb_read_thread(
     let v: serde_json::Value = serde_json::from_str(&s_json).expect("cannot parse json");
     let mut a_o_input_device: A_o_input_device = serde_json::from_value(v.get("a_o_input_device").expect("json must have a_o_input_device").clone()).expect("cannot decode json");
     let mut a_o_name_synonym: A_o_name_synonym = serde_json::from_value(v.get("a_o_name_synonym").expect("json must have a_o_name_synonym").clone()).expect("cannot decode json");
-    println!("a_o_input_device {:?}", a_o_input_device);
+    // println!("a_o_input_device {:?}", a_o_input_device);
     let mut v_o_input_device: Option<&mut O_input_device> = None;
     let mut o_device_handle_option: Option<DeviceHandle<GlobalContext>> = None;
     let mut b_usb_readout_active = false;
@@ -100,7 +101,6 @@ fn f_usb_read_thread(
                     }
                     // release the old interface and attach the kernel driver
                 }
-                
                 
                 n_id_vendor = vid;
                 n_id_product = pid;
@@ -280,6 +280,9 @@ async fn f_websocket_thread(
     mut o_rx_receiver: broadcast::Receiver<String>, 
     mut o_tx_sender_clone: broadcast::Sender<String>, 
     o_tx_control_usb: mpsc::Sender<ControlCommand>, 
+    v_o_sender_tx_stepper_28BYJ_48_x:Option<mpsc::Sender::<String>>,
+    v_o_sender_tx_stepper_28BYJ_48_y:Option<mpsc::Sender::<String>>,
+    v_o_sender_tx_stepper_28BYJ_48_z: Option<mpsc::Sender::<String>>
 ) { 
     let (mut o_ws_sender, mut o_ws_receiver) = o_websocket.split();
 
@@ -313,6 +316,43 @@ async fn f_websocket_thread(
                             if(s_name_function == "hello"){
                                 o_response.insert("s_res".to_string(), json!("World !"));
                                 o_response.insert("o_child".to_string(), json!({ "s_stdout__lsusb": "yes" }));
+                            }
+
+                            if(s_name_function == "f_control_stepper_motor"){
+
+                                if let Some(s_axis) = v_json_parsed.get("s_axis").and_then(|v: &serde_json::Value| v.as_str()) {
+
+                                    println!("trying to control stepper motor: {:?}", v_json_parsed);
+                                    if(s_axis == "x"){
+                                        if let Some(ref o) = v_o_sender_tx_stepper_28BYJ_48_x{
+                                            o.send(
+                                                serde_json::from_value(v_json_parsed.clone()).expect("invalid serde_json value")
+                                            ).unwrap();
+                                        }
+                                    }
+                                    if(s_axis == "y"){
+                                        if let Some(ref o) = v_o_sender_tx_stepper_28BYJ_48_y{
+                                            o.send(
+                                                serde_json::from_value(v_json_parsed.clone()).expect("invalid serde_json value")
+                                            ).unwrap();
+                                        }
+                                    }
+                                    if(s_axis == "z"){
+
+                                        if let Some(ref o) = v_o_sender_tx_stepper_28BYJ_48_z{
+                                            o.send(
+                                                serde_json::from_value(v_json_parsed.clone()).expect("invalid serde_json value")
+                                            ).unwrap();
+                                        }
+                                    }
+
+
+                                }else{
+                                    o_response.insert("s_error".to_string(), json!("the property 's_axis' must be included"));
+
+                                }
+    
+    
                             }
 
                             if(s_name_function == "f_s_json_o_config"){
@@ -380,6 +420,8 @@ async fn f_websocket_thread(
                             )).unwrap();
                             o_tx_control_usb.send(ControlCommand::Start).unwrap();
                         }
+
+
                         
                     }
                 }
@@ -394,52 +436,7 @@ async fn f_websocket_thread(
 
 #[tokio::main]
 async fn main() {
-    let (o_tx_control_usb1, o_rx_control_usb1) = mpsc::channel();
-    let (o_tx_control_usb2, o_rx_control_usb2) = mpsc::channel();
-
-    thread::spawn(move || {
-        f_usb_read_thread(o_tx_control_usb2, o_rx_control_usb1);
-    });
-
-    let n_messages_at_a_time_in_the_channel_buffer_max = 10;
-    let (o_tx_sender, _) = broadcast::channel::<String>(n_messages_at_a_time_in_the_channel_buffer_max);
-    let o_tx_sender_clone = o_tx_sender.clone();
-    let routes = warp::path("ws")
-        .and(warp::ws())
-        .map(move |o_ws: warp::ws::Ws| {
-            let o_rx_receiver: broadcast::Receiver<String> = o_tx_sender.subscribe();
-            let o_tx_sender_clone = o_tx_sender.clone();
-            let o_tx_control_usb1_clone = o_tx_control_usb1.clone();
-            o_ws.on_upgrade(move |o_websocket| f_websocket_thread(
-                o_websocket,
-                o_rx_receiver,
-                o_tx_sender_clone,
-                o_tx_control_usb1_clone 
-            ))
-        })
-        .or(warp::fs::dir("public"));
-
-    let mut a_n_ip = [127,0,0,1];
-    let s_hostname = gethostname();
-    if(s_hostname == "raspi-desktop"){
-        a_n_ip = [192,168,1,105];
-    }
-    tokio::spawn(
-        warp::serve(routes)
-        .tls()
-        // RSA
-        .cert_path("cert.pem")
-        .key_path("key.pem")
-        .run((a_n_ip, 3030))
-    );
-    println!("webserver running at http://127.0.0.1:3030/");
-    println!("websocket running at ws://127.0.0.1:3030/ws");
-
-
-    // 
-
-
-    //raspi pinout pin layout 
+        //raspi pinout pin layout 
     // |----------------------|----------------------|
     // |_   3v3 power         |_   5v power          |
     // |_   GPIO 2 (SDA)      |_   5v power          |
@@ -464,9 +461,80 @@ async fn main() {
     // |----------------------|----------------------|
 
 
-    // let mut o_sender_tx_stepper_28BYJ_48_x = f_o_sender_tx_spawn_thread_with_event_listener_for_stepper([2,3,4,17]);
-    // let mut o_sender_tx_stepper_28BYJ_48_y = f_o_sender_tx_spawn_thread_with_event_listener_for_stepper([27,22,10,9]);
-    // let mut o_sender_tx_stepper_28BYJ_48_z = f_o_sender_tx_spawn_thread_with_event_listener_for_stepper([11,0,5,6]);
+    let b_gpio_available = f_b_gpio_available();
+    
+    let mut v_o_sender_tx_stepper_28BYJ_48_x = None;
+    let mut v_o_sender_tx_stepper_28BYJ_48_y = None;
+    let mut v_o_sender_tx_stepper_28BYJ_48_z = None;
+
+    if(b_gpio_available){
+        let a_n_pin_x = [2,3,4,17];
+        let a_n_pin_y = [27,22,10,9];
+        let a_n_pin_z = [11,0,5,6];
+        v_o_sender_tx_stepper_28BYJ_48_x = Some(f_o_sender_tx_spawn_thread_with_event_listener_for_stepper(a_n_pin_x));
+        v_o_sender_tx_stepper_28BYJ_48_y = Some(f_o_sender_tx_spawn_thread_with_event_listener_for_stepper(a_n_pin_y));
+        v_o_sender_tx_stepper_28BYJ_48_z = Some(f_o_sender_tx_spawn_thread_with_event_listener_for_stepper(a_n_pin_z));
+        println!("you are using a raspberry pi, make sure the stepper motors are wired like this");
+        println!("x-axis stepper gpio pins: {:?}", a_n_pin_x);
+        println!("y-axis stepper gpio pins: {:?}", a_n_pin_y);
+        println!("z-axis stepper gpio pins: {:?}", a_n_pin_z);
+    }else{
+        println!("with some 3d printed hardware and byj28 stepper motors you can run this software to control the microscope with a usb controller")
+    }
+
+    let mut v_o_sender_tx_stepper_28BYJ_48_x__clone_for_main = v_o_sender_tx_stepper_28BYJ_48_x.clone();
+    let mut v_o_sender_tx_stepper_28BYJ_48_y__clone_for_main = v_o_sender_tx_stepper_28BYJ_48_y.clone();
+    let mut v_o_sender_tx_stepper_28BYJ_48_z__clone_for_main = v_o_sender_tx_stepper_28BYJ_48_z.clone();
+
+
+    let (o_tx_control_usb1, o_rx_control_usb1) = mpsc::channel();
+    let (o_tx_control_usb2, o_rx_control_usb2) = mpsc::channel();
+
+    thread::spawn(move || {
+        f_usb_read_thread(o_tx_control_usb2, o_rx_control_usb1);
+    });
+
+    let n_messages_at_a_time_in_the_channel_buffer_max = 10;
+    let (o_tx_sender, _) = broadcast::channel::<String>(n_messages_at_a_time_in_the_channel_buffer_max);
+    let o_tx_sender_clone = o_tx_sender.clone();
+    let routes = warp::path("ws")
+        .and(warp::ws())
+        .map(move |o_ws: warp::ws::Ws| {
+            
+            let o_rx_receiver: broadcast::Receiver<String> = o_tx_sender.subscribe();
+            let o_tx_sender_clone = o_tx_sender.clone();
+            let o_tx_control_usb1_clone = o_tx_control_usb1.clone();
+            let mut v_o_sender_tx_stepper_28BYJ_48_x__clone_for_websocket = v_o_sender_tx_stepper_28BYJ_48_x.clone();
+            let mut v_o_sender_tx_stepper_28BYJ_48_y__clone_for_websocket = v_o_sender_tx_stepper_28BYJ_48_y.clone();
+            let mut v_o_sender_tx_stepper_28BYJ_48_z__clone_for_websocket = v_o_sender_tx_stepper_28BYJ_48_z.clone();
+            o_ws.on_upgrade(move |o_websocket| f_websocket_thread(
+                o_websocket,
+                o_rx_receiver,
+                o_tx_sender_clone,
+                o_tx_control_usb1_clone,
+                v_o_sender_tx_stepper_28BYJ_48_x__clone_for_websocket,
+                v_o_sender_tx_stepper_28BYJ_48_y__clone_for_websocket,
+                v_o_sender_tx_stepper_28BYJ_48_z__clone_for_websocket
+            ))
+        })
+        .or(warp::fs::dir("public"));
+    //use o_sender_tx_stepper_28BYJ_48_y here later
+    let mut a_n_ip = [127,0,0,1];
+    let s_hostname = gethostname();
+    if(s_hostname == "raspi-desktop"){
+        a_n_ip = [192,168,1,105];
+    }
+    tokio::spawn(
+        warp::serve(routes)
+        .tls()
+        // RSA
+        .cert_path("cert.pem")
+        .key_path("key.pem")
+        .run((a_n_ip, 3030))
+    );
+    println!("webserver running at http://127.0.0.1:3030/");
+    println!("websocket running at ws://127.0.0.1:3030/ws");
+
 
 
     while let Ok(o) = o_rx_control_usb2.recv() {
@@ -497,25 +565,31 @@ async fn main() {
             n_r_y = if(n_r_y.abs() > 0.05){n_r_y*0.5} else{0.0};
             println!("n_r_x,n_r_y,n_l_x,n_l_y {},{},{},{}", n_r_x,n_r_y,n_l_x,n_l_y);
 
-            // println!("micsec delta {}", n_micsec_delta);
-            // o_sender_tx_stepper_28BYJ_48_x.send(
-            //     json!({ 
-            //         "n_rpm_nor": n_r_x.abs(),
-            //         "b_direction": if(n_r_x>0.0){true}else{false}
-            //     }).to_string()
-            // ).unwrap();
-            // o_sender_tx_stepper_28BYJ_48_y.send(
-            //     json!({ 
-            //         "n_rpm_nor": n_r_y.abs(),
-            //         "b_direction": if(n_r_y>0.0){true}else{false}
-            //     }).to_string()
-            // ).unwrap();
-            // o_sender_tx_stepper_28BYJ_48_z.send(
-            //     json!({ 
-            //         "n_rpm_nor": n_l_y.abs(),
-            //         "b_direction": if(n_l_y>0.0){true}else{false}
-            //     }).to_string()
-            // ).unwrap();
+
+            if let Some(ref o) = v_o_sender_tx_stepper_28BYJ_48_x__clone_for_main{
+                o.send(
+                    json!({ 
+                        "n_rpm_nor": n_r_x.abs(),
+                        "b_direction": if(n_r_x>0.0){true}else{false}
+                    }).to_string()
+                ).unwrap();
+            }
+            if let Some(ref o) = v_o_sender_tx_stepper_28BYJ_48_y__clone_for_main{
+                o.send(
+                    json!({ 
+                        "n_rpm_nor": n_r_y.abs(),
+                        "b_direction": if(n_r_y>0.0){true}else{false}
+                    }).to_string()
+                ).unwrap();
+            }
+            if let Some(ref o) = v_o_sender_tx_stepper_28BYJ_48_z__clone_for_main{
+                o.send(
+                    json!({ 
+                        "n_rpm_nor": n_l_y.abs(),
+                        "b_direction": if(n_l_y>0.0){true}else{false}
+                    }).to_string()
+                ).unwrap();
+            }
         }
 
         // tx_clone.send(data.a_n_u8_usb_read_result.unwrap());
@@ -523,13 +597,6 @@ async fn main() {
 
     }
 
-    // Send messages from the main loop or based on other events
-    loop {
-        if o_tx_sender_clone.send(String::from("1,2,3,4,5,6,7,8,9,10")).is_err() {
-            eprintln!("Failed to send message to WebSocket clients");
-        }
-        tokio::time::sleep(tokio::time::Duration::from_secs(1)).await;
-    }
     
 }
 

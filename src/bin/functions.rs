@@ -295,6 +295,11 @@ pub fn f_substep_o_stepper(
     // 1 0 0 0
 }
 
+pub fn f_b_gpio_available(
+
+)->bool{
+    return Gpio::new().is_ok();
+}
 pub fn f_o_stepper_28BYJ_48(
     a_n_pin: [u8;4],
 )->O_stepper_28BYJ_48{
