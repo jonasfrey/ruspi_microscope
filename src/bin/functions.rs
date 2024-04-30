@@ -462,7 +462,7 @@ pub fn f_o_sender_tx_spawn_thread_with_event_listener_for_stepper(
                     let value: Value = serde_json::from_str(&s_msg).unwrap();
                     if let Some(n_rpm) = value.get("n_rpm_nor") {
                         let v = n_rpm.as_f64().unwrap();
-                        // println!("property found: {:?}", n);
+                        // println!("property found: {:?}", v);
                         o_stepper.n_rpm_nor = v;
                     }
                     if let Some(n_rpm) = value.get("b_direction") {

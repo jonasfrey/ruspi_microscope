@@ -318,42 +318,6 @@ async fn f_websocket_thread(
                                 o_response.insert("o_child".to_string(), json!({ "s_stdout__lsusb": "yes" }));
                             }
 
-                            if(s_name_function == "f_control_stepper_motor"){
-
-                                if let Some(s_axis) = v_json_parsed.get("s_axis").and_then(|v: &serde_json::Value| v.as_str()) {
-
-                                    println!("trying to control stepper motor: {:?}", v_json_parsed);
-                                    if(s_axis == "x"){
-                                        if let Some(ref o) = v_o_sender_tx_stepper_28BYJ_48_x{
-                                            o.send(
-                                                serde_json::from_value(v_json_parsed.clone()).expect("invalid serde_json value")
-                                            ).unwrap();
-                                        }
-                                    }
-                                    if(s_axis == "y"){
-                                        if let Some(ref o) = v_o_sender_tx_stepper_28BYJ_48_y{
-                                            o.send(
-                                                serde_json::from_value(v_json_parsed.clone()).expect("invalid serde_json value")
-                                            ).unwrap();
-                                        }
-                                    }
-                                    if(s_axis == "z"){
-
-                                        if let Some(ref o) = v_o_sender_tx_stepper_28BYJ_48_z{
-                                            o.send(
-                                                serde_json::from_value(v_json_parsed.clone()).expect("invalid serde_json value")
-                                            ).unwrap();
-                                        }
-                                    }
-
-
-                                }else{
-                                    o_response.insert("s_error".to_string(), json!("the property 's_axis' must be included"));
-
-                                }
-    
-    
-                            }
 
                             if(s_name_function == "f_s_json_o_config"){
                                 o_response.insert("s_json_o_config".to_string(), json!(f_s_json_o_config()));
@@ -405,6 +369,47 @@ async fn f_websocket_thread(
                         
                         println!("received s_name_function {}", s_name_function);
                         o_tx_sender_clone.send(String::from("message received, heres a new one sent!"));
+                        
+                        if(s_name_function == "f_control_stepper_motor"){
+
+                            if let Some(s_axis) = v_json_parsed.get("s_axis").and_then(|v: &serde_json::Value| v.as_str()) {
+
+                                let n_rpm_nor = &v_json_parsed["n_rpm_nor"];
+                                if n_rpm_nor.is_number(){
+                                    println!("asdf: {}", n_rpm_nor.as_f64().unwrap());
+                                }
+                                
+                                if(s_axis == "x"){
+                                    if let Some(ref o) = v_o_sender_tx_stepper_28BYJ_48_x{
+                                        o.send(
+                                            (v_json_parsed.clone()).to_string()
+                                        ).unwrap();
+                                    }
+                                }
+                                if(s_axis == "y"){
+                                    if let Some(ref o) = v_o_sender_tx_stepper_28BYJ_48_y{
+                                        o.send(
+                                            (v_json_parsed.clone()).to_string()
+                                        ).unwrap();
+                                    }
+                                }
+                                if(s_axis == "z"){
+
+                                    if let Some(ref o) = v_o_sender_tx_stepper_28BYJ_48_z{
+                                        o.send(
+                                            (v_json_parsed.clone()).to_string()
+                                        ).unwrap();
+                                    }
+                                }
+
+
+                            }
+                            // else{
+                            //     o_response.insert("s_error".to_string(), json!("the property 's_axis' must be included"));
+                            // }
+
+
+                        }
 
 
 
@@ -558,6 +563,11 @@ async fn main() {
             let mut n_r_x = (o_right_stick_x_axis.n_nor-0.5)*2.;
             let mut n_r_y = (o_right_stick_y_axis.n_nor-0.5)*2.;
     
+            // if the gamepad is connected and autmatically turned of 
+            // to save power, the x axis will still be interpreted as 0
+            // and then 0 will be sent
+            // therefore we have to check if the value differs from the last one... 
+
     
             n_l_x = if(n_l_x.abs() > 0.05){n_l_x*0.5} else{0.0};
             n_l_y = if(n_l_y.abs() > 0.05){n_l_y*0.5} else{0.0};

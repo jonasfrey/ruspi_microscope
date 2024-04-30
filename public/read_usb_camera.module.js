@@ -77,7 +77,7 @@ let o_state = {
   n_factor_scale: 1., 
   n_factor_brightness: 1., 
   n_factor_contrast: 1.,
-  n_factor_gamma: 2.2,
+  n_factor_gamma: 1.0,// i assume the js webcam capturing api already does gamma correction
   n_x_trn_nor: 0.0,
   n_y_trn_nor: 0.0,
   a_o_webcam: [],
@@ -335,6 +335,8 @@ let o_gpu_gateway = await f_o_gpu_gateway(
       o_trn2.y = 1.-o_trn2.y;
       vec2 o2 = (o_trn2 *${o_state.a_s_image_mode.length}.);
       vec2 o2f = fract(o2);
+      o2f.y = 1.-o2f.y;
+
       float b_image_modes_preview = float(o2.x <= 1.0);
       if(b_image_modes_preview == 1.0){
         n_idx_a_s_image_mode_mutable = floor(o2.y);
@@ -539,9 +541,9 @@ async function startWebcam() {
 
           for(let o_keyboard_key of o_state.a_o_keyboard_key){
             let n_idx = [
-              'i', 'k',// x axis - +
-              'j', 'l',// y axis - +
-              'i', 'k',// z axis - +
+              'j', 'l',// x axis - +
+              'i', 'k',// y axis - +
+              'u', 'o',// z axis - +
             ].indexOf(o_keyboard_key.s_name)
             if(
               n_idx == -1
@@ -553,13 +555,14 @@ async function startWebcam() {
             let o_js = {
               s_name_function:'f_control_stepper_motor',
               s_axis: ['x', 'y', 'z'][parseInt(n_idx/2)],
-              n_rpm_nor: (o_keyboard_key?.b_down) ? 0.3: 0.0 * (n_idx%2)*-1
+              n_rpm_nor: ((o_keyboard_key?.b_down) ? 0.3: 0.0) ,
+              b_direction: n_idx%2 == 0
             }
             console.log(o_js)
+
             o_ws.send(JSON.stringify(o_js))
-            if(!o_keyboard_key?.b_down){
-              o_keyboard_key.b_down_last = false
-            }
+            o_keyboard_key.b_down_last = o_keyboard_key?.b_down
+
           }
 
         
