@@ -3,9 +3,12 @@ import {
   f_add_css,
   f_s_css_prefixed,
   o_variables, 
-  f_s_css_from_o_variables
-} from "https://deno.land/x/f_add_css@1.1/mod.js"
-
+  f_s_css_from_o_variables, 
+  f_s_hsla
+} from "https://deno.land/x/f_add_css@1.2/mod.js"
+import {
+  O_vec4
+}from "https://deno.land/x/vector@1.4/mod.js"
 import {
   f_o_html__and_make_renderable,
 }
@@ -60,12 +63,18 @@ class O_keyboard_key{
 
 
 let o_state = {
+  o_cursor_virtual: {
+    o_trn: {
+      n_x: 0,
+      n_y: 0
+    }
+  },
   a_o_keyboard_key: [],
   o_config: {},
   n_idx_a_s_image_mode: 5,
   a_s_image_mode: a_s_image_mode,
   n_fps: 24,
-  b_render__o_js__gamepad_controls: false,
+  b_render__settings: false,
   v_o_input_device: null,
   o_state__notifire: {},
   n_id_timeout: null,
@@ -112,15 +121,48 @@ let f_keydown_or_keyup = function(o_e, b_down){
   v_o[`n_ms_wpn_${(b_down) ? "down": "up"}`] = n_ms_wpn;
   v_o.n_ms_wpn__last_down_or_up = window.performance.now();
   v_o.b_down = b_down
-  console.log(b_down)
+  // console.log(b_down)
 }
 window.addEventListener('keydown', (o_e)=>{ f_keydown_or_keyup(o_e, true)})
 window.addEventListener('keyup', (o_e)=>{ f_keydown_or_keyup(o_e, false)})
 
+window.addEventListener('mousemove', (o_e)=>{ 
+
+  o_state.o_cursor_virtual.o_trn.n_x = o_e.clientX;
+  o_state.o_cursor_virtual.o_trn.n_y = o_e.clientY;
+  o_state?.o_js__o_cursor_virtual._f_render();
+  console.log(o_e.target)
+  Array.from(document.querySelectorAll('.hoverable')).map(o=>{
+    o.classList.remove("hovered")
+    return o
+  });
+  o_e.target.classList.add("hovered");
+
+})
+
+o_variables.o_hsla__fg_hover = new O_vec4(
+  0.2, 
+  0.3, 
+  0.8, 
+  0.9
+);
 o_variables.n_rem_font_size_base = 1. // adjust font size, other variables can also be adapted before adding the css to the dom
 o_variables.n_rem_padding_interactive_elements = 0.5; // adjust padding for interactive elements 
+window.o_variables = o_variables
 f_add_css(
   `
+  .hoverable {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border: 1px solid ${f_s_hsla(o_variables.o_hsla__fg)};
+      padding: 0.5rem;
+  }
+  .hoverable.hovered{
+    color: ${f_s_hsla(o_variables.o_hsla__fg_hover)};
+    border: 1px solid ${f_s_hsla(o_variables.o_hsla__fg_hover)};
+  }
+
   body{
       min-height: 100vh;
       min-width: 100vw;
@@ -260,7 +302,37 @@ f_add_css(
       top: 0;
       left: 0;
   }
+  .o_cursor_virtual{
+    width:5vmin;
+    height:5vmin; 
+    pointer-events: none;
+    transform: translate(-50%,-50%);
 
+  }
+  .o_cursor_virtual .r1,
+  .o_cursor_virtual .r2,
+  .o_cursor_virtual .r3{
+    position: absolute;
+    top:50%;
+    left:50%;
+    border-radius:50%;
+    transform: translate(-50%,-50%);
+  }
+  .o_cursor_virtual .r1{
+    border: 3px solid green;
+    width:100%;
+    height:100%;
+  }
+  .o_cursor_virtual .r2{
+    border: 1px solid green;
+    width:90%;
+    height:90%;
+  }
+  .o_cursor_virtual .r3{
+    border: 5px solid green;
+    width:5%;
+    height:5%;
+  }
 
   ${
       f_s_css_from_o_variables(
@@ -538,56 +610,84 @@ async function startWebcam() {
           let v_o__left_meta1_button = (o_state?.v_o_input_device?.a_o_input_sensor?.find(o=> o.s_name == "left_meta1_button"));
           let v_o__left_meta1_button_last = (o_state?.v_o_input_device__last?.a_o_input_sensor?.find(o=> o.s_name == "left_meta1_button"));
 
+          let v_o_keyboard_key__esc = null;
 
           for(let o_keyboard_key of o_state.a_o_keyboard_key){
+            if(o_keyboard_key.s_name == 'Escape'){
+              v_o_keyboard_key__esc = o_keyboard_key
+            }
             let n_idx = [
               'j', 'l',// x axis - +
               'i', 'k',// y axis - +
               'u', 'o',// z axis - +
             ].indexOf(o_keyboard_key.s_name)
-            if(
-              n_idx == -1
-              ||
-              o_keyboard_key?.b_down == o_keyboard_key?.b_down_last
-              ){
-              continue
+            if(n_idx != -1){
+              let s_axis = ['x', 'y', 'z'][parseInt(n_idx/2)]
+              let b_direction = n_idx%2 == 0
+              let n_sign = (b_direction) ? -1: 1;
+  
+              if(o_keyboard_key?.b_down){
+  
+                o_state.o_cursor_virtual.o_trn[`n_${s_axis}`] += 10 * n_sign;
+                console.log(o_state.o_cursor_virtual.o_trn[`n_${s_axis}`])
+              }
+  
+              if(
+                o_keyboard_key?.b_down == o_keyboard_key?.b_down_last
+                ){
+                continue
+              }
+  
+              let o_js = {
+                s_name_function:'f_control_stepper_motor',
+                s_axis,
+                n_rpm_nor: ((o_keyboard_key?.b_down) ? 0.3: 0.0) ,
+                b_direction
+              }
+              // console.log(o_js)
+              
+              o_ws.send(JSON.stringify(o_js))
             }
-            let o_js = {
-              s_name_function:'f_control_stepper_motor',
-              s_axis: ['x', 'y', 'z'][parseInt(n_idx/2)],
-              n_rpm_nor: ((o_keyboard_key?.b_down) ? 0.3: 0.0) ,
-              b_direction: n_idx%2 == 0
-            }
-            console.log(o_js)
 
-            o_ws.send(JSON.stringify(o_js))
-            o_keyboard_key.b_down_last = o_keyboard_key?.b_down
 
           }
+          // Array.from(document.querySelectorAll('.hoverable')).map(o=>{
+          //   o.classList.remove("hovered")
+          //   return o
+          // });
 
-        
+          o_state.o_js__o_cursor_virtual._f_render()
+
           if(
-            v_o__right_meta1_button?.n_nor == 1.0
-            && v_o__right_meta1_button_last?.n_nor == 0.0
+            (v_o__right_meta1_button?.n_nor == 1.0
+            && v_o__right_meta1_button_last?.n_nor == 0.0)
+            || (v_o_keyboard_key__esc?.b_down &&  (v_o_keyboard_key__esc?.b_down != v_o_keyboard_key__esc?.b_down_last))
             ){
-              o_state.b_render__o_js__gamepad_controls = !o_state.b_render__o_js__gamepad_controls
-              o_state.o_js__gamepad_controls._f_render()
+              o_state.b_render__settings = !o_state.b_render__settings
+              if(!o_state.o_js__settings._b_rendering){
+                o_state.o_js__settings._f_render()
+              }
             }
             
-          o_state.b_render__o_js__gamepad_controls
+          o_state.b_render__settings
           if(v_o_l2?.n_nor == 1.0){
             //layer 2 camera control
-            o_state.n_x_trn_nor+=f_n_signed_nor_with_threshhold( "right_stick_x_axis", 0.1)*0.02;
-            o_state.n_y_trn_nor+=f_n_signed_nor_with_threshhold( "right_stick_y_axis", 0.1)*0.02;
-            o_state.n_factor_scale+=f_n_signed_nor_with_threshhold( "left_stick_y_axis", 0.1)*-0.02;
+            
+            let n_nor_right_stick_x_axis =  f_n_signed_nor_with_threshhold( "right_stick_x_axis", 0.0)
+            let n_nor_right_stick_y_axis =  f_n_signed_nor_with_threshhold( "right_stick_y_axis", 0.0)
+            let n_nor_left_stick_y_axis =  f_n_signed_nor_with_threshhold( "left_stick_y_axis", 0.0)
+            let n_nor_left_stick_x_axis =  f_n_signed_nor_with_threshhold( "left_stick_x_axis", 0.0)
+            o_state.o_cursor_virtual.o_trn.n_x += n_nor_left_stick_x_axis*10;
+            o_state.o_cursor_virtual.o_trn.n_y += n_nor_left_stick_y_axis*10;
+            o_state.o_js__o_cursor_virtual._f_render();
+
+            o_state.n_x_trn_nor+=n_nor_right_stick_x_axis*0.02;
+            o_state.n_y_trn_nor+=n_nor_right_stick_y_axis*0.02;
+            o_state.n_factor_scale+=n_nor_left_stick_y_axis*-0.02;
             o_state.n_factor_contrast-=f_n_grouped_value("direction_pad_down")*0.02;
             o_state.n_factor_contrast+=f_n_grouped_value("direction_pad_up")*0.02;
             o_state.n_factor_gamma+=f_n_grouped_value("direction_pad_right")*0.02;
             o_state.n_factor_gamma-=f_n_grouped_value("direction_pad_left")*0.02;
-            console.log({
-              v__o_l1, 
-              v__o_l1__last
-            })
             let n_summand__n_idx_a_s_image_mode = 0;
             if(
               v__o_l1?.n_nor == 1.0 
@@ -609,7 +709,7 @@ async function startWebcam() {
               if(o_state.n_idx_a_s_image_mode > (o_state.a_s_image_mode.length-1)){
                 o_state.n_idx_a_s_image_mode = 0;
               }
-              console.log(o_state.n_idx_a_s_image_mode)
+              // console.log(o_state.n_idx_a_s_image_mode)
             }
           }
 
@@ -644,6 +744,10 @@ async function startWebcam() {
                 o_gpu_gateway, 
             );
   
+            for(let o_keyboard_key of o_state.a_o_keyboard_key){
+              // needs to be at the end
+              o_keyboard_key.b_down_last = o_keyboard_key?.b_down
+            }
             // Add your WebGL drawing code here to manipulate the video frame
             // gl.drawArrays(gl.TRIANGLES, 0, 6);
         }
@@ -733,55 +837,16 @@ if(o_e.key == ' '){
 
 })
 let f_r_ser_w_cli_o_config = async function(){
+  //r_ser_w_cli // read server , write client
   let o = await f_o_ws_response({s_name_function: "f_s_json_o_config"});
   let o_config = JSON.parse(o.s_json_o_config);
   o_state.o_config = o_config;
 
-  o_state?.o_js__a_o_usb_device._f_render()
+  o_state?.o_js__a_o_usb_device?._f_render?.()
 
   await o
 }
-let f_r_ser_w_cli_a_o_usb_device = async function(){
-     
-  let o2 = await f_o_ws_response({s_name_function: "f_o_command", s_command: 'lsusb'});
-  // console.log(o2)
-  let b_new_device = false;
-  let a_o_usb_device = o2.s_stdout.split('\n').filter(s=>s.includes('Device ')).map(s=>{
-    let [
-      s_prop_bus,
-      s_n_val_bus, 
-      s_prop_device, 
-      s_n_val_device, 
-      s_prop_id, 
-      s_val_vendor_id_product_id, 
-    ] = s.split(' ');
-    if(!o_state.a_o_usb_device.find(o2=>o2?.s_val_vendor_id_product_id == s_val_vendor_id_product_id)){
-      b_new_device = true;
-    }
-    return {
-      s_prop_bus,
-      n_val_bus: parseInt(s_n_val_bus),
-      s_prop_device,
-      n_val_device: parseInt(s_n_val_device),
-      s_prop_id,
-      n_id_vendor : parseInt(`0x${s_val_vendor_id_product_id.split(":").shift()}`, 16),
-      n_id_product : parseInt(`0x${s_val_vendor_id_product_id.split(":").pop()}`, 16),
-      s_val_vendor_id_product_id, 
-      s_lsusbline: s,
-      s_name: s.split(' ').slice(6).join(' ')
-    }
-  })
-  // console.log(o_state.a_o_usb_device)
-  if(
-    b_new_device
-    || 
-    a_o_usb_device.length != o_state.a_o_usb_device.length //ugly and lazy way to check if usbdevice has been unplugged or plugged
-  ){
-    o_state.a_o_usb_device = a_o_usb_device
-    // console.log(o_state.a_o_usb_device)
-    o_state?.o_js__a_o_usb_device._f_render()
-  }
-}
+
 // Replace 'ws://example.com/socket' with the URL of your WebSocket server
 const o_ws = new WebSocket(`ws${(location.protocol == 'https:')?"s":''}://${location.hostname}:${location.port}/ws`);
 
@@ -790,7 +855,6 @@ const o_ws = new WebSocket(`ws${(location.protocol == 'https:')?"s":''}://${loca
 o_ws.addEventListener('open', async function (event) {
     console.log("WebSocket is open now.");
     // let o = await f_o_ws_response({s_name_function: "hello"});
-    f_r_ser_w_cli_a_o_usb_device();
     f_r_ser_w_cli_o_config().then(
       ()=>{
         console.log(o_state.o_config)
@@ -1024,266 +1088,332 @@ document.body.appendChild(
             Object.assign(
               o_state,
               {
-                  o_js__gamepad_controls: {
+                  o_js__o_cursor_virtual: {
+                      f_o_jsh: ()=>{
+                          return {
+                              a_o:[   
+                                  
+                                  {
+                                    class: "o_cursor_virtual", 
+                                    style: [
+                                      `position:fixed`, 
+                                      `left: ${o_state.o_cursor_virtual.o_trn.n_x}px`,
+                                      `top: ${o_state.o_cursor_virtual.o_trn.n_y}px`,
+                                    ].join(';'), 
+                                    a_o: [
+                                      {
+                                        class: "r1", 
+                                      }, 
+                                      {
+                                        class: "r2", 
+                                      },
+                                      {
+                                        class: "r3", 
+                                      }
+                                    ]
+                                  }
+                              ]
+                          }
+                      }
+                  }
+              }
+          
+          ).o_js__o_cursor_virtual,
+
+            Object.assign(
+              o_state,
+              {
+                  o_js__settings: {
                       f_o_jsh: ()=>{
                         return {
-                          b_render: o_state.b_render__o_js__gamepad_controls,
+                          b_render: o_state.b_render__settings,
                           a_o: [
-                            //layer1
-                            // f_o_svg(
-                            //   {
-                            //     "left_stick_x_axis":'left_stick_x_axis',
-                            //     "left_stick_y_axis":'left_stick_y_axis',
-                            //     "right_stick_x_axis":'right_stick_x_axis',
-                            //     "right_stick_y_axis":'right_stick_y_axis',
-                            //     "direction_pad_up":'direction_pad_up',
-                            //     "direction_pad_left":'direction_pad_left',
-                            //     "direction_pad_down":'direction_pad_down',
-                            //     "direction_pad_right":'direction_pad_right',
-                            //     "face_button_bottom":'face_button_bottom',
-                            //     "face_button_right":'face_button_right',
-                            //     "face_button_left":'face_button_left',
-                            //     "face_button_top":'face_button_top',
-                            //     "left_index_finger_button_l1":'left_index_finger_button_l1',
-                            //     "right_index_finger_button_r1":'right_index_finger_button_r1',
-                            //     "left_middle_finger_button_l2":'left_middle_finger_button_l2',
-                            //     "right_middle_finger_button_r2":'right_middle_finger_button_r2',
-                            //     "left_meta1_button":'left_meta1_button',
-                            //     "right_meta1_button":'right_meta1_button',
-                            //     "center_meta1_button": 'center_meta1_button',
-                            //     "left_stick_button_l3":'left_stick_button_l3',
-                            //     "right_stick_button_r3":'right_stick_button_r3',
-                            //     "right_middle_finger_button_r2":'right_middle_finger_button_r2',
-                            //     "left_middle_finger_button_l2":'left_middle_finger_button_l2',
-                            //   },
-                            //   `Layer test`
-                            //  ),
-                            f_o_svg(
+                            {
+                              class: "gamepad_controls", 
+                              a_o: [
+                                //layer1
+                                // f_o_svg(
+                                //   {
+                                //     "left_stick_x_axis":'left_stick_x_axis',
+                                //     "left_stick_y_axis":'left_stick_y_axis',
+                                //     "right_stick_x_axis":'right_stick_x_axis',
+                                //     "right_stick_y_axis":'right_stick_y_axis',
+                                //     "direction_pad_up":'direction_pad_up',
+                                //     "direction_pad_left":'direction_pad_left',
+                                //     "direction_pad_down":'direction_pad_down',
+                                //     "direction_pad_right":'direction_pad_right',
+                                //     "face_button_bottom":'face_button_bottom',
+                                //     "face_button_right":'face_button_right',
+                                //     "face_button_left":'face_button_left',
+                                //     "face_button_top":'face_button_top',
+                                //     "left_index_finger_button_l1":'left_index_finger_button_l1',
+                                //     "right_index_finger_button_r1":'right_index_finger_button_r1',
+                                //     "left_middle_finger_button_l2":'left_middle_finger_button_l2',
+                                //     "right_middle_finger_button_r2":'right_middle_finger_button_r2',
+                                //     "left_meta1_button":'left_meta1_button',
+                                //     "right_meta1_button":'right_meta1_button',
+                                //     "center_meta1_button": 'center_meta1_button',
+                                //     "left_stick_button_l3":'left_stick_button_l3',
+                                //     "right_stick_button_r3":'right_stick_button_r3',
+                                //     "right_middle_finger_button_r2":'right_middle_finger_button_r2',
+                                //     "left_middle_finger_button_l2":'left_middle_finger_button_l2',
+                                //   },
+                                //   `Layer test`
+                                //  ),
+                                f_o_svg(
+                                  {
+                                    "left_stick_x_axis":'',
+                                    "left_stick_y_axis":'Focus (y)',
+                                    "right_stick_x_axis":'',
+                                    "right_stick_y_axis":'move slide (x y)',
+                                    "direction_pad_up":'',
+                                    "direction_pad_left":'',
+                                    "direction_pad_down":'Move slide slow (y)',
+                                    "direction_pad_right":'Move slide slow (x)',
+                                    "face_button_bottom":'Take screenshot',
+                                    "face_button_right":'Record video',
+                                    "face_button_left":'Ask AI (GPT4)',
+                                    "face_button_top":'Focus stack (add image)',
+                                    "left_index_finger_button_l1":'',
+                                    "right_index_finger_button_r1":'Finish focus stack',
+                                    "left_middle_finger_button_l2":'',
+                                    "right_middle_finger_button_r2":'Hold down, switch Layer 2',
+                                    "left_meta1_button":'Reset image manipulation',
+                                    "right_meta1_button":'show controls',
+                                    "center_meta1_button": '',
+                                    "left_stick_button_l3":'',
+                                    "right_stick_button_r3":'',
+                                  },
+                                  `Layer 1`
+                                 ),
+                                 f_o_svg(
+                                  {
+                                    "left_stick_x_axis":'',
+                                    "left_stick_y_axis":'Zoom digial (y)',
+                                    "right_stick_x_axis":'',
+                                    "right_stick_y_axis":'Move digital (x y)',
+                                    "direction_pad_up":'',
+                                    "direction_pad_left":'',
+                                    "direction_pad_down":'Contrast + -',
+                                    "direction_pad_right":'Gamma + -',
+                                    "face_button_bottom":'',
+                                    "face_button_right":'',
+                                    "face_button_left":'',
+                                    "face_button_top":'',
+                                    "left_index_finger_button_l1":'Previous Image mode',
+                                    "right_index_finger_button_r1":'Next Image mode',
+                                    "left_middle_finger_button_l2":'',
+                                    "right_middle_finger_button_r2":'',
+                                    "left_meta1_button":'',
+                                    "right_meta1_button":'',
+                                    "center_meta1_button": '',
+                                    "left_stick_button_l3":'',
+                                    "right_stick_button_r3":'',
+                                  },
+                                  `Layer 2 (Image control)`
+                                 ),
+    
+                              ]
+                            },
+                            Object.assign(
+                              o_state,
                               {
-                                "left_stick_x_axis":'',
-                                "left_stick_y_axis":'Focus (y)',
-                                "right_stick_x_axis":'',
-                                "right_stick_y_axis":'move slide (x y)',
-                                "direction_pad_up":'',
-                                "direction_pad_left":'',
-                                "direction_pad_down":'Move slide slow (y)',
-                                "direction_pad_right":'Move slide slow (x)',
-                                "face_button_bottom":'Take screenshot',
-                                "face_button_right":'Record video',
-                                "face_button_left":'Ask AI (GPT4)',
-                                "face_button_top":'Focus stack (add image)',
-                                "left_index_finger_button_l1":'',
-                                "right_index_finger_button_r1":'Finish focus stack',
-                                "left_middle_finger_button_l2":'',
-                                "right_middle_finger_button_r2":'Hold down, switch Layer 2',
-                                "left_meta1_button":'Reset image manipulation',
-                                "right_meta1_button":'show controls',
-                                "center_meta1_button": '',
-                                "left_stick_button_l3":'',
-                                "right_stick_button_r3":'',
-                              },
-                              `Layer 1`
-                             ),
-                             f_o_svg(
+                                  o_js__s_prompt_image_ai_generic: {
+                                      f_o_jsh: ()=>{
+                                          return {
+                                              class: 'hoverable',
+                                              a_o:[   
+                                                  {
+                                                      innerText: "prompt_for_ai"
+                                                  }, 
+                                                  {
+                                                      s_tag: "input", 
+                                                      type: 'text', 
+                                                      value: o_state.s_prompt_image_ai_generic,
+                                                      oninput: (o_e)=>{
+                                                          o_state.s_prompt_image_ai_generic = o_e.target.value
+                                                      }
+                                                  }
+                                              ]
+                                          }
+                                      }
+                                  }
+                              }
+                          
+                          ).o_js__s_prompt_image_ai_generic,
+                          Object.assign(
+                              o_state,
                               {
-                                "left_stick_x_axis":'',
-                                "left_stick_y_axis":'Zoom digial (y)',
-                                "right_stick_x_axis":'',
-                                "right_stick_y_axis":'Move digital (x y)',
-                                "direction_pad_up":'',
-                                "direction_pad_left":'',
-                                "direction_pad_down":'Contrast + -',
-                                "direction_pad_right":'Gamma + -',
-                                "face_button_bottom":'',
-                                "face_button_right":'',
-                                "face_button_left":'',
-                                "face_button_top":'',
-                                "left_index_finger_button_l1":'Previous Image mode',
-                                "right_index_finger_button_r1":'Next Image mode',
-                                "left_middle_finger_button_l2":'',
-                                "right_middle_finger_button_r2":'',
-                                "left_meta1_button":'',
-                                "right_meta1_button":'',
-                                "center_meta1_button": '',
-                                "left_stick_button_l3":'',
-                                "right_stick_button_r3":'',
-                              },
-                              `Layer 2 (Image control)`
-                             ),
+                                  o_js__s_api_key_openai: {
+                                      f_o_jsh: ()=>{
+                                          return {
+                                              a_o:[   
+                                                  {
+                                                      innerText: "api_key_openai"
+                                                  }, 
+                                                  {
+                                                      s_tag: "input", 
+                                                      type: 'text', 
+                                                      oninput: (o_e)=>{
+                                                          o_state.s_api_key_openai = o_e.target.value
+              
+                                                          clearTimeout(o_state.n_id_timeout)
+                                                          o_state.n_id_timeout = setTimeout( async ()=>{
+                                                              let o = await fetch(
+                                                                  "https://api.openai.com/v1/organizations",
+                                                                  {
+                                                                      headers: {
+                                                                          "Authorization": `Bearer ${o_state.s_api_key_openai}`
+                                                                      }
+                                                                  }    
+                                                              );
+                                                              let b_invalid = false;
+                                                              if(!o.ok){
+                                                                  b_invalid = true;
+                                                              }
+                                                              try {
+                                                                  let o_parsed = await o.json();
+                                                                  await f_o_throw_notification(o_state.o_state__notifire,`valid api key added`, 'success')
+              
+                                                              } catch (error) {
+                                                                  // f_o_throw_notification('api key invalid')
+                                                                  b_invalid = true
+                                                              }
+                                                              if(b_invalid){
+                                                                  await f_o_throw_notification(o_state.o_state__notifire,`invalid api key: ${o_state.s_api_key_openai}!`, 'warning')
+                                                              }
+              
+                                                          },3000)
+                                                      }
+                                                  }
+                                              ]
+                                          }
+                                      }
+                                  }
+                              }
+                          
+                          ).o_js__s_api_key_openai,
+                          ...[
+                              "n_factor_scale",
+                              "n_factor_brightness",
+                              "n_factor_contrast",
+                              "n_factor_gamma",
+                              "n_x_trn_nor",
+                              "n_y_trn_nor",
+                          ].map(s_prop=>{
+                              let s_prop2 = `o_js__${s_prop}`
+                              return Object.assign(
+                                  o_state,
+                                  {
+                                      [s_prop2]: {
+                                          f_o_jsh:()=>{
+                                              return {
+                                                  a_o: [
+                                                      {
+                                                          s_tag: "label", 
+                                                          innerText: s_prop
+                                                      },
+                                                      {
+                                                          s_tag: "input",
+                                                          type: 'range', 
+                                                          step: 0.01, 
+                                                          min: -1,
+                                                          max:3.,
+                                                          value:  o_state[s_prop],
+                                                          oninput: (o_e)=>{
+                                                              let n = parseFloat(o_e.target.value)
+                                                              o_state[s_prop] = n;
+                                                          }
+                                                      }
+                                                  ]
+                                              }
+                                          }
+                                      }
+                                  }
+                              )[s_prop2]
+                          }),
+              
+                            Object.assign(
+                                o_state, 
+                                {
+                                    o_js__a_o_usb_device: {
+                                        f_o_jsh: async  ()=>{
+                                          let o2 = await f_o_ws_response({s_name_function: "f_o_command", s_command: 'lsusb'});
+                                          o_state.a_o_usb_device = o2.s_stdout.split('\n').filter(s=>s.includes('Device ')).map(s=>{
+                                            let [
+                                              s_prop_bus,
+                                              s_n_val_bus, 
+                                              s_prop_device, 
+                                              s_n_val_device, 
+                                              s_prop_id, 
+                                              s_val_vendor_id_product_id, 
+                                            ] = s.split(' ');
 
+                                            return {
+                                              s_prop_bus,
+                                              n_val_bus: parseInt(s_n_val_bus),
+                                              s_prop_device,
+                                              n_val_device: parseInt(s_n_val_device),
+                                              s_prop_id,
+                                              n_id_vendor : parseInt(`0x${s_val_vendor_id_product_id.split(":").shift()}`, 16),
+                                              n_id_product : parseInt(`0x${s_val_vendor_id_product_id.split(":").pop()}`, 16),
+                                              s_val_vendor_id_product_id, 
+                                              s_lsusbline: s,
+                                              s_name: s.split(' ').slice(6).join(' ')
+                                            }
+                                          })
+                                          console.log(o2)
+                                            return {
+                                                class: "a_o_usb_device",
+                                                s_tag: "select", 
+                                                onchange: (o_e)=>{
+                                                  let o_usb_device = o_state.a_o_usb_device.find(o2=>{
+                                                    return o2.s_val_vendor_id_product_id == o_e.target.value
+                                                  });
+                                                  if(o_usb_device){
+                                                    o_state.o_usb_device = o_usb_device
+                                                    // console.log(o_usb_device)
+                                                    o_ws.send(
+                                                      JSON.stringify({
+                                                        s_name_function: "f_switch_usb_device", 
+                                                        n_id_vendor: o_usb_device.n_id_vendor,
+                                                        n_id_product: o_usb_device.n_id_product,
+                                                      })
+                                                    )
+                                                    o_state.o_config.n_id_vendor = o_usb_device.n_id_vendor
+                                                    o_state.o_config.n_id_product = o_usb_device.n_id_product
+                                                    let o = f_o_ws_response({
+                                                      s_name_function: "f_b_write_s_json_o_config", 
+                                                      s_json_o_config: JSON.stringify(o_state.o_config)
+                                                    });
+                                                  }
+                                                },
+                                                a_o: [
+                                                    ...o_state.a_o_usb_device.map(o=>{
+                                                        return {
+                                                            s_tag: "option",
+                                                            value: o.s_val_vendor_id_product_id, 
+                                                            innerText: o.s_name, 
+                                                            ...(
+                                                              (  
+                                                              o_state?.o_config?.n_id_product == o?.n_id_product
+                                                              && o_state?.o_config?.n_id_vendor == o?.n_id_vendor
+                                                            ) ? {selected: true} : {})
+                                                        }
+                                                    })
+                                                ]
+                                            }
+                                        }
+                                    }
+                                }
+                            ).o_js__a_o_usb_device,
                           ]
                         }
                       }
                   }
               }
-          ).o_js__gamepad_controls,
-            Object.assign(
-                o_state,
-                {
-                    o_js__s_prompt_image_ai_generic: {
-                        f_o_jsh: ()=>{
-                            return {
-                                a_o:[   
-                                    {
-                                        innerText: "prompt_for_ai"
-                                    }, 
-                                    {
-                                        s_tag: "input", 
-                                        type: 'text', 
-                                        value: o_state.s_prompt_image_ai_generic,
-                                        oninput: (o_e)=>{
-                                            o_state.s_prompt_image_ai_generic = o_e.target.value
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    }
-                }
-            
-            ).o_js__s_prompt_image_ai_generic,
-            Object.assign(
-                o_state,
-                {
-                    o_js__s_api_key_openai: {
-                        f_o_jsh: ()=>{
-                            return {
-                                a_o:[   
-                                    {
-                                        innerText: "api_key_openai"
-                                    }, 
-                                    {
-                                        s_tag: "input", 
-                                        type: 'text', 
-                                        oninput: (o_e)=>{
-                                            o_state.s_api_key_openai = o_e.target.value
+          ).o_js__settings,
 
-                                            clearTimeout(o_state.n_id_timeout)
-                                            o_state.n_id_timeout = setTimeout( async ()=>{
-                                                let o = await fetch(
-                                                    "https://api.openai.com/v1/organizations",
-                                                    {
-                                                        headers: {
-                                                            "Authorization": `Bearer ${o_state.s_api_key_openai}`
-                                                        }
-                                                    }    
-                                                );
-                                                let b_invalid = false;
-                                                if(!o.ok){
-                                                    b_invalid = true;
-                                                }
-                                                try {
-                                                    let o_parsed = await o.json();
-                                                    await f_o_throw_notification(o_state.o_state__notifire,`valid api key added`, 'success')
-
-                                                } catch (error) {
-                                                    // f_o_throw_notification('api key invalid')
-                                                    b_invalid = true
-                                                }
-                                                if(b_invalid){
-                                                    await f_o_throw_notification(o_state.o_state__notifire,`invalid api key: ${o_state.s_api_key_openai}!`, 'warning')
-                                                }
-
-                                            },3000)
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    }
-                }
-            
-            ).o_js__s_api_key_openai,
-            ...[
-                "n_factor_scale",
-                "n_factor_brightness",
-                "n_factor_contrast",
-                "n_factor_gamma",
-                "n_x_trn_nor",
-                "n_y_trn_nor",
-            ].map(s_prop=>{
-                let s_prop2 = `o_js__${s_prop}`
-                return Object.assign(
-                    o_state,
-                    {
-                        [s_prop2]: {
-                            f_o_jsh:()=>{
-                                return {
-                                    a_o: [
-                                        {
-                                            s_tag: "label", 
-                                            innerText: s_prop
-                                        },
-                                        {
-                                            s_tag: "input",
-                                            type: 'range', 
-                                            step: 0.01, 
-                                            min: -1,
-                                            max:3.,
-                                            value:  o_state[s_prop],
-                                            oninput: (o_e)=>{
-                                                let n = parseFloat(o_e.target.value)
-                                                o_state[s_prop] = n;
-                                            }
-                                        }
-                                    ]
-                                }
-                            }
-                        }
-                    }
-                )[s_prop2]
-            }),
-
-              Object.assign(
-                  o_state, 
-                  {
-                      o_js__a_o_usb_device: {
-                          f_o_jsh: ()=>{
-                              return {
-                                  class: "a_o_usb_device",
-                                  s_tag: "select", 
-                                  onchange: (o_e)=>{
-                                    console.log(o_e.target.value)
-                                    let o_usb_device = o_state.a_o_usb_device.find(o2=>{
-                                      return o2.s_val_vendor_id_product_id == o_e.target.value
-                                    });
-                                    if(o_usb_device){
-                                      o_state.o_usb_device = o_usb_device
-                                      // console.log(o_usb_device)
-                                      o_ws.send(
-                                        JSON.stringify({
-                                          s_name_function: "f_switch_usb_device", 
-                                          n_id_vendor: o_usb_device.n_id_vendor,
-                                          n_id_product: o_usb_device.n_id_product,
-                                        })
-                                      )
-                                      o_state.o_config.n_id_vendor = o_usb_device.n_id_vendor
-                                      o_state.o_config.n_id_product = o_usb_device.n_id_product
-                                      let o = f_o_ws_response({
-                                        s_name_function: "f_b_write_s_json_o_config", 
-                                        s_json_o_config: JSON.stringify(o_state.o_config)
-                                      });
-                                    }
-                                  },
-                                  a_o: [
-                                      ...o_state.a_o_usb_device.map(o=>{
-                                          return {
-                                              s_tag: "option",
-                                              value: o.s_val_vendor_id_product_id, 
-                                              innerText: o.s_name, 
-                                              ...(
-                                                (  
-                                                o_state?.o_config?.n_id_product == o?.n_id_product
-                                                && o_state?.o_config?.n_id_vendor == o?.n_id_vendor
-                                              ) ? {selected: true} : {})
-                                          }
-                                      })
-                                  ]
-                              }
-                          }
-                      }
-                  }
-              ).o_js__a_o_usb_device,
           ]
       }
   )
