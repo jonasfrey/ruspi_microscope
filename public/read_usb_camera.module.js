@@ -62,6 +62,48 @@ class O_keyboard_key{
 }
 
 
+
+class O_input_font_icon{
+  constructor(
+    s_name_input, 
+    s_char, 
+    s_name_font
+  ){
+    this.s_name_input =     s_name_input, 
+    this.s_char =     s_char, 
+    this.s_name_font =     s_name_font
+  }
+}
+
+let f_s_class__from_s_name_font = function(s){
+  return s.replaceAll(":", '-').replaceAll(" ", "_");
+}
+let f_s_path_font_from_s_name_font = function(s){
+  return `'./fonts/${s.replaceAll(':', '_-').replaceAll(" ", "_")}/${s.replaceAll('Controller Font: ', 'Controller - ')}.otf'`
+  
+}
+
+let s_name_font_Controller_Font___Atari_2600 = 'Controller Font: Atari 2600'
+let s_name_font_Controller_Font___Microsoft_Xbox_One = 'Controller Font: Microsoft Xbox One'
+let s_name_font_Controller_Font___Nintendo_Game_Boy = 'Controller Font: Nintendo Game Boy'
+let s_name_font_Controller_Font___Nintendo_GBA = 'Controller Font: Nintendo GBA'
+let s_name_font_Controller_Font___Nintendo_NES = 'Controller Font: Nintendo NES'
+let s_name_font_Controller_Font___Nintendo_SNES = 'Controller Font: Nintendo SNES'
+// i have modified this font and added analog stick x and y axis arrows so <O>, for both L and R analog stick
+let s_name_font_Controller_Font___Nintendo_Switch_modified = 'Controller Font: Nintendo Switch modified'
+let s_name_font_Controller_Font___Sony_PlayStation_4 = 'Controller Font: Sony PlayStation 4'
+
+let a_s_name_font = [
+  s_name_font_Controller_Font___Atari_2600,
+  s_name_font_Controller_Font___Microsoft_Xbox_One,
+  s_name_font_Controller_Font___Nintendo_Game_Boy,
+  s_name_font_Controller_Font___Nintendo_GBA,
+  s_name_font_Controller_Font___Nintendo_NES,
+  s_name_font_Controller_Font___Nintendo_SNES,
+  s_name_font_Controller_Font___Nintendo_Switch_modified,
+  s_name_font_Controller_Font___Sony_PlayStation_4,
+]
+
 let o_state = {
   o_cursor_virtual: {
     o_trn: {
@@ -69,8 +111,183 @@ let o_state = {
       n_y: 0
     }
   },
+        // "left_meta1_button": '(',//nintendo nes font ('select') 
+      // "right_meta1_button": ')',//nintendo nes font ('start') 
   a_o_keyboard_key: [],
-  o_config: {},
+  a_o_input_font_icon: [
+    new O_input_font_icon(
+      "face_button_bottom",
+      'a',
+      s_name_font_Controller_Font___Sony_PlayStation_4
+    ),
+    new O_input_font_icon(
+      "face_button_right",
+      'b',
+      s_name_font_Controller_Font___Sony_PlayStation_4
+    ),
+    new O_input_font_icon(
+      "face_button_top",
+      'y',
+      s_name_font_Controller_Font___Sony_PlayStation_4
+    ),
+    new O_input_font_icon(
+      "face_button_left",
+      'x',
+      s_name_font_Controller_Font___Sony_PlayStation_4
+    ),
+    new O_input_font_icon(
+      "right_index_finger_button_r1",
+      '}',
+      s_name_font_Controller_Font___Sony_PlayStation_4
+    ),
+    new O_input_font_icon(
+      "right_middle_finger_button_r2",
+      ']',
+      s_name_font_Controller_Font___Sony_PlayStation_4
+    ),
+    new O_input_font_icon(
+      "left_index_finger_button_l1",
+      '{',
+      s_name_font_Controller_Font___Sony_PlayStation_4
+    ),
+    new O_input_font_icon(
+      "left_middle_finger_button_l2",
+      '[',
+      s_name_font_Controller_Font___Sony_PlayStation_4
+    ),
+    new O_input_font_icon(
+      "left_stick_button_l3",
+      '<',
+      s_name_font_Controller_Font___Nintendo_Switch_modified
+    ),
+    new O_input_font_icon(
+      "right_stick_button_r3",
+      '>',
+      s_name_font_Controller_Font___Nintendo_Switch_modified
+    ),
+    new O_input_font_icon(
+      "left_stick_x_axis",
+      'i',
+      s_name_font_Controller_Font___Nintendo_Switch_modified
+    ),
+    new O_input_font_icon(
+      "left_stick_y_axis",
+      'j',
+      s_name_font_Controller_Font___Nintendo_Switch_modified
+    ),
+    new O_input_font_icon(
+      "right_stick_x_axis",
+      'k',
+      s_name_font_Controller_Font___Nintendo_Switch_modified
+    ),
+    new O_input_font_icon(
+      "right_stick_y_axis",
+      'l',
+      s_name_font_Controller_Font___Nintendo_Switch_modified
+    ),
+    new O_input_font_icon(
+      "left_meta1_button",
+      'v',
+      s_name_font_Controller_Font___Nintendo_NES
+    ),
+    new O_input_font_icon(
+      "center_meta1_button",
+      'g', //  se switch 
+      s_name_font_Controller_Font___Nintendo_NES,
+    )
+    , new O_input_font_icon(
+      "right_meta1_button",
+      'm',
+      s_name_font_Controller_Font___Nintendo_NES
+    ),
+    new O_input_font_icon(
+      "direction_pad_up",
+      'w',
+      s_name_font_Controller_Font___Sony_PlayStation_4
+    ),
+    new O_input_font_icon(
+      "direction_pad_down",
+      'x',
+      s_name_font_Controller_Font___Sony_PlayStation_4
+    ),
+    new O_input_font_icon(
+      "direction_pad_right",
+      'd',
+      s_name_font_Controller_Font___Sony_PlayStation_4
+    ),
+    new O_input_font_icon(
+      "direction_pad_left",
+      'a',
+      s_name_font_Controller_Font___Sony_PlayStation_4
+    ),
+    new O_input_font_icon(
+      "direction_pad_values",
+      '',
+      s_name_font_Controller_Font___Sony_PlayStation_4
+    ),
+  ],
+  o_config: {
+
+    a_o_s_name_input_s_name_action: [
+      {
+        s_name_input: 'move_slide_x', 
+        s_name_action: 'right_stick_x_axis', 
+        b_invert: false,
+      },
+      {
+        s_name_input: 'move_slide_y', 
+        s_name_action: 'right_stick_y_axis', 
+        b_invert: false,
+      },
+      {
+        s_name_input: 'move_focus', 
+        s_name_action: 'left_stick_y_axis', 
+        b_invert: false,
+      },
+      {
+        s_name_input: 'move_slide_single_step_x_plus', 
+        s_name_action: 'direction_pad_right', 
+        b_invert: false,
+      },
+      {
+        s_name_input: 'move_slide_single_step_x_minus', 
+        s_name_action: 'direction_pad_left', 
+        b_invert: false,
+      },
+      {
+        s_name_input: 'move_slide_single_step_y_plus', 
+        s_name_action: 'direction_pad_up', 
+        b_invert: false,
+      },
+      {
+        s_name_input: 'move_slide_single_step_y_minus', 
+        s_name_action: 'direction_pad_down', 
+        b_invert: false,
+      },
+      {
+        s_name_input: 'right_meta1_button', 
+        s_name_action: 'toggle_settings', 
+        b_invert: false,
+      },
+      {
+        s_name_input: 'left_meta1_button', 
+        s_name_action: 'reset_image_manipulation', 
+        b_invert: false,
+      },
+      {
+        s_name_input: 'asdf', 
+        s_name_action: 'asdf', 
+        b_invert: false,
+      },
+      {
+        s_name_input: 'asdf', 
+        s_name_action: 'asdf', 
+        b_invert: false,
+      },
+
+
+    ]
+  },
   n_idx_a_s_image_mode: 5,
   a_s_image_mode: a_s_image_mode,
   n_fps: 24,
@@ -131,7 +348,7 @@ window.addEventListener('mousemove', (o_e)=>{
   o_state.o_cursor_virtual.o_trn.n_x = o_e.clientX;
   o_state.o_cursor_virtual.o_trn.n_y = o_e.clientY;
   o_state?.o_js__o_cursor_virtual._f_render();
-  console.log(o_e.target)
+  // console.log(o_e.target)
   Array.from(document.querySelectorAll('.hoverable')).map(o=>{
     o.classList.remove("hovered")
     return o
@@ -151,6 +368,19 @@ o_variables.n_rem_padding_interactive_elements = 0.5; // adjust padding for inte
 window.o_variables = o_variables
 f_add_css(
   `
+  ${a_s_name_font.map(s=>{
+    return `
+      @font-face {
+        font-family: '${s}';
+        src: url(${f_s_path_font_from_s_name_font(s)}) format('opentype');
+      }
+      .${f_s_class__from_s_name_font(s)}{
+        font-family: '${s}';
+      }
+    `
+  }).join('\n')}
+
+
   .hoverable {
       display: flex;
       align-items: center;
@@ -588,7 +818,7 @@ async function startWebcam() {
   let n_ms_delta_max = 1000/o_state.n_fps;
   let n_ms_last = 0;
   let n_c = 0;
-    function updateTexture() {
+    function f_render() {
       n_c +=1;
       if(n_c == 100){
         f_resize_canvas()
@@ -597,6 +827,13 @@ async function startWebcam() {
       let n_ms_delta = n_ms - n_ms_last;
       if(n_ms_delta > n_ms_delta_max){
         if (o_el_vid.readyState >= o_el_vid.HAVE_CURRENT_DATA) {
+          let a_o_el_under_cursor_virtual = Array.from(document.querySelectorAll("input")).filter(o=>{
+
+              let o2 = (o.getBoundingClientRect());
+              return (o_state.o_cursor_virtual.o_trn.n_x >= o2.left && o_state.o_cursor_virtual.o_trn.n_y >= o2.top)
+                  && (o_state.o_cursor_virtual.o_trn.n_x <= o2.left+o2.width && o_state.o_cursor_virtual.o_trn.n_y <= o2.top+o2.height )
+          });
+          console.log(a_o_el_under_cursor_virtual)
           // process input from controller 
           let v_o_l2 = (o_state?.v_o_input_device?.a_o_input_sensor?.find(o=> o.s_name == "left_middle_finger_button_l2"));
 
@@ -615,6 +852,19 @@ async function startWebcam() {
           for(let o_keyboard_key of o_state.a_o_keyboard_key){
             if(o_keyboard_key.s_name == 'Escape'){
               v_o_keyboard_key__esc = o_keyboard_key
+            }
+            if(
+              o_keyboard_key.s_name == 'y'
+              && o_keyboard_key?.b_down != o_keyboard_key?.b_down_last
+            ){
+              let s_event = (o_keyboard_key?.b_down) ? 'click': 'mouseup';
+              var o_event = new MouseEvent(s_event, {
+                  bubbles: true,
+                  cancelable: true,
+                  view: window
+              });
+              console.log(o_event)
+              a_o_el_under_cursor_virtual.forEach(o=>{o.dispatchEvent(o_event); o.click()})
             }
             let n_idx = [
               'j', 'l',// x axis - +
@@ -656,7 +906,6 @@ async function startWebcam() {
           //   return o
           // });
 
-          o_state.o_js__o_cursor_virtual._f_render()
 
           if(
             (v_o__right_meta1_button?.n_nor == 1.0
@@ -744,6 +993,9 @@ async function startWebcam() {
                 o_gpu_gateway, 
             );
   
+            o_state.o_js__o_cursor_virtual._f_render()
+            
+
             for(let o_keyboard_key of o_state.a_o_keyboard_key){
               // needs to be at the end
               o_keyboard_key.b_down_last = o_keyboard_key?.b_down
@@ -753,11 +1005,11 @@ async function startWebcam() {
         }
         n_ms_last = n_ms;
       }
-      requestAnimationFrame(updateTexture);
+      requestAnimationFrame(f_render);
 
   }
   
-  updateTexture();
+  f_render();
   f_resize_canvas();
   f_resize_canvas();
 }
@@ -970,7 +1222,12 @@ window.addEventListener('resize',()=>{
 });
 
 
-startWebcam();
+try{
+
+  startWebcam();
+}catch(o_e){
+  console.error(o_e)
+}
 f_resize_canvas()
 
 
@@ -1079,9 +1336,25 @@ let f_o_svg = function(
 document.body.appendChild(
   await f_o_html__and_make_renderable(
       {
+          b_render: (true), //'debug' fonts, show all fonts
           s_tag: 'div', 
+          style: "font-size: 3rem",
           class: "app inputs",
           a_o: [
+            ...o_state.a_o_input_font_icon.map(o=>{
+              return {
+                style: 'display:flex;flex-direction:row',
+
+                a_o: [
+                  ...a_s_name_font.map(s=>{
+                    return {
+                      class: f_s_class__from_s_name_font(s), 
+                      innerText: o.s_char,
+                    }
+                  })
+                ]
+              }
+            }),
             f_o_js__notifire( 
                 o_state.o_state__notifire
             ), 
@@ -1120,6 +1393,8 @@ document.body.appendChild(
           
           ).o_js__o_cursor_virtual,
 
+
+
             Object.assign(
               o_state,
               {
@@ -1128,6 +1403,39 @@ document.body.appendChild(
                         return {
                           b_render: o_state.b_render__settings,
                           a_o: [
+
+                            // {
+                            //   class: 'control_mapping', 
+                            //   a_o: [
+                                
+                            //       Object.assign(
+                            //         o_state, 
+                            //         {
+                            //           o_js__control_mapping_overlay: {
+                            //             f_o_jsh:()=>{
+                            //               return {
+                            //                   a_o: [
+                            //                     {
+                            //                       innerText: "Press any input to assign it to selected action"
+                            //                     }
+                            //                   ]
+                            //               }
+                            //             }
+                            //           }
+                            //         }
+                            //       ).o_js__control_mapping_overlay,
+                            //     ...o_state.o_config.a_o_s_name_input_s_name_action.map(o=>{
+                            //       return {
+                            //         a_o: [
+                            //           {
+                            //             innerText: o.s_name_action
+                            //           }, 
+                            //           f_o_jsh__keyicons(o.s_name_input)
+                            //         ]
+                            //       }
+                            //     })
+                            //   ]
+                            // }, 
                             {
                               class: "gamepad_controls", 
                               a_o: [
