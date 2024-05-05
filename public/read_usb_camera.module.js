@@ -62,7 +62,6 @@ class O_keyboard_key{
 }
 
 
-
 class O_input_font_icon{
   constructor(
     s_name_input, 
@@ -72,6 +71,19 @@ class O_input_font_icon{
     this.s_name_input =     s_name_input, 
     this.s_char =     s_char, 
     this.s_name_font =     s_name_font
+  }
+}
+class O_input_action{
+  constructor(
+    s_name_action, 
+    s_name_input__controller, 
+    s_name_char_keyboard, 
+    v_b_invert_axis
+  ){
+    this.s_name_action = s_name_action, 
+    this.s_name_input__controller = s_name_input__controller, 
+    this.s_name_char_keyboard = s_name_char_keyboard, 
+    this.v_b_invert_axis = v_b_invert_axis
   }
 }
 
@@ -105,6 +117,7 @@ let a_s_name_font = [
 ]
 
 let o_state = {
+  b_webcam_available: false,
   o_cursor_virtual: {
     o_trn: {
       n_x: 0,
@@ -117,42 +130,42 @@ let o_state = {
   a_o_input_font_icon: [
     new O_input_font_icon(
       "face_button_bottom",
-      'a',
-      s_name_font_Controller_Font___Sony_PlayStation_4
-    ),
-    new O_input_font_icon(
-      "face_button_right",
-      'b',
-      s_name_font_Controller_Font___Sony_PlayStation_4
-    ),
-    new O_input_font_icon(
-      "face_button_top",
-      'y',
-      s_name_font_Controller_Font___Sony_PlayStation_4
-    ),
-    new O_input_font_icon(
-      "face_button_left",
       'x',
       s_name_font_Controller_Font___Sony_PlayStation_4
     ),
     new O_input_font_icon(
-      "right_index_finger_button_r1",
-      '}',
+      "face_button_right",
+      'c',
       s_name_font_Controller_Font___Sony_PlayStation_4
     ),
     new O_input_font_icon(
-      "right_middle_finger_button_r2",
+      "face_button_top",
+      't',
+      s_name_font_Controller_Font___Sony_PlayStation_4
+    ),
+    new O_input_font_icon(
+      "face_button_left",
+      's',
+      s_name_font_Controller_Font___Sony_PlayStation_4
+    ),
+    new O_input_font_icon(
+      "right_index_finger_button_r1",
       ']',
       s_name_font_Controller_Font___Sony_PlayStation_4
     ),
     new O_input_font_icon(
+      "right_middle_finger_button_r2",
+      '}',
+      s_name_font_Controller_Font___Sony_PlayStation_4
+    ),
+    new O_input_font_icon(
       "left_index_finger_button_l1",
-      '{',
+      '[',
       s_name_font_Controller_Font___Sony_PlayStation_4
     ),
     new O_input_font_icon(
       "left_middle_finger_button_l2",
-      '[',
+      '{',
       s_name_font_Controller_Font___Sony_PlayStation_4
     ),
     new O_input_font_icon(
@@ -167,57 +180,57 @@ let o_state = {
     ),
     new O_input_font_icon(
       "left_stick_x_axis",
-      'i',
+      'I',
       s_name_font_Controller_Font___Nintendo_Switch_modified
     ),
     new O_input_font_icon(
       "left_stick_y_axis",
-      'j',
+      'J',
       s_name_font_Controller_Font___Nintendo_Switch_modified
     ),
     new O_input_font_icon(
       "right_stick_x_axis",
-      'k',
+      'K',
       s_name_font_Controller_Font___Nintendo_Switch_modified
     ),
     new O_input_font_icon(
       "right_stick_y_axis",
-      'l',
+      'L',
       s_name_font_Controller_Font___Nintendo_Switch_modified
     ),
     new O_input_font_icon(
       "left_meta1_button",
-      'v',
-      s_name_font_Controller_Font___Nintendo_NES
+      '{',
+      s_name_font_Controller_Font___Nintendo_GBA
     ),
     new O_input_font_icon(
       "center_meta1_button",
-      'g', //  se switch 
-      s_name_font_Controller_Font___Nintendo_NES,
+      'h',
+      s_name_font_Controller_Font___Nintendo_Switch_modified,
     )
     , new O_input_font_icon(
       "right_meta1_button",
-      'm',
-      s_name_font_Controller_Font___Nintendo_NES
+      '}',
+      s_name_font_Controller_Font___Nintendo_GBA
     ),
     new O_input_font_icon(
       "direction_pad_up",
-      'w',
+      'W',
       s_name_font_Controller_Font___Sony_PlayStation_4
     ),
     new O_input_font_icon(
       "direction_pad_down",
-      'x',
+      'X',
       s_name_font_Controller_Font___Sony_PlayStation_4
     ),
     new O_input_font_icon(
       "direction_pad_right",
-      'd',
+      'D',
       s_name_font_Controller_Font___Sony_PlayStation_4
     ),
     new O_input_font_icon(
       "direction_pad_left",
-      'a',
+      'A',
       s_name_font_Controller_Font___Sony_PlayStation_4
     ),
     new O_input_font_icon(
@@ -227,63 +240,119 @@ let o_state = {
     ),
   ],
   o_config: {
+    o_input_action: null,
+    a_o_input_action: [
+      new O_input_action(
+        'move_slide_x_plus', 
+        'right_stick_x_axis', 
+        'l',
+        false,
+      ),
+      new O_input_action(
+        'move_slide_x_minus',
+        'right_stick_x_axis', 
+         'j', 
+         false,
+       ),
+      new O_input_action(
+        'move_slide_y_plus',
+        'right_stick_y_axis', 
+        'i', 
+        false,
+      ),
+      new O_input_action(
+        'move_slide_y_minus',
+        'right_stick_y_axis', 
+         'k', 
+         false,
+       ),
+      new O_input_action(
+        'move_focus_plus',
+        'left_stick_y_axis', 
+        'o', 
+        false,
+      ),
+      new O_input_action(
+        'move_focus_minus',
+        'left_stick_y_axis', 
+         'u',
+         false,
+       ),
+      new O_input_action(
+        'move_slide_single_step_x_plus', 
+        'direction_pad_right', 
+        false,
+      ),
+      new O_input_action(
+        'move_slide_single_step_x_minus', 
+       'direction_pad_left', 
+        false,
+      ),
+      new O_input_action(
+        'move_slide_single_step_y_plus', 
+       'direction_pad_up', 
+        false,
+      ),
+      new O_input_action(
+        'move_slide_single_step_y_minus', 
+       'direction_pad_down', 
+        false,
+      ),
+      new O_input_action(
+        'toggle_settings', 
+        'right_meta1_button', 
+        'escape',
+        false,
+      ),
+      new O_input_action(
+        'hold_down_toggle_image_control', 
+        'left_middle_finger_button_l2', 
+        'escape',
+        false,
+      ),
+      new O_input_action(
+       'reset_image_manipulation', 
+        'left_meta1_button', 
+        'r',
+        false,
+      ),
+      new O_input_action(
+        'move_digital_x_plus', 
+        'right_stick_x_axis', 
+        'd',
+        false,
+      ),
+      new O_input_action(
+        'move_digital_x_minus', 
+        'right_stick_x_axis', 
+        'a',
+        false,
+      ),
 
-    a_o_s_name_input_s_name_action: [
-      {
-        s_name_input: 'move_slide_x', 
-        s_name_action: 'right_stick_x_axis', 
-        b_invert: false,
-      },
-      {
-        s_name_input: 'move_slide_y', 
-        s_name_action: 'right_stick_y_axis', 
-        b_invert: false,
-      },
-      {
-        s_name_input: 'move_focus', 
-        s_name_action: 'left_stick_y_axis', 
-        b_invert: false,
-      },
-      {
-        s_name_input: 'move_slide_single_step_x_plus', 
-        s_name_action: 'direction_pad_right', 
-        b_invert: false,
-      },
-      {
-        s_name_input: 'move_slide_single_step_x_minus', 
-        s_name_action: 'direction_pad_left', 
-        b_invert: false,
-      },
-      {
-        s_name_input: 'move_slide_single_step_y_plus', 
-        s_name_action: 'direction_pad_up', 
-        b_invert: false,
-      },
-      {
-        s_name_input: 'move_slide_single_step_y_minus', 
-        s_name_action: 'direction_pad_down', 
-        b_invert: false,
-      },
-      {
-        s_name_input: 'right_meta1_button', 
-        s_name_action: 'toggle_settings', 
-        b_invert: false,
-      },
-      {
-        s_name_input: 'left_meta1_button', 
-        s_name_action: 'reset_image_manipulation', 
-        b_invert: false,
-      },
-      {
-        s_name_input: 'asdf', 
-        s_name_action: 'asdf', 
-        b_invert: false,
-      },
-      {
-        s_name_input: 'asdf', 
-        s_name_action: 'asdf', 
-        b_invert: false,
-      },
+      new O_input_action(
+        'move_digital_y_plus', 
+        'right_stick_y_axis', 
+        'w',
+        false,
+      ),
+      new O_input_action(
+        'move_digital_y_minus', 
+        'right_stick_y_axis', 
+        's',
+        false,
+      ),
+      new O_input_action(
+        'zoom_digital_plus', 
+        'left_stick_y_axis', 
+        'e',
+        false,
+      ),
+      new O_input_action(
+        'zoom_digital_plus', 
+        'left_stick_y_axis', 
+        'q',
+        false,
+      ),
 
 
     ]
@@ -429,6 +498,12 @@ f_add_css(
       aspect-ratio:2/1;
       position:relative;
       background: rgba(22,22,22,0.8);
+  }
+  .keyboard_char {
+      padding: 1rem;
+      border: 2px solid white;
+      border-radius: 10px;
+      box-shadow: 6px 3px 0px #858585;
   }
   .gamepad_controls .layer{
     font-size:2rem;
@@ -796,10 +871,11 @@ let f_n_signed_nor_with_threshhold = function(
   return n_tmp
 }
 window.o_state = o_state
-async function startWebcam() {
+let f_try_start_webcam = async function(){
   if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
-    console.log("enumerateDevices() not supported.");
-    return;
+    console.log("enumerateDevices() not supported, therefore cannot access webcam");
+    o_state.b_webcam_available = false;
+    return
   }
 
   try {
@@ -807,10 +883,18 @@ async function startWebcam() {
       video: { width: 1920, height: 1080 }
     });
     o_el_vid.srcObject = stream;
+    o_state.b_webcam_available = true
+    return 
 
   } catch (error) {
     console.error('Error accessing the webcam:', error);
+    o_state.b_webcam_available = false;
+    return 
   }
+}
+async function f_start_render_loop() {
+
+  await f_try_start_webcam();
 
   let gl = o_gpu_gateway.o_ctx;
 
@@ -826,14 +910,19 @@ async function startWebcam() {
       let n_ms = window.performance.now();
       let n_ms_delta = n_ms - n_ms_last;
       if(n_ms_delta > n_ms_delta_max){
-        if (o_el_vid.readyState >= o_el_vid.HAVE_CURRENT_DATA) {
+        if (
+          (o_state.b_webcam_available && 
+          o_el_vid.readyState >= o_el_vid.HAVE_CURRENT_DATA)
+          || !o_state.b_webcam_available
+          ) {
+
           let a_o_el_under_cursor_virtual = Array.from(document.querySelectorAll("input")).filter(o=>{
 
               let o2 = (o.getBoundingClientRect());
               return (o_state.o_cursor_virtual.o_trn.n_x >= o2.left && o_state.o_cursor_virtual.o_trn.n_y >= o2.top)
                   && (o_state.o_cursor_virtual.o_trn.n_x <= o2.left+o2.width && o_state.o_cursor_virtual.o_trn.n_y <= o2.top+o2.height )
           });
-          console.log(a_o_el_under_cursor_virtual)
+          // console.log(a_o_el_under_cursor_virtual)
           // process input from controller 
           let v_o_l2 = (o_state?.v_o_input_device?.a_o_input_sensor?.find(o=> o.s_name == "left_middle_finger_button_l2"));
 
@@ -848,125 +937,164 @@ async function startWebcam() {
           let v_o__left_meta1_button_last = (o_state?.v_o_input_device__last?.a_o_input_sensor?.find(o=> o.s_name == "left_meta1_button"));
 
           let v_o_keyboard_key__esc = null;
-
-          for(let o_keyboard_key of o_state.a_o_keyboard_key){
-            if(o_keyboard_key.s_name == 'Escape'){
-              v_o_keyboard_key__esc = o_keyboard_key
+          let b_remap_input_action = o_state.o_config.o_input_action != null;
+          if(b_remap_input_action){
+            // re-map an input 
+            let a_o_keyboard_key_not_same_as_last = o_state.a_o_keyboard_key.filter(o=>{
+              return o.b_down != o.b_down_last
+            });
+            let o_keyboard_key = a_o_keyboard_key_not_same_as_last?.[0];
+            if(o_keyboard_key){
+              o_state.o_config.o_input_action.s_name_char_keyboard = o_keyboard_key.s_name;
+              o_state.o_config.o_input_action = null;
+              o_state.o_js__a_o_input_mapping._f_render(); 
             }
-            if(
-              o_keyboard_key.s_name == 'y'
-              && o_keyboard_key?.b_down != o_keyboard_key?.b_down_last
-            ){
-              let s_event = (o_keyboard_key?.b_down) ? 'click': 'mouseup';
-              var o_event = new MouseEvent(s_event, {
-                  bubbles: true,
-                  cancelable: true,
-                  view: window
-              });
-              console.log(o_event)
-              a_o_el_under_cursor_virtual.forEach(o=>{o.dispatchEvent(o_event); o.click()})
-            }
-            let n_idx = [
-              'j', 'l',// x axis - +
-              'i', 'k',// y axis - +
-              'u', 'o',// z axis - +
-            ].indexOf(o_keyboard_key.s_name)
-            if(n_idx != -1){
-              let s_axis = ['x', 'y', 'z'][parseInt(n_idx/2)]
-              let b_direction = n_idx%2 == 0
-              let n_sign = (b_direction) ? -1: 1;
-  
-              if(o_keyboard_key?.b_down){
-  
-                o_state.o_cursor_virtual.o_trn[`n_${s_axis}`] += 10 * n_sign;
-                console.log(o_state.o_cursor_virtual.o_trn[`n_${s_axis}`])
+            let a_o_input_sensor_not_same_as_last = o_state.v_o_input_device.a_o_input_sensor.map(
+              (o_input_sensor, n_idx)=>{
+                let o_input_sensor__last = o_state.v_o_input_device__last.a_o_input_sensor[n_idx]
+                let n_nor_diff = o_input_sensor.n_nor - o_input_sensor__last.n_nor;
+                if(n_nor_diff == 0){return false}
+                return {
+                  n_nor_diff,
+                  o_input_sensor
+                }
+            })
+            .filter(v=>v)
+            .sort(
+              (o1, o2)=>{
+               return o2.n_nor_diff-o1.n_nor_diff
               }
-  
+            );
+              // console.log(a_o_input_sensor_not_same_as_last)
+            let o_input_sensor = a_o_input_sensor_not_same_as_last?.[0]?.o_input_sensor;
+            if(o_input_sensor){
+              o_state.o_config.o_input_action.s_name_input__controller = o_input_sensor.s_name;
+              // console.log(o_state.o_config.o_input_action)
+              o_state.o_config.o_input_action = null;
+              o_state.o_js__a_o_input_mapping._f_render(); 
+            }
+          }
+
+          if(!b_remap_input_action){
+
+            for(let o_keyboard_key of o_state.a_o_keyboard_key){
+              if(o_keyboard_key.s_name == 'Escape'){
+                v_o_keyboard_key__esc = o_keyboard_key
+              }
               if(
-                o_keyboard_key?.b_down == o_keyboard_key?.b_down_last
-                ){
-                continue
+                o_keyboard_key.s_name == 'y'
+                && o_keyboard_key?.b_down != o_keyboard_key?.b_down_last
+              ){
+                let s_event = (o_keyboard_key?.b_down) ? 'click': 'mouseup';
+                var o_event = new MouseEvent(s_event, {
+                    bubbles: true,
+                    cancelable: true,
+                    view: window
+                });
+                console.log(o_event)
+                a_o_el_under_cursor_virtual.forEach(o=>{o.dispatchEvent(o_event); o.click()})
+              }
+              let n_idx = [
+                'j', 'l',// x axis - +
+                'i', 'k',// y axis - +
+                'u', 'o',// z axis - +
+              ].indexOf(o_keyboard_key.s_name)
+              if(n_idx != -1){
+                let s_axis = ['x', 'y', 'z'][parseInt(n_idx/2)]
+                let b_direction = n_idx%2 == 0
+                let n_sign = (b_direction) ? -1: 1;
+    
+                if(o_keyboard_key?.b_down){
+    
+                  o_state.o_cursor_virtual.o_trn[`n_${s_axis}`] += 10 * n_sign;
+                  console.log(o_state.o_cursor_virtual.o_trn[`n_${s_axis}`])
+                }
+    
+                if(
+                  o_keyboard_key?.b_down == o_keyboard_key?.b_down_last
+                  ){
+                  continue
+                }
+    
+                let o_js = {
+                  s_name_function:'f_control_stepper_motor',
+                  s_axis,
+                  n_rpm_nor: ((o_keyboard_key?.b_down) ? 0.3: 0.0) ,
+                  b_direction
+                }
+                // console.log(o_js)
+                
+                o_ws.send(JSON.stringify(o_js))
               }
   
-              let o_js = {
-                s_name_function:'f_control_stepper_motor',
-                s_axis,
-                n_rpm_nor: ((o_keyboard_key?.b_down) ? 0.3: 0.0) ,
-                b_direction
+  
+            }
+            // Array.from(document.querySelectorAll('.hoverable')).map(o=>{
+            //   o.classList.remove("hovered")
+            //   return o
+            // });
+  
+  
+            if(
+              (v_o__right_meta1_button?.n_nor == 1.0
+              && v_o__right_meta1_button_last?.n_nor == 0.0)
+              || (v_o_keyboard_key__esc?.b_down &&  (v_o_keyboard_key__esc?.b_down != v_o_keyboard_key__esc?.b_down_last))
+              ){
+                o_state.b_render__settings = !o_state.b_render__settings
+                if(!o_state.o_js__settings._b_rendering){
+                  o_state.o_js__settings._f_render()
+                  console.log('asdf')
+                }
               }
-              // console.log(o_js)
               
-              o_ws.send(JSON.stringify(o_js))
-            }
-
-
-          }
-          // Array.from(document.querySelectorAll('.hoverable')).map(o=>{
-          //   o.classList.remove("hovered")
-          //   return o
-          // });
-
-
-          if(
-            (v_o__right_meta1_button?.n_nor == 1.0
-            && v_o__right_meta1_button_last?.n_nor == 0.0)
-            || (v_o_keyboard_key__esc?.b_down &&  (v_o_keyboard_key__esc?.b_down != v_o_keyboard_key__esc?.b_down_last))
-            ){
-              o_state.b_render__settings = !o_state.b_render__settings
-              if(!o_state.o_js__settings._b_rendering){
-                o_state.o_js__settings._f_render()
+            if(v_o_l2?.n_nor == 1.0){
+              //layer 2 camera control
+              
+              let n_nor_right_stick_x_axis =  f_n_signed_nor_with_threshhold( "right_stick_x_axis", 0.0)
+              let n_nor_right_stick_y_axis =  f_n_signed_nor_with_threshhold( "right_stick_y_axis", 0.0)
+              let n_nor_left_stick_y_axis =  f_n_signed_nor_with_threshhold( "left_stick_y_axis", 0.0)
+              let n_nor_left_stick_x_axis =  f_n_signed_nor_with_threshhold( "left_stick_x_axis", 0.0)
+              o_state.o_cursor_virtual.o_trn.n_x += n_nor_left_stick_x_axis*10;
+              o_state.o_cursor_virtual.o_trn.n_y += n_nor_left_stick_y_axis*10;
+              o_state.o_js__o_cursor_virtual._f_render();
+  
+              o_state.n_x_trn_nor+=n_nor_right_stick_x_axis*0.02;
+              o_state.n_y_trn_nor+=n_nor_right_stick_y_axis*0.02;
+              o_state.n_factor_scale+=n_nor_left_stick_y_axis*-0.02;
+              o_state.n_factor_contrast-=f_n_grouped_value("direction_pad_down")*0.02;
+              o_state.n_factor_contrast+=f_n_grouped_value("direction_pad_up")*0.02;
+              o_state.n_factor_gamma+=f_n_grouped_value("direction_pad_right")*0.02;
+              o_state.n_factor_gamma-=f_n_grouped_value("direction_pad_left")*0.02;
+              let n_summand__n_idx_a_s_image_mode = 0;
+              if(
+                v__o_l1?.n_nor == 1.0 
+                && v__o_l1__last?.n_nor == 0.0
+              ){
+                n_summand__n_idx_a_s_image_mode = -1
+              }
+              if(
+                v__o_r1?.n_nor == 1.0 
+                && v__o_r1__last?.n_nor == 0.0
+              ){
+                n_summand__n_idx_a_s_image_mode = +1
+              }
+              if(n_summand__n_idx_a_s_image_mode != 0){
+                o_state.n_idx_a_s_image_mode = (o_state.n_idx_a_s_image_mode+n_summand__n_idx_a_s_image_mode);
+                if(o_state.n_idx_a_s_image_mode < 0){
+                  o_state.n_idx_a_s_image_mode = o_state.a_s_image_mode.length-1
+                }
+                if(o_state.n_idx_a_s_image_mode > (o_state.a_s_image_mode.length-1)){
+                  o_state.n_idx_a_s_image_mode = 0;
+                }
+                // console.log(o_state.n_idx_a_s_image_mode)
               }
             }
-            
-          o_state.b_render__settings
-          if(v_o_l2?.n_nor == 1.0){
-            //layer 2 camera control
-            
-            let n_nor_right_stick_x_axis =  f_n_signed_nor_with_threshhold( "right_stick_x_axis", 0.0)
-            let n_nor_right_stick_y_axis =  f_n_signed_nor_with_threshhold( "right_stick_y_axis", 0.0)
-            let n_nor_left_stick_y_axis =  f_n_signed_nor_with_threshhold( "left_stick_y_axis", 0.0)
-            let n_nor_left_stick_x_axis =  f_n_signed_nor_with_threshhold( "left_stick_x_axis", 0.0)
-            o_state.o_cursor_virtual.o_trn.n_x += n_nor_left_stick_x_axis*10;
-            o_state.o_cursor_virtual.o_trn.n_y += n_nor_left_stick_y_axis*10;
-            o_state.o_js__o_cursor_virtual._f_render();
-
-            o_state.n_x_trn_nor+=n_nor_right_stick_x_axis*0.02;
-            o_state.n_y_trn_nor+=n_nor_right_stick_y_axis*0.02;
-            o_state.n_factor_scale+=n_nor_left_stick_y_axis*-0.02;
-            o_state.n_factor_contrast-=f_n_grouped_value("direction_pad_down")*0.02;
-            o_state.n_factor_contrast+=f_n_grouped_value("direction_pad_up")*0.02;
-            o_state.n_factor_gamma+=f_n_grouped_value("direction_pad_right")*0.02;
-            o_state.n_factor_gamma-=f_n_grouped_value("direction_pad_left")*0.02;
-            let n_summand__n_idx_a_s_image_mode = 0;
-            if(
-              v__o_l1?.n_nor == 1.0 
-              && v__o_l1__last?.n_nor == 0.0
-            ){
-              n_summand__n_idx_a_s_image_mode = -1
-            }
-            if(
-              v__o_r1?.n_nor == 1.0 
-              && v__o_r1__last?.n_nor == 0.0
-            ){
-              n_summand__n_idx_a_s_image_mode = +1
-            }
-            if(n_summand__n_idx_a_s_image_mode != 0){
-              o_state.n_idx_a_s_image_mode = (o_state.n_idx_a_s_image_mode+n_summand__n_idx_a_s_image_mode);
-              if(o_state.n_idx_a_s_image_mode < 0){
-                o_state.n_idx_a_s_image_mode = o_state.a_s_image_mode.length-1
-              }
-              if(o_state.n_idx_a_s_image_mode > (o_state.a_s_image_mode.length-1)){
-                o_state.n_idx_a_s_image_mode = 0;
-              }
-              // console.log(o_state.n_idx_a_s_image_mode)
+            if(v_o__left_meta1_button_last?.n_nor == 1.0){
+              f_reset_image_manipulation();
+  
             }
           }
 
-          if(v_o__left_meta1_button_last?.n_nor == 1.0){
-            f_reset_image_manipulation();
-
-          }
-          o_state.v_o_input_device__last = o_state.v_o_input_device
 
 
             f_update_data_in_o_gpu_gateway(
@@ -996,10 +1124,12 @@ async function startWebcam() {
             o_state.o_js__o_cursor_virtual._f_render()
             
 
+            // needs to be at the end
+            o_state.v_o_input_device__last = o_state.v_o_input_device
             for(let o_keyboard_key of o_state.a_o_keyboard_key){
-              // needs to be at the end
               o_keyboard_key.b_down_last = o_keyboard_key?.b_down
             }
+
             // Add your WebGL drawing code here to manipulate the video frame
             // gl.drawArrays(gl.TRIANGLES, 0, 6);
         }
@@ -1092,7 +1222,9 @@ let f_r_ser_w_cli_o_config = async function(){
   //r_ser_w_cli // read server , write client
   let o = await f_o_ws_response({s_name_function: "f_s_json_o_config"});
   let o_config = JSON.parse(o.s_json_o_config);
-  o_state.o_config = o_config;
+  let o_config_tmp_original = o_state.o_config;
+  o_state.o_config = Object.assign(o_state.o_config, o_config);
+  o_state.o_config.a_o_input_action = o_config_tmp_original.a_o_input_action;
 
   o_state?.o_js__a_o_usb_device?._f_render?.()
 
@@ -1224,7 +1356,7 @@ window.addEventListener('resize',()=>{
 
 try{
 
-  startWebcam();
+  f_start_render_loop();
 }catch(o_e){
   console.error(o_e)
 }
@@ -1336,13 +1468,13 @@ let f_o_svg = function(
 document.body.appendChild(
   await f_o_html__and_make_renderable(
       {
-          b_render: (true), //'debug' fonts, show all fonts
           s_tag: 'div', 
-          style: "font-size: 3rem",
+          style: "font-size: 2rem; ",
           class: "app inputs",
           a_o: [
             ...o_state.a_o_input_font_icon.map(o=>{
               return {
+              b_render: (false), //'debug' fonts, show all fonts
                 style: 'display:flex;flex-direction:row',
 
                 a_o: [
@@ -1404,38 +1536,7 @@ document.body.appendChild(
                           b_render: o_state.b_render__settings,
                           a_o: [
 
-                            // {
-                            //   class: 'control_mapping', 
-                            //   a_o: [
-                                
-                            //       Object.assign(
-                            //         o_state, 
-                            //         {
-                            //           o_js__control_mapping_overlay: {
-                            //             f_o_jsh:()=>{
-                            //               return {
-                            //                   a_o: [
-                            //                     {
-                            //                       innerText: "Press any input to assign it to selected action"
-                            //                     }
-                            //                   ]
-                            //               }
-                            //             }
-                            //           }
-                            //         }
-                            //       ).o_js__control_mapping_overlay,
-                            //     ...o_state.o_config.a_o_s_name_input_s_name_action.map(o=>{
-                            //       return {
-                            //         a_o: [
-                            //           {
-                            //             innerText: o.s_name_action
-                            //           }, 
-                            //           f_o_jsh__keyicons(o.s_name_input)
-                            //         ]
-                            //       }
-                            //     })
-                            //   ]
-                            // }, 
+
                             {
                               class: "gamepad_controls", 
                               a_o: [
@@ -1523,6 +1624,91 @@ document.body.appendChild(
     
                               ]
                             },
+                            Object.assign(
+                              o_state, 
+                              {
+                                o_js__a_o_input_mapping: {
+                                  f_o_jsh: ()=>{
+                                    return {
+                                      class: 'a_o_input_mapping', 
+                                      a_o: [
+                                        
+                                        ...o_state.o_config.a_o_input_action.map(o=>{
+                                          let v_o_input_font = o_state.a_o_input_font_icon.find(
+                                            o2=>{
+                                              return o2.s_name_input == o.s_name_input__controller
+                                            }
+                                          )
+
+                                          return {
+                                            style: "display:flex; flex-direction:row;justify-content:space-between;align-items:center",
+                                            a_o: [
+                                              {
+                                                innerText: o.s_name_action
+                                              }, 
+                                              {
+                                                onclick: ()=>{
+                                                  o_state.o_config.o_input_action = o;
+                                                  o_state.o_js__a_o_input_mapping?._f_render();
+                                                },
+                                                s_tag: "button", 
+                                              style: "font-size: 3rem;display:flex; flex-direction:row;justify-content:space-between;align-items:center",
+                                                a_o: [
+                                                  {
+                                                    class: 'keyboard_char',
+                                                    innerText: (o_state.o_config.o_input_action == o ) ? '?': o.s_name_char_keyboard
+                                                  },
+                                                  {
+                                                    innerHTML: "&nbsp;&nbsp;&nbsp;"
+                                                  },
+                                                  {
+                                                    class: f_s_class__from_s_name_font(v_o_input_font?.s_name_font),
+                                                    innerText: (o_state.o_config.o_input_action == o ) ? '?':  v_o_input_font?.s_char
+                                                  }
+                                                ]
+                                              }
+                                              // f_o_jsh__keyicons(o.s_name_input)
+                                            ]
+                                          }
+                                        })
+                                      ]
+                                    }
+                                  }
+                                }
+                              }
+                            ).o_js__a_o_input_mapping,
+                            {
+                              class: 'a_o_input_mapping', 
+                              a_o: [
+                                
+                                  Object.assign(
+                                    o_state, 
+                                    {
+                                      o_js__control_mapping_overlay: {
+                                        f_o_jsh:()=>{
+                                          return {
+                                              a_o: [
+                                                {
+                                                  innerText: "Press any input to assign it to selected action"
+                                                }
+                                              ]
+                                          }
+                                        }
+                                      }
+                                    }
+                                  ).o_js__control_mapping_overlay,
+                                ...o_state.o_config.a_o_input_action.map(o=>{
+                                  return {
+                                    a_o: [
+                                      {
+                                        innerText: o.s_name_action
+                                      }, 
+                                      // f_o_jsh__keyicons(o.s_name_input)
+                                    ]
+                                  }
+                                })
+                              ]
+                            }, 
                             Object.assign(
                               o_state,
                               {
@@ -1670,7 +1856,20 @@ document.body.appendChild(
                                               s_name: s.split(' ').slice(6).join(' ')
                                             }
                                           })
-                                          console.log(o2)
+                                          let o_usb_device = o_state.a_o_usb_device.find(o=>{
+                                            o.n_id_vendor == o_state?.o_config?.n_id_vendor
+                                            && o.n_id_product == o_state?.o_config?.n_id_product
+                                          }) 
+                                          if(o_usb_device){
+                                            o_state.o_usb_device = o_usb_device;
+                                            o_ws.send(
+                                              JSON.stringify({
+                                                s_name_function: "f_switch_usb_device", 
+                                                n_id_vendor: o_usb_device.n_id_vendor,
+                                                n_id_product: o_usb_device.n_id_product,
+                                              })
+                                            )
+                                          }
                                             return {
                                                 class: "a_o_usb_device",
                                                 s_tag: "select", 

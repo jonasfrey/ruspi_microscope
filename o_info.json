@@ -490,7 +490,7 @@
           },
           {
             "s_type": "u1",
-            "s_name": "padding_or_not_found_out_yet",
+            "s_name": "center_meta1_button",
             "v_o_input_sensor_value": null,
             "a_o_num_str_value": [],
             "v_o_num_str_value": null,
@@ -499,7 +499,7 @@
           },
           {
             "s_type": "u1",
-            "s_name": "center_meta1_button",
+            "s_name": "padding_or_not_found_out_yet",
             "v_o_input_sensor_value": null,
             "a_o_num_str_value": [],
             "v_o_num_str_value": null,

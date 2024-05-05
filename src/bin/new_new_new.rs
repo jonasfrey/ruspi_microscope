@@ -552,7 +552,7 @@ async fn main() {
                     "o_input_device": o_input_device  // Embed the struct within the outer property
                 })
             ).expect("failed to convert to json"));
-            println!("update");
+            // println!("update");
             let o_left_stick_x_axis = f_o_input_sensor_from_s_name(&o_input_device, "left_stick_x_axis").unwrap();
             let o_left_stick_y_axis = f_o_input_sensor_from_s_name(&o_input_device, "left_stick_y_axis").unwrap();
             let o_right_stick_x_axis = f_o_input_sensor_from_s_name(&o_input_device, "right_stick_x_axis").unwrap();
@@ -568,12 +568,14 @@ async fn main() {
             // and then 0 will be sent
             // therefore we have to check if the value differs from the last one... 
 
-    
-            n_l_x = if(n_l_x.abs() > 0.05){n_l_x*0.5} else{0.0};
-            n_l_y = if(n_l_y.abs() > 0.05){n_l_y*0.5} else{0.0};
-            n_r_x = if(n_r_x.abs() > 0.05){n_r_x*0.5} else{0.0};
-            n_r_y = if(n_r_y.abs() > 0.05){n_r_y*0.5} else{0.0};
-            println!("n_r_x,n_r_y,n_l_x,n_l_y {},{},{},{}", n_r_x,n_r_y,n_l_x,n_l_y);
+            // for o in o_input_device.a_o_input_sensor.iter(){
+            //     println!("{}:{}", o.s_name, o.n_nor);
+            // }
+            // n_l_x = if(n_l_x.abs() > 0.05){n_l_x*0.5} else{0.0};
+            // n_l_y = if(n_l_y.abs() > 0.05){n_l_y*0.5} else{0.0};
+            // n_r_x = if(n_r_x.abs() > 0.05){n_r_x*0.5} else{0.0};
+            // n_r_y = if(n_r_y.abs() > 0.05){n_r_y*0.5} else{0.0};
+            // println!("n_r_x,n_r_y,n_l_x,n_l_y {},{},{},{}", n_r_x,n_r_y,n_l_x,n_l_y);
 
 
             if let Some(ref o) = v_o_sender_tx_stepper_28BYJ_48_x__clone_for_main{
