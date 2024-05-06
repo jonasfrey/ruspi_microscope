@@ -43,7 +43,11 @@ let a_s_image_mode = [
   'red_channel_only',
   'green_channel_only', 
   'blue_channel_only', 
-  'edge_detection'
+  'edge_detection', 
+  'sharpen', 
+  'gaussian_blur',
+  'emboss', 
+  'outline_edge'
 ]
 class O_keyboard_key{
   constructor(
@@ -283,28 +287,44 @@ let o_state = {
        ),
       new O_input_action(
         'move_slide_single_step_x_plus', 
-        'direction_pad_right', 
+        'direction_pad_right',
+        '?', 
         false,
       ),
       new O_input_action(
         'move_slide_single_step_x_minus', 
        'direction_pad_left', 
+       '?', 
         false,
       ),
       new O_input_action(
         'move_slide_single_step_y_plus', 
        'direction_pad_up', 
+       '?', 
         false,
       ),
       new O_input_action(
         'move_slide_single_step_y_minus', 
        'direction_pad_down', 
+       '?', 
         false,
       ),
       new O_input_action(
         'toggle_settings', 
         'right_meta1_button', 
         'escape',
+        false,
+      ),
+      new O_input_action(
+        'next_image_mode', 
+        '?', 
+        'x',
+        false,
+      ),
+      new O_input_action(
+        'previous_image_mode', 
+        '?', 
+        'z',
         false,
       ),
       new O_input_action(
@@ -351,7 +371,7 @@ let o_state = {
         false,
       ),
       new O_input_action(
-        'zoom_digital_plus', 
+        'zoom_digital_minus', 
         'left_stick_y_axis', 
         'q',
         false,
@@ -697,6 +717,40 @@ let o_gpu_gateway = await f_o_gpu_gateway(
     uniform vec2 o_scl_canvas;
     uniform sampler2D image_from_video;
 
+    vec4 f_o_convolved_static_3x3(
+      vec2 o_trn, 
+      float[3*3] a_n_factor_weight_krnl 
+    ){
+    
+        vec2 o_scl_krnl = vec2(3.);
+        vec2 o_scl_krnl_half = floor(o_scl_krnl/2.);
+        
+        vec4 o_col_sum = vec4(0.);
+        float n_factor_sum = 0.;
+        for(float n_x = 0.; n_x < o_scl_krnl.x; n_x+=1.){
+            for(float n_y = 0.; n_y < o_scl_krnl.y; n_y+=1.){
+                vec2 o_trn_krnl = vec2(n_x, n_y);
+                vec2 o_trn_krnl2 = o_trn_krnl-o_scl_krnl_half;
+                float n_idx_a_n_krnl = n_y*o_scl_krnl.x + n_x;
+                float n_factor = a_n_factor_weight_krnl[int(n_idx_a_n_krnl)];
+                n_factor_sum+=n_factor;
+                vec4 o_col_tmp =
+                    texture(
+                        image_from_video,
+                        (o_trn+o_trn_krnl2.xy)/o_scl_canvas.xy
+                    )*n_factor;
+                o_col_sum+= o_col_tmp;
+            }
+        }
+        vec4 o_col_res = o_col_sum;
+        if(n_factor_sum != 0.0){
+          // could be devision by zero, for example for a edge detection sobel kernel 
+          o_col_res = o_col_res/n_factor_sum;
+        }
+        return (o_col_res);
+    
+    
+    }
     void main() {
       //o_trn_nor_pixel normalized pixel coordinates from -1.0 -1.0 to 1.0 1.0
       float n_idx_a_s_image_mode_mutable = n_idx_a_s_image_mode;
@@ -752,58 +806,81 @@ let o_gpu_gateway = await f_o_gpu_gateway(
         fragColor *= vec4(0., 0., 1., 1.);
       }
       if(n_idx_a_s_image_mode_mutable == ${(o_state.a_s_image_mode.indexOf("edge_detection"))}.){
-        vec2 iResolution  = o_scl_canvas;
-        vec2 fragCoord = o_trn2 * iResolution;
-        vec2 o_scl_krnl = vec2(3.);
-        vec2 o_scl_krnl_half = floor(o_scl_krnl/2.);
-        float n_elements_krnl = o_scl_krnl.x * o_scl_krnl.y;
-        vec2 o_factor_edge = vec2(2.);
-        vec2 o_factor_nonedge = vec2(1.);
-        vec4 o_blur = vec4(0.);
-        vec4 o_sum_sobel_x = vec4(0.);
-        vec4 o_sum_sobel_y = vec4(0.);
-        for(
-            float n_trn_x = - o_scl_krnl_half.x;  
-            n_trn_x<o_scl_krnl_half.x+1.;
-            n_trn_x+=1.
-        ){  
-            for(
-                float n_trn_y = - o_scl_krnl_half.y;  
-                n_trn_y<o_scl_krnl_half.y+1.;
-                n_trn_y+=1.
-            ){
-    
-                vec2 o_trn = fragCoord.xy+vec2(n_trn_x, n_trn_y);
-                vec4 o_c_b1 = texture(image_from_video, o_trn/iResolution.xy);
-                vec2 o_fctr = vec2(
-                    (n_trn_y == 0.) ? n_trn_x*o_factor_edge.x : o_factor_nonedge.x*n_trn_x,
-                    (n_trn_x == 0.) ? n_trn_y*o_factor_edge.y : o_factor_nonedge.y*n_trn_y
-                );
-                o_sum_sobel_x += o_c_b1*o_fctr.x;
-                o_sum_sobel_y += o_c_b1*o_fctr.y;
-                o_blur += o_c_b1;
-            }
-    
-        }
-        vec4 o_prod_sobel_x = o_sum_sobel_x*o_sum_sobel_x;
-        vec4 o_prod_sobel_y = o_sum_sobel_y*o_sum_sobel_y;
-        
-        vec4 o_edges = vec4(
-            length(o_prod_sobel_x.x+o_prod_sobel_y.x),
-            length(o_prod_sobel_x.y+o_prod_sobel_y.y),
-            length(o_prod_sobel_x.z+o_prod_sobel_y.z),
-            length(o_prod_sobel_x.w+o_prod_sobel_y.w)
+        vec2 o_trn = o_trn2*o_scl_canvas;
+        vec4 o_col_sobel_x = f_o_convolved_static_3x3(
+            o_trn,
+            float[](
+              //sobel edge detection x
+              -1., 0., 1.,
+              -2., 0., 2.,
+              -1., 0., 1.
+            )
         );
-          
-        o_blur /= n_elements_krnl;
-        vec4 o_c_b1 = texture(image_from_video, fragCoord.xy/iResolution.xy);
-        fragColor = vec4(o_edges);//*(1.+(1./n_elements_krnl));
-        fragColor.w = 1.;
-        //fragColor = vec4(o_c_b1)*o_edges;//*(1.+(1./n_elements_krnl));
-        //fragColor = vec4(0.)+n*(1./n_elements_krnl);
-        // fragColor = (fragColor);
-        // fragColor = vec4(length(o_prod_sobel_x.x+o_prod_sobel_y.x));
+        vec4 o_col_sobel_y = f_o_convolved_static_3x3(
+            o_trn,
+            float[](
+              //sobel edge detection y
+              1., 2., 1.,
+              0., 0., 0.,
+              -1., -2., -1.
+            )
+        );
+        
+        vec4 o_col_sobel_x_pow = pow(o_col_sobel_x,vec4(2.));
+        vec4 o_col_sobel_y_pow = pow(o_col_sobel_y,vec4(2.));
+        fragColor = vec4(
+          sqrt(o_col_sobel_x_pow.x+o_col_sobel_y_pow.x),
+          sqrt(o_col_sobel_x_pow.y+o_col_sobel_y_pow.y),
+          sqrt(o_col_sobel_x_pow.z+o_col_sobel_y_pow.z),
+          sqrt(o_col_sobel_x_pow.w+o_col_sobel_y_pow.w)
+        );
+        fragColor = o_col_sobel_y;
+
       }
+
+      if(n_idx_a_s_image_mode_mutable == ${(o_state.a_s_image_mode.indexOf("sharpen"))}.){
+        fragColor = f_o_convolved_static_3x3(
+            o_trn2*o_scl_canvas,
+            float[](
+              0., -1., 0.,
+              -1., 5., -1.,
+              0., -1., 0.
+            )
+        );
+        return;
+    }
+    if(n_idx_a_s_image_mode_mutable == ${(o_state.a_s_image_mode.indexOf("gaussian_blur"))}.){
+      fragColor = f_o_convolved_static_3x3(
+          o_trn2*o_scl_canvas,
+          float[](
+            1., 2., 1.,
+            2., 4., 2.,
+            1., 2., 1.
+          )
+      );
+    }
+    if(n_idx_a_s_image_mode_mutable == ${(o_state.a_s_image_mode.indexOf("emboss"))}.){
+      fragColor = f_o_convolved_static_3x3(
+          o_trn2*o_scl_canvas,
+          float[](
+            -2., -1., 0.,
+            -1., 1. , 1.,
+            0., 1., 2.
+          )
+      );
+    }
+    if(n_idx_a_s_image_mode_mutable == ${(o_state.a_s_image_mode.indexOf("outline_edge"))}.){
+      fragColor = f_o_convolved_static_3x3(
+          o_trn2*o_scl_canvas,
+          float[](
+            -1., -1., -1.,
+            -1.,  8., -1.,
+            -1., -1., -1.
+          )
+      );
+    }
+
+    
 
       // apply the image styles at the end 
       fragColor *= n_factor_brightness;
@@ -989,7 +1066,6 @@ async function f_start_render_loop() {
 
             for(let o_input_action of o_state.o_config.a_o_input_action){
                 o_input_action.v_o_keyboard_key = o_state.a_o_keyboard_key.find(o=>{
-                  console.log(o_input_action)
                   return o.s_name.toLowerCase() == o_input_action.s_name_char_keyboard.toLowerCase()
                 });
                 o_input_action.v_o_input_sensor = o_state?.v_o_input_device?.a_o_input_sensor?.find(
@@ -1000,80 +1076,126 @@ async function f_start_render_loop() {
                     }
                   }
                 )
-                if(o_input_action.s_name_action == 'move_slide_x_plus'){
-                 o_state.n_x_trn_nor += (o_input_action?.v_o_keyboard_key?.b_down) ? 10 : 0;
-                 o_state.n_x_trn_nor += (o_input_action?.v_o_input_sensor?.n_nor) ? o_input_action?.v_o_input_sensor?.n_nor : 0;
+                if(o_input_action.s_name_action == 'move_digital_x_plus'){
+                 o_state.n_x_trn_nor += (o_input_action?.v_o_keyboard_key?.b_down) ? +0.01 : 0;
+                 o_state.n_x_trn_nor += (o_input_action?.v_o_input_sensor?.n_nor) ? +Math.abs(o_input_action?.v_o_input_sensor?.n_nor) : 0;
+                }
+                if(o_input_action.s_name_action == 'move_digital_x_minus'){
+                  o_state.n_x_trn_nor += (o_input_action?.v_o_keyboard_key?.b_down) ? -0.01 : 0;
+                  o_state.n_x_trn_nor += (o_input_action?.v_o_input_sensor?.n_nor) ? -Math.abs(o_input_action?.v_o_input_sensor?.n_nor) : 0;
+                }
+                if(o_input_action.s_name_action == 'move_digital_y_plus'){
+                  o_state.n_y_trn_nor += (o_input_action?.v_o_keyboard_key?.b_down) ? -0.01 : 0;
+                  o_state.n_y_trn_nor += (o_input_action?.v_o_input_sensor?.n_nor) ? -Math.abs(o_input_action?.v_o_input_sensor?.n_nor) : 0;
+                 }
+                 if(o_input_action.s_name_action == 'move_digital_y_minus'){
+                   o_state.n_y_trn_nor += (o_input_action?.v_o_keyboard_key?.b_down) ? +0.01 : 0;
+                   o_state.n_y_trn_nor += (o_input_action?.v_o_input_sensor?.n_nor) ? + Math.abs(o_input_action?.v_o_input_sensor?.n_nor) : 0;
+                 }
+                 if(o_input_action.s_name_action == 'zoom_digital_plus'){
+                  o_state.n_factor_scale += (o_input_action?.v_o_keyboard_key?.b_down) ? +0.01 : 0;
+                  o_state.n_factor_scale += (o_input_action?.v_o_input_sensor?.n_nor) ? + Math.abs(o_input_action?.v_o_input_sensor?.n_nor) : 0;
+                }
+                if(o_input_action.s_name_action == 'zoom_digital_minus'){
+                  o_state.n_factor_scale += (o_input_action?.v_o_keyboard_key?.b_down) ? -0.01 : 0;
+                  o_state.n_factor_scale += (o_input_action?.v_o_input_sensor?.n_nor) ? - Math.abs(o_input_action?.v_o_input_sensor?.n_nor) : 0;
+                }
+                 
+                if(o_input_action.s_name_action == 'next_image_mode'){
+                  if(
+                    (o_input_action?.v_o_keyboard_key?.b_down == true) 
+                    && o_input_action?.v_o_keyboard_key?.b_down != o_input_action?.v_o_keyboard_key?.b_down_last
+                  ){
+                    o_state.n_idx_a_s_image_mode = (o_state.n_idx_a_s_image_mode+1)%o_state.a_s_image_mode.length
+                  }
+                }
+                if(o_input_action.s_name_action == 'previous_image_mode'){
+                  if(
+                    (o_input_action?.v_o_keyboard_key?.b_down == true) 
+                    && o_input_action?.v_o_keyboard_key?.b_down != o_input_action?.v_o_keyboard_key?.b_down_last
+                  ){
+                    o_state.n_idx_a_s_image_mode -=1
+                    if(o_state.n_idx_a_s_image_mode < 0){
+                      o_state.n_idx_a_s_image_mode = o_state.a_s_image_mode.length-1;
+                    }
+                  }
                 }
                 if(o_input_action.s_name_action == 'toggle_settings'){
                   if(
-                    o_input_action?.v_o_keyboard_key?.b_down != o_input_action?.v_o_keyboard_key?.b_down_last
+                    (
+                      (o_input_action?.v_o_keyboard_key?.b_down == true) 
+                      && o_input_action?.v_o_keyboard_key?.b_down != o_input_action?.v_o_keyboard_key?.b_down_last
+                    )
                     ||
-                    o_input_action?.v_o_input_sensor?.n_nor != o_input_action?.v_o_input_sensor?.n_nor_last
+                    (
+                      o_input_action?.v_o_input_sensor?.n_nor == 1.0
+                      &&
+                      (
+                      o_input_action?.v_o_input_sensor?.n_nor != o_input_action?.v_o_input_sensor_last?.n_nor
+                      )
+                    )
                     ){
                     o_state.b_render__settings = !o_state.b_render__settings
-
-                    if(!o_state.o_js__settings._b_rendering){
-
-                      o_state.o_js__settings._f_render()
-                      console.log('asdf')
+                    if(!o_state?.o_js__settings?._b_rendering){
+                      o_state?.o_js__settings?._f_render?.()
                     }
                   }
 
                 }
             }
-            for(let o_keyboard_key of o_state.a_o_keyboard_key){
+            // for(let o_keyboard_key of o_state.a_o_keyboard_key){
               
-              if(o_keyboard_key.s_name == 'Escape'){
-                v_o_keyboard_key__esc = o_keyboard_key
-              }
-              if(
-                o_keyboard_key.s_name == 'y'
-                && o_keyboard_key?.b_down != o_keyboard_key?.b_down_last
-              ){
-                let s_event = (o_keyboard_key?.b_down) ? 'click': 'mouseup';
-                var o_event = new MouseEvent(s_event, {
-                    bubbles: true,
-                    cancelable: true,
-                    view: window
-                });
-                console.log(o_event)
-                a_o_el_under_cursor_virtual.forEach(o=>{o.dispatchEvent(o_event); o.click()})
-              }
-              let n_idx = [
-                'j', 'l',// x axis - +
-                'i', 'k',// y axis - +
-                'u', 'o',// z axis - +
-              ].indexOf(o_keyboard_key.s_name)
-              if(n_idx != -1){
-                let s_axis = ['x', 'y', 'z'][parseInt(n_idx/2)]
-                let b_direction = n_idx%2 == 0
-                let n_sign = (b_direction) ? -1: 1;
+            //   if(o_keyboard_key.s_name == 'Escape'){
+            //     v_o_keyboard_key__esc = o_keyboard_key
+            //   }
+            //   if(
+            //     o_keyboard_key.s_name == 'y'
+            //     && o_keyboard_key?.b_down != o_keyboard_key?.b_down_last
+            //   ){
+            //     let s_event = (o_keyboard_key?.b_down) ? 'click': 'mouseup';
+            //     var o_event = new MouseEvent(s_event, {
+            //         bubbles: true,
+            //         cancelable: true,
+            //         view: window
+            //     });
+            //     console.log(o_event)
+            //     a_o_el_under_cursor_virtual.forEach(o=>{o.dispatchEvent(o_event); o.click()})
+            //   }
+            //   let n_idx = [
+            //     'j', 'l',// x axis - +
+            //     'i', 'k',// y axis - +
+            //     'u', 'o',// z axis - +
+            //   ].indexOf(o_keyboard_key.s_name)
+            //   if(n_idx != -1){
+            //     let s_axis = ['x', 'y', 'z'][parseInt(n_idx/2)]
+            //     let b_direction = n_idx%2 == 0
+            //     let n_sign = (b_direction) ? -1: 1;
     
-                if(o_keyboard_key?.b_down){
+            //     if(o_keyboard_key?.b_down){
     
-                  o_state.o_cursor_virtual.o_trn[`n_${s_axis}`] += 10 * n_sign;
-                  console.log(o_state.o_cursor_virtual.o_trn[`n_${s_axis}`])
-                }
+            //       o_state.o_cursor_virtual.o_trn[`n_${s_axis}`] += 10 * n_sign;
+            //       console.log(o_state.o_cursor_virtual.o_trn[`n_${s_axis}`])
+            //     }
     
-                if(
-                  o_keyboard_key?.b_down == o_keyboard_key?.b_down_last
-                  ){
-                  continue
-                }
+            //     if(
+            //       o_keyboard_key?.b_down == o_keyboard_key?.b_down_last
+            //       ){
+            //       continue
+            //     }
     
-                let o_js = {
-                  s_name_function:'f_control_stepper_motor',
-                  s_axis,
-                  n_rpm_nor: ((o_keyboard_key?.b_down) ? 0.3: 0.0) ,
-                  b_direction
-                }
-                // console.log(o_js)
+            //     let o_js = {
+            //       s_name_function:'f_control_stepper_motor',
+            //       s_axis,
+            //       n_rpm_nor: ((o_keyboard_key?.b_down) ? 0.3: 0.0) ,
+            //       b_direction
+            //     }
+            //     // console.log(o_js)
                 
-                o_ws.send(JSON.stringify(o_js))
-              }
+            //     o_ws.send(JSON.stringify(o_js))
+            //   }
   
   
-            }
+            // }
             // Array.from(document.querySelectorAll('.hoverable')).map(o=>{
             //   o.classList.remove("hovered")
             //   return o
@@ -1189,78 +1311,78 @@ async function f_start_render_loop() {
 
 
 
-window.addEventListener('keydown', async (o_e)=>{
-  [
-    ['q',"n_factor_scale", + 0.01], 
-    ['e',"n_factor_scale", - 0.01],    
-    ['w',"n_y_trn_nor", + 0.01],    
-    ['s',"n_y_trn_nor", - 0.01],    
-    ['a',"n_x_trn_nor", - 0.01],    
-    ['d',"n_x_trn_nor", + 0.01],    
-    ['r',"n_factor_brightness", - 0.01],    
-    ['f',"n_factor_brightness", + 0.01],    
-    ['t',"n_factor_contrast", - 0.01],    
-    ['g',"n_factor_contrast", + 0.01],    
-    ['y',"n_factor_gamma", - 0.01],    
-    ['h',"n_factor_gamma", + 0.01]
-].map(a_v =>{
-  if(o_e.key == a_v[0]){
-    o_state[a_v[1]] += a_v[2]
-    o_state[`o_js__${a_v[1]}`]._f_render()
-  }
-})
+// window.addEventListener('keydown', async (o_e)=>{
+//   [
+//     ['q',"n_factor_scale", + 0.01], 
+//     ['e',"n_factor_scale", - 0.01],    
+//     ['w',"n_y_trn_nor", + 0.01],    
+//     ['s',"n_y_trn_nor", - 0.01],    
+//     ['a',"n_x_trn_nor", - 0.01],    
+//     ['d',"n_x_trn_nor", + 0.01],    
+//     ['r',"n_factor_brightness", - 0.01],    
+//     ['f',"n_factor_brightness", + 0.01],    
+//     ['t',"n_factor_contrast", - 0.01],    
+//     ['g',"n_factor_contrast", + 0.01],    
+//     ['y',"n_factor_gamma", - 0.01],    
+//     ['h',"n_factor_gamma", + 0.01]
+// ].map(a_v =>{
+//   if(o_e.key == a_v[0]){
+//     o_state[a_v[1]] += a_v[2]
+//     o_state[`o_js__${a_v[1]}`]._f_render()
+//   }
+// })
 
-if(o_e.key == 'm'){
-  o_state.n_idx_a_s_image_mode = (o_state.n_idx_a_s_image_mode + 1)%o_state.a_s_image_mode.length;
-}
-if(o_e.key == ' '){
+// if(o_e.key == 'm'){
+//   o_state.n_idx_a_s_image_mode = (o_state.n_idx_a_s_image_mode + 1)%o_state.a_s_image_mode.length;
+// }
+// if(o_e.key == ' '){
 
-    await f_o_throw_notification(o_state.o_state__notifire,`image has been saved`, 'success')
+//     await f_o_throw_notification(o_state.o_state__notifire,`image has been saved`, 'success')
   
-    o_state.f_captureAndSendImage()
-    // Convert canvas to a data URL (Base64 image)
-    const s_data_url = o_el_canvas.toDataURL('image/jpeg');
+//     o_state.f_captureAndSendImage()
+//     // Convert canvas to a data URL (Base64 image)
+//     const s_data_url = o_el_canvas.toDataURL('image/jpeg');
 
     
-    let o_resp = await fetch(
-        "https://api.openai.com/v1/chat/completions", 
-        {
-            headers: {
-                "Content-Type":" application/json" ,
-                "Authorization":`Bearer ${o_state.s_api_key_openai}`,
-            }, 
-            body: JSON.stringify(
-                {
-                    "model": "gpt-4-turbo",
-                    "messages": [
-                      {
-                        "role": "user",
-                        "content": [
-                          {
-                            "type": "text",
-                            "text": o_state.s_prompt_image_ai_generic
-                          },
-                          {
-                            "type": "image_url",
-                            "image_url": {
-                              "url": s_data_url
-                            }
-                          }
-                        ]
-                      }
-                    ],
-                    "max_tokens": 300
-                  }
-            )
-        }
-    )   
-    let o_parsed = o_resp.json();
-    console.log(o_parsed);
-    window.o_parsed = o_parsed
+//     let o_resp = await fetch(
+//         "https://api.openai.com/v1/chat/completions", 
+//         {
+//             headers: {
+//                 "Content-Type":" application/json" ,
+//                 "Authorization":`Bearer ${o_state.s_api_key_openai}`,
+//             }, 
+//             body: JSON.stringify(
+//                 {
+//                     "model": "gpt-4-turbo",
+//                     "messages": [
+//                       {
+//                         "role": "user",
+//                         "content": [
+//                           {
+//                             "type": "text",
+//                             "text": o_state.s_prompt_image_ai_generic
+//                           },
+//                           {
+//                             "type": "image_url",
+//                             "image_url": {
+//                               "url": s_data_url
+//                             }
+//                           }
+//                         ]
+//                       }
+//                     ],
+//                     "max_tokens": 300
+//                   }
+//             )
+//         }
+//     )   
+//     let o_parsed = o_resp.json();
+//     console.log(o_parsed);
+//     window.o_parsed = o_parsed
 
-}
+// }
 
-})
+// })
 let f_r_ser_w_cli_o_config = async function(){
   //r_ser_w_cli // read server , write client
   let o = await f_o_ws_response({s_name_function: "f_s_json_o_config"});
