@@ -84,6 +84,9 @@ class O_input_action{
     this.s_name_input__controller = s_name_input__controller, 
     this.s_name_char_keyboard = s_name_char_keyboard, 
     this.v_b_invert_axis = v_b_invert_axis
+    this.v_o_keyboard_key = null
+    this.v_o_input_sensor = null
+    this.v_o_input_sensor_last = null
   }
 }
 
@@ -307,7 +310,7 @@ let o_state = {
       new O_input_action(
         'hold_down_toggle_image_control', 
         'left_middle_finger_button_l2', 
-        'escape',
+        'u',
         false,
       ),
       new O_input_action(
@@ -712,7 +715,6 @@ let o_gpu_gateway = await f_o_gpu_gateway(
       o_trn2.y = 1.-o_trn2.y;
       vec2 o2 = (o_trn2 *${o_state.a_s_image_mode.length}.);
       vec2 o2f = fract(o2);
-      o2f.y = 1.-o2f.y;
 
       float b_image_modes_preview = float(o2.x <= 1.0);
       if(b_image_modes_preview == 1.0){
@@ -723,7 +725,13 @@ let o_gpu_gateway = await f_o_gpu_gateway(
         o_trn2 *= n_factor_scale;
         o_trn2 += .5;
         o_trn2 += o_trn_nor;
-
+      }
+      if(
+        o_trn2.x > 1. || o_trn2.x < 0.
+        || o_trn2.y > 1. || o_trn2.y < 0.
+        ){
+          fragColor = vec4(vec3(0.), 1.);
+          return;
       }
       
       vec4 o_pixel_value_image_from_video = texture(image_from_video, o_trn2); 
@@ -892,6 +900,8 @@ let f_try_start_webcam = async function(){
     return 
   }
 }
+
+
 async function f_start_render_loop() {
 
   await f_try_start_webcam();
@@ -949,7 +959,7 @@ async function f_start_render_loop() {
               o_state.o_config.o_input_action = null;
               o_state.o_js__a_o_input_mapping._f_render(); 
             }
-            let a_o_input_sensor_not_same_as_last = o_state.v_o_input_device.a_o_input_sensor.map(
+            let a_o_input_sensor_not_same_as_last = o_state?.v_o_input_device?.a_o_input_sensor.map(
               (o_input_sensor, n_idx)=>{
                 let o_input_sensor__last = o_state.v_o_input_device__last.a_o_input_sensor[n_idx]
                 let n_nor_diff = o_input_sensor.n_nor - o_input_sensor__last.n_nor;
@@ -977,7 +987,42 @@ async function f_start_render_loop() {
 
           if(!b_remap_input_action){
 
+            for(let o_input_action of o_state.o_config.a_o_input_action){
+                o_input_action.v_o_keyboard_key = o_state.a_o_keyboard_key.find(o=>{
+                  console.log(o_input_action)
+                  return o.s_name.toLowerCase() == o_input_action.s_name_char_keyboard.toLowerCase()
+                });
+                o_input_action.v_o_input_sensor = o_state?.v_o_input_device?.a_o_input_sensor?.find(
+                  (o, n_idx)=>{
+                    if(o.s_name == o_input_action.s_name_input__controller){
+                      o_input_action.v_o_input_sensor_last = o_state?.v_o_input_device__last.a_o_input_sensor[n_idx];
+                      return true 
+                    }
+                  }
+                )
+                if(o_input_action.s_name_action == 'move_slide_x_plus'){
+                 o_state.n_x_trn_nor += (o_input_action?.v_o_keyboard_key?.b_down) ? 10 : 0;
+                 o_state.n_x_trn_nor += (o_input_action?.v_o_input_sensor?.n_nor) ? o_input_action?.v_o_input_sensor?.n_nor : 0;
+                }
+                if(o_input_action.s_name_action == 'toggle_settings'){
+                  if(
+                    o_input_action?.v_o_keyboard_key?.b_down != o_input_action?.v_o_keyboard_key?.b_down_last
+                    ||
+                    o_input_action?.v_o_input_sensor?.n_nor != o_input_action?.v_o_input_sensor?.n_nor_last
+                    ){
+                    o_state.b_render__settings = !o_state.b_render__settings
+
+                    if(!o_state.o_js__settings._b_rendering){
+
+                      o_state.o_js__settings._f_render()
+                      console.log('asdf')
+                    }
+                  }
+
+                }
+            }
             for(let o_keyboard_key of o_state.a_o_keyboard_key){
+              
               if(o_keyboard_key.s_name == 'Escape'){
                 v_o_keyboard_key__esc = o_keyboard_key
               }
@@ -1034,65 +1079,63 @@ async function f_start_render_loop() {
             //   return o
             // });
   
-  
-            if(
-              (v_o__right_meta1_button?.n_nor == 1.0
-              && v_o__right_meta1_button_last?.n_nor == 0.0)
-              || (v_o_keyboard_key__esc?.b_down &&  (v_o_keyboard_key__esc?.b_down != v_o_keyboard_key__esc?.b_down_last))
-              ){
-                o_state.b_render__settings = !o_state.b_render__settings
-                if(!o_state.o_js__settings._b_rendering){
-                  o_state.o_js__settings._f_render()
-                  console.log('asdf')
-                }
-              }
+            // if(
+            //   (v_o__right_meta1_button?.n_nor == 1.0
+            //   && v_o__right_meta1_button_last?.n_nor == 0.0)
+            //   || (v_o_keyboard_key__esc?.b_down &&  (v_o_keyboard_key__esc?.b_down != v_o_keyboard_key__esc?.b_down_last))
+            //   ){
+            //     o_state.b_render__settings = !o_state.b_render__settings
+            //     if(!o_state.o_js__settings._b_rendering){
+            //       o_state.o_js__settings._f_render()
+            //       console.log('asdf')
+            //     }
+            //   }
               
-            if(v_o_l2?.n_nor == 1.0){
-              //layer 2 camera control
+            // if(v_o_l2?.n_nor == 1.0){
+            //   //layer 2 camera control
               
-              let n_nor_right_stick_x_axis =  f_n_signed_nor_with_threshhold( "right_stick_x_axis", 0.0)
-              let n_nor_right_stick_y_axis =  f_n_signed_nor_with_threshhold( "right_stick_y_axis", 0.0)
-              let n_nor_left_stick_y_axis =  f_n_signed_nor_with_threshhold( "left_stick_y_axis", 0.0)
-              let n_nor_left_stick_x_axis =  f_n_signed_nor_with_threshhold( "left_stick_x_axis", 0.0)
-              o_state.o_cursor_virtual.o_trn.n_x += n_nor_left_stick_x_axis*10;
-              o_state.o_cursor_virtual.o_trn.n_y += n_nor_left_stick_y_axis*10;
-              o_state.o_js__o_cursor_virtual._f_render();
+            //   let n_nor_right_stick_x_axis =  f_n_signed_nor_with_threshhold( "right_stick_x_axis", 0.0)
+            //   let n_nor_right_stick_y_axis =  f_n_signed_nor_with_threshhold( "right_stick_y_axis", 0.0)
+            //   let n_nor_left_stick_y_axis =  f_n_signed_nor_with_threshhold( "left_stick_y_axis", 0.0)
+            //   let n_nor_left_stick_x_axis =  f_n_signed_nor_with_threshhold( "left_stick_x_axis", 0.0)
+            //   o_state.o_cursor_virtual.o_trn.n_x += n_nor_left_stick_x_axis*10;
+            //   o_state.o_cursor_virtual.o_trn.n_y += n_nor_left_stick_y_axis*10;
+            //   o_state.o_js__o_cursor_virtual._f_render();
   
-              o_state.n_x_trn_nor+=n_nor_right_stick_x_axis*0.02;
-              o_state.n_y_trn_nor+=n_nor_right_stick_y_axis*0.02;
-              o_state.n_factor_scale+=n_nor_left_stick_y_axis*-0.02;
-              o_state.n_factor_contrast-=f_n_grouped_value("direction_pad_down")*0.02;
-              o_state.n_factor_contrast+=f_n_grouped_value("direction_pad_up")*0.02;
-              o_state.n_factor_gamma+=f_n_grouped_value("direction_pad_right")*0.02;
-              o_state.n_factor_gamma-=f_n_grouped_value("direction_pad_left")*0.02;
-              let n_summand__n_idx_a_s_image_mode = 0;
-              if(
-                v__o_l1?.n_nor == 1.0 
-                && v__o_l1__last?.n_nor == 0.0
-              ){
-                n_summand__n_idx_a_s_image_mode = -1
-              }
-              if(
-                v__o_r1?.n_nor == 1.0 
-                && v__o_r1__last?.n_nor == 0.0
-              ){
-                n_summand__n_idx_a_s_image_mode = +1
-              }
-              if(n_summand__n_idx_a_s_image_mode != 0){
-                o_state.n_idx_a_s_image_mode = (o_state.n_idx_a_s_image_mode+n_summand__n_idx_a_s_image_mode);
-                if(o_state.n_idx_a_s_image_mode < 0){
-                  o_state.n_idx_a_s_image_mode = o_state.a_s_image_mode.length-1
-                }
-                if(o_state.n_idx_a_s_image_mode > (o_state.a_s_image_mode.length-1)){
-                  o_state.n_idx_a_s_image_mode = 0;
-                }
-                // console.log(o_state.n_idx_a_s_image_mode)
-              }
-            }
-            if(v_o__left_meta1_button_last?.n_nor == 1.0){
-              f_reset_image_manipulation();
-  
-            }
+            //   o_state.n_x_trn_nor+=n_nor_right_stick_x_axis*0.02;
+            //   o_state.n_y_trn_nor+=n_nor_right_stick_y_axis*0.02;
+            //   o_state.n_factor_scale+=n_nor_left_stick_y_axis*-0.02;
+            //   o_state.n_factor_contrast-=f_n_grouped_value("direction_pad_down")*0.02;
+            //   o_state.n_factor_contrast+=f_n_grouped_value("direction_pad_up")*0.02;
+            //   o_state.n_factor_gamma+=f_n_grouped_value("direction_pad_right")*0.02;
+            //   o_state.n_factor_gamma-=f_n_grouped_value("direction_pad_left")*0.02;
+            //   let n_summand__n_idx_a_s_image_mode = 0;
+            //   if(
+            //     v__o_l1?.n_nor == 1.0 
+            //     && v__o_l1__last?.n_nor == 0.0
+            //   ){
+            //     n_summand__n_idx_a_s_image_mode = -1
+            //   }
+            //   if(
+            //     v__o_r1?.n_nor == 1.0 
+            //     && v__o_r1__last?.n_nor == 0.0
+            //   ){
+            //     n_summand__n_idx_a_s_image_mode = +1
+            //   }
+            //   if(n_summand__n_idx_a_s_image_mode != 0){
+            //     o_state.n_idx_a_s_image_mode = (o_state.n_idx_a_s_image_mode+n_summand__n_idx_a_s_image_mode);
+            //     if(o_state.n_idx_a_s_image_mode < 0){
+            //       o_state.n_idx_a_s_image_mode = o_state.a_s_image_mode.length-1
+            //     }
+            //     if(o_state.n_idx_a_s_image_mode > (o_state.a_s_image_mode.length-1)){
+            //       o_state.n_idx_a_s_image_mode = 0;
+            //     }
+            //     // console.log(o_state.n_idx_a_s_image_mode)
+            //   }
+            // }
+            // if(v_o__left_meta1_button_last?.n_nor == 1.0){
+            //   f_reset_image_manipulation();
+            // }
           }
 
 

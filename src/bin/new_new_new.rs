@@ -9,6 +9,7 @@ use futures::{
     StreamExt, SinkExt
 };
 use std::{
+    os::unix::fs::PermissionsExt,
     io::{
         self,
         ErrorKind,
@@ -258,6 +259,11 @@ fn f_b_write_s_json_o_config(s_str: &str) -> bool{
     let mut file = File::create(s_path_file_abs__config).expect("Failed to create file");
 
     file.write_all(s_str.as_bytes()).expect("Failed to write to file");
+
+
+    fs::set_permissions(s_path_file_abs__config, fs::Permissions::from_mode(0o777)).unwrap();
+
+
     return true;
     // println!("Data written to {}", s_path_file_abs__config);
 }
