@@ -288,25 +288,37 @@ let o_state = {
       new O_input_action(
         'move_slide_single_step_x_plus', 
         'direction_pad_right',
-        '?', 
+        'l', 
         false,
       ),
       new O_input_action(
         'move_slide_single_step_x_minus', 
        'direction_pad_left', 
-       '?', 
+       'h', 
         false,
       ),
       new O_input_action(
         'move_slide_single_step_y_plus', 
        'direction_pad_up', 
-       '?', 
+       'i', 
         false,
       ),
       new O_input_action(
         'move_slide_single_step_y_minus', 
        'direction_pad_down', 
-       '?', 
+       'k', 
+        false,
+      ),
+      new O_input_action(
+        'hold_down_toggle_camera_control', 
+        'left_index_finger_button_l1', 
+        '',
+        false,
+      ),
+      new O_input_action(
+        'hold_down_toggle_image_control', 
+        'left_middle_finger_button_l2', 
+        '',
         false,
       ),
       new O_input_action(
@@ -315,6 +327,7 @@ let o_state = {
         'escape',
         false,
       ),
+
       new O_input_action(
         'next_image_mode', 
         '?', 
@@ -327,12 +340,7 @@ let o_state = {
         'z',
         false,
       ),
-      new O_input_action(
-        'hold_down_toggle_image_control', 
-        'left_middle_finger_button_l2', 
-        'u',
-        false,
-      ),
+
       new O_input_action(
        'reset_image_manipulation', 
         'left_meta1_button', 
@@ -455,7 +463,7 @@ o_variables.o_hsla__fg_hover = new O_vec4(
   0.8, 
   0.9
 );
-o_variables.n_rem_font_size_base = 1. // adjust font size, other variables can also be adapted before adding the css to the dom
+o_variables.n_rem_font_size_base = 1.5 // adjust font size, other variables can also be adapted before adding the css to the dom
 o_variables.n_rem_padding_interactive_elements = 0.5; // adjust padding for interactive elements 
 window.o_variables = o_variables
 f_add_css(
@@ -477,12 +485,14 @@ f_add_css(
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border: 1px solid ${f_s_hsla(o_variables.o_hsla__fg)};
+      /* border: 1px solid ${f_s_hsla(o_variables.o_hsla__fg)}; */
       padding: 0.5rem;
   }
-  .hoverable.hovered{
+  .hoverable.hovered, 
+  .hoverable:hover{
     color: ${f_s_hsla(o_variables.o_hsla__fg_hover)};
-    border: 1px solid ${f_s_hsla(o_variables.o_hsla__fg_hover)};
+    /*border: 1px solid ${f_s_hsla(o_variables.o_hsla__fg_hover)}; */
+    background: ${f_s_hsla(o_variables.o_hsla__bg_hover)};
   }
 
   body{
@@ -522,14 +532,19 @@ f_add_css(
       position:relative;
       background: rgba(22,22,22,0.8);
   }
+  [class^="Controller"] {
+    /* Your styles here */
+    font-size: 2rem;
+  }
   .keyboard_char {
-      padding: 1rem;
+      padding: 0.3rem;
+      min-width: 1rem;
+      min-height: 1rem;
       border: 2px solid white;
       border-radius: 10px;
-      box-shadow: 6px 3px 0px #858585;
+      box-shadow: 4px 2px 0px ${f_s_hsla(o_variables.o_hsla__bg_hover)};
   }
   .gamepad_controls .layer{
-    font-size:2rem;
     left: 50%;
     top: 5%;
     position:absolute;
@@ -554,13 +569,35 @@ f_add_css(
     top: -50px;
     left: 0;
 }
+/* Apply styles to all scrollable elements */
+::-webkit-scrollbar {
+    width: 12px; /* Width of the scrollbar */
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1); /* Semi-transparent black track */
+    border-radius: 10px; /* Rounded edges on the track */
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(192, 192, 192, 0.5); /* Semi-transparent silver thumb */
+    border-radius: 10px; /* Rounded edges on the thumb */
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(192, 192, 192, 0.7); /* Slightly less transparent when hovering */
+}
 
   .gamepad_controls .item{
     position:absolute;
     width: 20%;
   }
 
-
+  .settings{
+    padding: 0.9rem;
+    overflow-y: scroll;
+    overflow-x: hidden;
+  }
   .right_meta1_button, .left_meta1_button{
     top: 16%;
     left: 47%;
@@ -967,6 +1004,10 @@ let f_try_start_webcam = async function(){
       video: { width: 1920, height: 1080 }
     });
     o_el_vid.srcObject = stream;
+    const track = stream.getVideoTracks()[0];
+    const capabilities = track.getCapabilities();
+    window.o_video_capabilities = capabilities
+    window.o_video_track = track
     o_state.b_webcam_available = true
     return 
 
@@ -1070,7 +1111,7 @@ async function f_start_render_loop() {
                 o_input_action.v_o_input_sensor = o_state?.v_o_input_device?.a_o_input_sensor?.find(
                   (o, n_idx)=>{
                     if(o.s_name == o_input_action.s_name_input__controller){
-                      o_input_action.v_o_input_sensor_last = o_state?.v_o_input_device__last.a_o_input_sensor[n_idx];
+                      o_input_action.v_o_input_sensor_last = o_state?.v_o_input_device__last?.a_o_input_sensor?.[n_idx];
                       return true 
                     }
                   }
@@ -1634,7 +1675,6 @@ document.body.appendChild(
   await f_o_html__and_make_renderable(
       {
           s_tag: 'div', 
-          style: "font-size: 2rem; ",
           class: "app inputs",
           a_o: [
             ...o_state.a_o_input_font_icon.map(o=>{
@@ -1698,9 +1738,9 @@ document.body.appendChild(
                   o_js__settings: {
                       f_o_jsh: ()=>{
                         return {
+                          class: "settings",
                           b_render: o_state.b_render__settings,
                           a_o: [
-                            {innerText:'wtf'},
 
                             // {
                             //   class: "gamepad_controls", 
@@ -1790,239 +1830,348 @@ document.body.appendChild(
                             //   ]
                             // },
 
-                          //   Object.assign(
-                          //     o_state, 
-                          //     {
-                          //       o_js__a_o_input_mapping: {
-                          //         f_o_jsh: ()=>{
-                          //           let f_o_jsh = function(o, s_name){
-                          //             console.log(o)
-                          //             let v_o_input_font = o_state.a_o_input_font_icon.find(
-                          //               o2=>{
-                          //                 return o2.s_name_input == o.s_name_input__controller
-                          //               }
-                          //             )
-                          //             if(!s_name){
-                          //               s_name = o.s_name
-                          //             }
-                          //             return {
-                          //               style: "display:flex; flex-direction:row;justify-content:space-between;align-items:center",
-                          //               a_o: [
-                          //                 {
-                          //                   innerText: s_name
-                          //                 }, 
-                          //                 {
-                          //                   onclick: ()=>{
-                          //                     o_state.o_config.o_input_action = o;
-                          //                     o_state.o_js__a_o_input_mapping?._f_render();
-                          //                   },
-                          //                   s_tag: "button", 
-                          //                 style: "font-size: 3rem;display:flex; flex-direction:row;justify-content:space-between;align-items:center",
-                          //                   a_o: [
-                          //                     {
-                          //                       class: 'keyboard_char',
-                          //                       innerText: (o_state.o_config.o_input_action == o ) ? '?': o.s_name_char_keyboard
-                          //                     },
-                          //                     {
-                          //                       innerHTML: "&nbsp;&nbsp;&nbsp;"
-                          //                     },
-                          //                     {
-                          //                       class: f_s_class__from_s_name_font(v_o_input_font?.s_name_font),
-                          //                       innerText: (o_state.o_config.o_input_action == o ) ? '?':  v_o_input_font?.s_char
-                          //                     }
-                          //                   ]
-                          //                 }
-                          //                 // f_o_jsh__keyicons(o.s_name_input)
-                          //               ]
-                          //             }
-                          //           }
+                            Object.assign(
+                              o_state, 
+                              {
+                                o_js__a_o_input_mapping: {
+                                  f_o_jsh: ()=>{
+                                    let f_o_jsh = function(o, s_name){
+                                      console.log(o)
+                                      let v_o_input_font = o_state.a_o_input_font_icon.find(
+                                        o2=>{
+                                          return o2.s_name_input == o.s_name_input__controller
+                                        }
+                                      )
+                                      if(!s_name){
+                                        s_name = o.s_name
+                                      }
+                                      return {
+                                        class: "hoverable",
+                                        style: "display:flex; flex-direction:row;justify-content:space-between;align-items:center",
+                                        a_o: [
+                                          {
+                                            innerText: s_name
+                                          }, 
+                                          {
+                                            onclick: ()=>{
+                                              o_state.o_config.o_input_action = o;
+                                              o_state.o_js__a_o_input_mapping?._f_render();
+                                            },
+                                            s_tag: "button", 
+                                          style: "display:flex; flex-direction:row;justify-content:space-between;align-items:center",
+                                            a_o: [
+                                              {
+                                                class: 'keyboard_char',
+                                                innerText: (o_state.o_config.o_input_action == o ) ? '?': o.s_name_char_keyboard.toUpperCase()
+                                              },
+                                              {
+                                                innerHTML: "&nbsp;&nbsp;&nbsp;"
+                                              },
+                                              {
+                                                class: f_s_class__from_s_name_font(v_o_input_font?.s_name_font),
+                                                innerText: (o_state.o_config.o_input_action == o ) ? '?':  v_o_input_font?.s_char
+                                              }
+                                            ]
+                                          }
+                                          // f_o_jsh__keyicons(o.s_name_input)
+                                        ]
+                                      }
+                                    }
                                     
-                          //           return {
-                          //             class: 'a_o_input_mapping', 
-                          //             a_o: [
-                          //               {
-                          //                 innerText: "Move slide", 
-                          //               },
-                          //               f_o_jsh(
-                          //                 o_state.o_config.a_o_input_action.find(o=>
-                          //                   o.s_name=='move_slide_x_plus'
-                          //                 ),
-                          //                 'Right'
-                          //               ),
-                          //               f_o_jsh(
-                          //                 o_state.o_config.a_o_input_action.find(o=>
-                          //                   o.s_name=='move_slide_x_minus'
-                          //                 ),
-                          //                 'Left'
-                          //               ),
-                          //               f_o_jsh(
-                          //                 o_state.o_config.a_o_input_action.find(o=>
-                          //                   o.s_name=='move_slide_y_plus'
-                          //                 ),
-                          //                 'Up'
-                          //               ),
-                          //               f_o_jsh(
-                          //                 o_state.o_config.a_o_input_action.find(o=>
-                          //                   o.s_name=='move_slide_y_minus'
-                          //                 ),
-                          //                 'Down'
-                          //               )
-                          //               // ...o_state.o_config.a_o_input_action.map(o=>)
-                          //             ]
-                          //           }
-                          //         }
-                          //       }
-                          //     }
-                          //   ).o_js__a_o_input_mapping,
-                          //   {
-                          //     class: 'a_o_input_mapping', 
-                          //     a_o: [
+                                    return {
+                                      class: 'a_o_input_mapping', 
+                                      a_o: [
+                                        {
+                                          innerText: "Slide movement", 
+                                        },
+                                        f_o_jsh(
+                                          o_state.o_config.a_o_input_action.find(o=>
+                                            o.s_name=='move_slide_x_plus'
+                                          ),
+                                          'Right'
+                                        ),
+                                        f_o_jsh(
+                                          o_state.o_config.a_o_input_action.find(o=>
+                                            o.s_name=='move_slide_x_minus'
+                                          ),
+                                          'Left'
+                                        ),
+                                        f_o_jsh(
+                                          o_state.o_config.a_o_input_action.find(o=>
+                                            o.s_name=='move_slide_y_plus'
+                                          ),
+                                          'Up'
+                                        ),
+                                        f_o_jsh(
+                                          o_state.o_config.a_o_input_action.find(o=>
+                                            o.s_name=='move_slide_y_minus'
+                                          ),
+                                          'Down'
+                                        ),
+                                        f_o_jsh(
+                                          o_state.o_config.a_o_input_action.find(o=>
+                                            o.s_name=='move_slide_single_step_x_plus'
+                                          ),
+                                          'Right (single step)'
+                                        ),
+                                        f_o_jsh(
+                                          o_state.o_config.a_o_input_action.find(o=>
+                                            o.s_name=='move_slide_single_step_x_minus'
+                                          ),
+                                          'Left  (single step)'
+                                        ),
+                                        f_o_jsh(
+                                          o_state.o_config.a_o_input_action.find(o=>
+                                            o.s_name=='move_slide_single_step_y_plus'
+                                          ),
+                                          'Up  (single step)'
+                                        ),
+                                        f_o_jsh(
+                                          o_state.o_config.a_o_input_action.find(o=>
+                                            o.s_name=='move_slide_single_step_y_minus'
+                                          ),
+                                          'Down  (single step)'
+                                        ),
+                                        {
+                                          innerText: "Focus movement", 
+                                        },
+                                        f_o_jsh(
+                                          o_state.o_config.a_o_input_action.find(o=>
+                                            o.s_name=='move_focus_plus'
+                                          ),
+                                          'In'
+                                        ),
+                                        f_o_jsh(
+                                          o_state.o_config.a_o_input_action.find(o=>
+                                            o.s_name=='move_focus_minus'
+                                          ),
+                                          'Out'
+                                        ), 
+                                        {
+                                          innerText: "Camera control Layer", 
+                                        },
+
+                                        {
+                                          innerText: "Image control Layer", 
+                                        },
+                                        new O_input_action(
+                                          'next_image_mode', 
+                                          '?', 
+                                          'x',
+                                          false,
+                                        ),
+
+                                        
+                                        f_o_jsh(
+                                          o_state.o_config.a_o_input_action.find(o=>
+                                            o.s_name=='move_digital_x_plus'
+                                          ),
+                                          'Right'
+                                        ),
+                                        f_o_jsh(
+                                          o_state.o_config.a_o_input_action.find(o=>
+                                            o.s_name=='move_digital_x_minus'
+                                          ),
+                                          'Left'
+                                        ),
+                                        f_o_jsh(
+                                          o_state.o_config.a_o_input_action.find(o=>
+                                            o.s_name=='move_digital_y_plus'
+                                          ),
+                                          'Up'
+                                        ),
+                                        f_o_jsh(
+                                          o_state.o_config.a_o_input_action.find(o=>
+                                            o.s_name=='move_digital_y_minus'
+                                          ),
+                                          'Down'
+                                        ),
+                                        {
+                                          innerText: "Digital Zoom", 
+                                        },
+                                        f_o_jsh(
+                                          o_state.o_config.a_o_input_action.find(o=>
+                                            o.s_name=='zoom_digital_plus'
+                                          ),
+                                          'In'
+                                        ),
+                                        f_o_jsh(
+                                          o_state.o_config.a_o_input_action.find(o=>
+                                            o.s_name=='zoom_digital_minus'
+                                          ),
+                                          'Out'
+                                        ), 
+                                        {
+                                          innerText: "Image mode", 
+                                        },
+                                        new O_input_action(
+                                          'next_image_mode', 
+                                          'left_index_finger_button_l1', 
+                                          'x',
+                                          false,
+                                        ),
+                                        new O_input_action(
+                                          'previous_image_mode', 
+                                          'right_index_finger_button_r1', 
+                                          'z',
+                                          false,
+                                        ),
+                                        // ...o_state.o_config.a_o_input_action.map(o=>)
+                                      ]
+                                    }
+                                  }
+                                }
+                              }
+                            ).o_js__a_o_input_mapping,
+                            {
+                              class: 'a_o_input_mapping', 
+                              a_o: [
                                 
-                          //         Object.assign(
-                          //           o_state, 
-                          //           {
-                          //             o_js__control_mapping_overlay: {
-                          //               f_o_jsh:()=>{
-                          //                 return {
-                          //                     a_o: [
-                          //                       {
-                          //                         innerText: "Press any input to assign it to selected action"
-                          //                       }
-                          //                     ]
-                          //                 }
-                          //               }
-                          //             }
-                          //           }
-                          //         ).o_js__control_mapping_overlay,
-                          //       ...o_state.o_config.a_o_input_action.map(o=>{
-                          //         return {
-                          //           a_o: [
-                          //             {
-                          //               innerText: o.s_name
-                          //             }, 
-                          //             // f_o_jsh__keyicons(o.s_name_input)
-                          //           ]
-                          //         }
-                          //       })
-                          //     ]
-                          //   }, 
-                          //   Object.assign(
-                          //     o_state,
-                          //     {
-                          //         o_js__s_prompt_image_ai_generic: {
-                          //             f_o_jsh: ()=>{
-                          //                 return {
-                          //                     class: 'hoverable',
-                          //                     a_o:[   
-                          //                         {
-                          //                             innerText: "prompt_for_ai"
-                          //                         }, 
-                          //                         {
-                          //                             s_tag: "input", 
-                          //                             type: 'text', 
-                          //                             value: o_state.s_prompt_image_ai_generic,
-                          //                             oninput: (o_e)=>{
-                          //                                 o_state.s_prompt_image_ai_generic = o_e.target.value
-                          //                             }
-                          //                         }
-                          //                     ]
-                          //                 }
-                          //             }
-                          //         }
-                          //     }
+                                  Object.assign(
+                                    o_state, 
+                                    {
+                                      o_js__control_mapping_overlay: {
+                                        f_o_jsh:()=>{
+                                          return {
+                                              a_o: [
+                                                {
+                                                  innerText: "Press any input to assign it to selected action"
+                                                }
+                                              ]
+                                          }
+                                        }
+                                      }
+                                    }
+                                  ).o_js__control_mapping_overlay,
+                                ...o_state.o_config.a_o_input_action.map(o=>{
+                                  return {
+                                    a_o: [
+                                      {
+                                        innerText: o.s_name
+                                      }, 
+                                      // f_o_jsh__keyicons(o.s_name_input)
+                                    ]
+                                  }
+                                })
+                              ]
+                            }, 
+                            Object.assign(
+                              o_state,
+                              {
+                                  o_js__s_prompt_image_ai_generic: {
+                                      f_o_jsh: ()=>{
+                                          return {
+                                              class: 'hoverable',
+                                              a_o:[   
+                                                  {
+                                                      innerText: "prompt_for_ai"
+                                                  }, 
+                                                  {
+                                                      s_tag: "input", 
+                                                      type: 'text', 
+                                                      value: o_state.s_prompt_image_ai_generic,
+                                                      oninput: (o_e)=>{
+                                                          o_state.s_prompt_image_ai_generic = o_e.target.value
+                                                      }
+                                                  }
+                                              ]
+                                          }
+                                      }
+                                  }
+                              }
                           
-                          // ).o_js__s_prompt_image_ai_generic,
-                          // Object.assign(
-                          //     o_state,
-                          //     {
-                          //         o_js__s_api_key_openai: {
-                          //             f_o_jsh: ()=>{
-                          //                 return {
-                          //                     a_o:[   
-                          //                         {
-                          //                             innerText: "api_key_openai"
-                          //                         }, 
-                          //                         {
-                          //                             s_tag: "input", 
-                          //                             type: 'text', 
-                          //                             oninput: (o_e)=>{
-                          //                                 o_state.s_api_key_openai = o_e.target.value
+                          ).o_js__s_prompt_image_ai_generic,
+                          Object.assign(
+                              o_state,
+                              {
+                                  o_js__s_api_key_openai: {
+                                      f_o_jsh: ()=>{
+                                          return {
+                                              a_o:[   
+                                                  {
+                                                      innerText: "api_key_openai"
+                                                  }, 
+                                                  {
+                                                      s_tag: "input", 
+                                                      type: 'text', 
+                                                      oninput: (o_e)=>{
+                                                          o_state.s_api_key_openai = o_e.target.value
               
-                          //                                 clearTimeout(o_state.n_id_timeout)
-                          //                                 o_state.n_id_timeout = setTimeout( async ()=>{
-                          //                                     let o = await fetch(
-                          //                                         "https://api.openai.com/v1/organizations",
-                          //                                         {
-                          //                                             headers: {
-                          //                                                 "Authorization": `Bearer ${o_state.s_api_key_openai}`
-                          //                                             }
-                          //                                         }    
-                          //                                     );
-                          //                                     let b_invalid = false;
-                          //                                     if(!o.ok){
-                          //                                         b_invalid = true;
-                          //                                     }
-                          //                                     try {
-                          //                                         let o_parsed = await o.json();
-                          //                                         await f_o_throw_notification(o_state.o_state__notifire,`valid api key added`, 'success')
+                                                          clearTimeout(o_state.n_id_timeout)
+                                                          o_state.n_id_timeout = setTimeout( async ()=>{
+                                                              let o = await fetch(
+                                                                  "https://api.openai.com/v1/organizations",
+                                                                  {
+                                                                      headers: {
+                                                                          "Authorization": `Bearer ${o_state.s_api_key_openai}`
+                                                                      }
+                                                                  }    
+                                                              );
+                                                              let b_invalid = false;
+                                                              if(!o.ok){
+                                                                  b_invalid = true;
+                                                              }
+                                                              try {
+                                                                  let o_parsed = await o.json();
+                                                                  await f_o_throw_notification(o_state.o_state__notifire,`valid api key added`, 'success')
               
-                          //                                     } catch (error) {
-                          //                                         // f_o_throw_notification('api key invalid')
-                          //                                         b_invalid = true
-                          //                                     }
-                          //                                     if(b_invalid){
-                          //                                         await f_o_throw_notification(o_state.o_state__notifire,`invalid api key: ${o_state.s_api_key_openai}!`, 'warning')
-                          //                                     }
+                                                              } catch (error) {
+                                                                  // f_o_throw_notification('api key invalid')
+                                                                  b_invalid = true
+                                                              }
+                                                              if(b_invalid){
+                                                                  await f_o_throw_notification(o_state.o_state__notifire,`invalid api key: ${o_state.s_api_key_openai}!`, 'warning')
+                                                              }
               
-                          //                                 },3000)
-                          //                             }
-                          //                         }
-                          //                     ]
-                          //                 }
-                          //             }
-                          //         }
-                          //     }
+                                                          },3000)
+                                                      }
+                                                  }
+                                              ]
+                                          }
+                                      }
+                                  }
+                              }
                           
-                          // ).o_js__s_api_key_openai,
-                          // ...[
-                          //     "n_factor_scale",
-                          //     "n_factor_brightness",
-                          //     "n_factor_contrast",
-                          //     "n_factor_gamma",
-                          //     "n_x_trn_nor",
-                          //     "n_y_trn_nor",
-                          // ].map(s_prop=>{
-                          //     let s_prop2 = `o_js__${s_prop}`
-                          //     return Object.assign(
-                          //         o_state,
-                          //         {
-                          //             [s_prop2]: {
-                          //                 f_o_jsh:()=>{
-                          //                     return {
-                          //                         a_o: [
-                          //                             {
-                          //                                 s_tag: "label", 
-                          //                                 innerText: s_prop
-                          //                             },
-                          //                             {
-                          //                                 s_tag: "input",
-                          //                                 type: 'range', 
-                          //                                 step: 0.01, 
-                          //                                 min: -1,
-                          //                                 max:3.,
-                          //                                 value:  o_state[s_prop],
-                          //                                 oninput: (o_e)=>{
-                          //                                     let n = parseFloat(o_e.target.value)
-                          //                                     o_state[s_prop] = n;
-                          //                                 }
-                          //                             }
-                          //                         ]
-                          //                     }
-                          //                 }
-                          //             }
-                          //         }
-                          //     )[s_prop2]
-                          // }),
+                          ).o_js__s_api_key_openai,
+                          ...[
+                              "n_factor_scale",
+                              "n_factor_brightness",
+                              "n_factor_contrast",
+                              "n_factor_gamma",
+                              "n_x_trn_nor",
+                              "n_y_trn_nor",
+                          ].map(s_prop=>{
+                              let s_prop2 = `o_js__${s_prop}`
+                              return Object.assign(
+                                  o_state,
+                                  {
+                                      [s_prop2]: {
+                                          f_o_jsh:()=>{
+                                              return {
+                                                  a_o: [
+                                                      {
+                                                          s_tag: "label", 
+                                                          innerText: s_prop
+                                                      },
+                                                      {
+                                                          s_tag: "input",
+                                                          type: 'range', 
+                                                          step: 0.01, 
+                                                          min: -1,
+                                                          max:3.,
+                                                          value:  o_state[s_prop],
+                                                          oninput: (o_e)=>{
+                                                              let n = parseFloat(o_e.target.value)
+                                                              o_state[s_prop] = n;
+                                                          }
+                                                      }
+                                                  ]
+                                              }
+                                          }
+                                      }
+                                  }
+                              )[s_prop2]
+                          }),
               
                             Object.assign(
                                 o_state, 
