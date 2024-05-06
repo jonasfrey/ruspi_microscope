@@ -79,12 +79,12 @@ class O_input_font_icon{
 }
 class O_input_action{
   constructor(
-    s_name_action, 
+    s_name, 
     s_name_input__controller, 
     s_name_char_keyboard, 
     v_b_invert_axis
   ){
-    this.s_name_action = s_name_action, 
+    this.s_name = s_name, 
     this.s_name_input__controller = s_name_input__controller, 
     this.s_name_char_keyboard = s_name_char_keyboard, 
     this.v_b_invert_axis = v_b_invert_axis
@@ -439,7 +439,7 @@ window.addEventListener('mousemove', (o_e)=>{
 
   o_state.o_cursor_virtual.o_trn.n_x = o_e.clientX;
   o_state.o_cursor_virtual.o_trn.n_y = o_e.clientY;
-  o_state?.o_js__o_cursor_virtual._f_render();
+  // o_state?.o_js__o_cursor_virtual._f_render();
   // console.log(o_e.target)
   Array.from(document.querySelectorAll('.hoverable')).map(o=>{
     o.classList.remove("hovered")
@@ -834,7 +834,6 @@ let o_gpu_gateway = await f_o_gpu_gateway(
           sqrt(o_col_sobel_x_pow.z+o_col_sobel_y_pow.z),
           sqrt(o_col_sobel_x_pow.w+o_col_sobel_y_pow.w)
         );
-        fragColor = o_col_sobel_y;
 
       }
 
@@ -1076,32 +1075,32 @@ async function f_start_render_loop() {
                     }
                   }
                 )
-                if(o_input_action.s_name_action == 'move_digital_x_plus'){
+                if(o_input_action.s_name == 'move_digital_x_plus'){
                  o_state.n_x_trn_nor += (o_input_action?.v_o_keyboard_key?.b_down) ? +0.01 : 0;
                  o_state.n_x_trn_nor += (o_input_action?.v_o_input_sensor?.n_nor) ? +Math.abs(o_input_action?.v_o_input_sensor?.n_nor) : 0;
                 }
-                if(o_input_action.s_name_action == 'move_digital_x_minus'){
+                if(o_input_action.s_name == 'move_digital_x_minus'){
                   o_state.n_x_trn_nor += (o_input_action?.v_o_keyboard_key?.b_down) ? -0.01 : 0;
                   o_state.n_x_trn_nor += (o_input_action?.v_o_input_sensor?.n_nor) ? -Math.abs(o_input_action?.v_o_input_sensor?.n_nor) : 0;
                 }
-                if(o_input_action.s_name_action == 'move_digital_y_plus'){
+                if(o_input_action.s_name == 'move_digital_y_plus'){
                   o_state.n_y_trn_nor += (o_input_action?.v_o_keyboard_key?.b_down) ? -0.01 : 0;
                   o_state.n_y_trn_nor += (o_input_action?.v_o_input_sensor?.n_nor) ? -Math.abs(o_input_action?.v_o_input_sensor?.n_nor) : 0;
                  }
-                 if(o_input_action.s_name_action == 'move_digital_y_minus'){
+                 if(o_input_action.s_name == 'move_digital_y_minus'){
                    o_state.n_y_trn_nor += (o_input_action?.v_o_keyboard_key?.b_down) ? +0.01 : 0;
                    o_state.n_y_trn_nor += (o_input_action?.v_o_input_sensor?.n_nor) ? + Math.abs(o_input_action?.v_o_input_sensor?.n_nor) : 0;
                  }
-                 if(o_input_action.s_name_action == 'zoom_digital_plus'){
+                 if(o_input_action.s_name == 'zoom_digital_plus'){
                   o_state.n_factor_scale += (o_input_action?.v_o_keyboard_key?.b_down) ? +0.01 : 0;
                   o_state.n_factor_scale += (o_input_action?.v_o_input_sensor?.n_nor) ? + Math.abs(o_input_action?.v_o_input_sensor?.n_nor) : 0;
                 }
-                if(o_input_action.s_name_action == 'zoom_digital_minus'){
+                if(o_input_action.s_name == 'zoom_digital_minus'){
                   o_state.n_factor_scale += (o_input_action?.v_o_keyboard_key?.b_down) ? -0.01 : 0;
                   o_state.n_factor_scale += (o_input_action?.v_o_input_sensor?.n_nor) ? - Math.abs(o_input_action?.v_o_input_sensor?.n_nor) : 0;
                 }
                  
-                if(o_input_action.s_name_action == 'next_image_mode'){
+                if(o_input_action.s_name == 'next_image_mode'){
                   if(
                     (o_input_action?.v_o_keyboard_key?.b_down == true) 
                     && o_input_action?.v_o_keyboard_key?.b_down != o_input_action?.v_o_keyboard_key?.b_down_last
@@ -1109,7 +1108,7 @@ async function f_start_render_loop() {
                     o_state.n_idx_a_s_image_mode = (o_state.n_idx_a_s_image_mode+1)%o_state.a_s_image_mode.length
                   }
                 }
-                if(o_input_action.s_name_action == 'previous_image_mode'){
+                if(o_input_action.s_name == 'previous_image_mode'){
                   if(
                     (o_input_action?.v_o_keyboard_key?.b_down == true) 
                     && o_input_action?.v_o_keyboard_key?.b_down != o_input_action?.v_o_keyboard_key?.b_down_last
@@ -1120,7 +1119,7 @@ async function f_start_render_loop() {
                     }
                   }
                 }
-                if(o_input_action.s_name_action == 'toggle_settings'){
+                if(o_input_action.s_name == 'toggle_settings'){
                   if(
                     (
                       (o_input_action?.v_o_keyboard_key?.b_down == true) 
@@ -1136,8 +1135,9 @@ async function f_start_render_loop() {
                     )
                     ){
                     o_state.b_render__settings = !o_state.b_render__settings
-                    if(!o_state?.o_js__settings?._b_rendering){
-                      o_state?.o_js__settings?._f_render?.()
+                    if(!o_state.o_js__settings._b_rendering){
+                      o_state?.o_js__settings._f_render()
+                      console.log("asdf")
                     }
                   }
 
@@ -1286,7 +1286,7 @@ async function f_start_render_loop() {
                 o_gpu_gateway, 
             );
   
-            o_state.o_js__o_cursor_virtual._f_render()
+            // o_state.o_js__o_cursor_virtual._f_render()
             
 
             // needs to be at the end
@@ -1700,297 +1700,329 @@ document.body.appendChild(
                         return {
                           b_render: o_state.b_render__settings,
                           a_o: [
+                            {innerText:'wtf'},
 
-
-                            {
-                              class: "gamepad_controls", 
-                              a_o: [
-                                //layer1
-                                // f_o_svg(
-                                //   {
-                                //     "left_stick_x_axis":'left_stick_x_axis',
-                                //     "left_stick_y_axis":'left_stick_y_axis',
-                                //     "right_stick_x_axis":'right_stick_x_axis',
-                                //     "right_stick_y_axis":'right_stick_y_axis',
-                                //     "direction_pad_up":'direction_pad_up',
-                                //     "direction_pad_left":'direction_pad_left',
-                                //     "direction_pad_down":'direction_pad_down',
-                                //     "direction_pad_right":'direction_pad_right',
-                                //     "face_button_bottom":'face_button_bottom',
-                                //     "face_button_right":'face_button_right',
-                                //     "face_button_left":'face_button_left',
-                                //     "face_button_top":'face_button_top',
-                                //     "left_index_finger_button_l1":'left_index_finger_button_l1',
-                                //     "right_index_finger_button_r1":'right_index_finger_button_r1',
-                                //     "left_middle_finger_button_l2":'left_middle_finger_button_l2',
-                                //     "right_middle_finger_button_r2":'right_middle_finger_button_r2',
-                                //     "left_meta1_button":'left_meta1_button',
-                                //     "right_meta1_button":'right_meta1_button',
-                                //     "center_meta1_button": 'center_meta1_button',
-                                //     "left_stick_button_l3":'left_stick_button_l3',
-                                //     "right_stick_button_r3":'right_stick_button_r3',
-                                //     "right_middle_finger_button_r2":'right_middle_finger_button_r2',
-                                //     "left_middle_finger_button_l2":'left_middle_finger_button_l2',
-                                //   },
-                                //   `Layer test`
-                                //  ),
-                                f_o_svg(
-                                  {
-                                    "left_stick_x_axis":'',
-                                    "left_stick_y_axis":'Focus (y)',
-                                    "right_stick_x_axis":'',
-                                    "right_stick_y_axis":'move slide (x y)',
-                                    "direction_pad_up":'',
-                                    "direction_pad_left":'',
-                                    "direction_pad_down":'Move slide slow (y)',
-                                    "direction_pad_right":'Move slide slow (x)',
-                                    "face_button_bottom":'Take screenshot',
-                                    "face_button_right":'Record video',
-                                    "face_button_left":'Ask AI (GPT4)',
-                                    "face_button_top":'Focus stack (add image)',
-                                    "left_index_finger_button_l1":'',
-                                    "right_index_finger_button_r1":'Finish focus stack',
-                                    "left_middle_finger_button_l2":'',
-                                    "right_middle_finger_button_r2":'Hold down, switch Layer 2',
-                                    "left_meta1_button":'Reset image manipulation',
-                                    "right_meta1_button":'show controls',
-                                    "center_meta1_button": '',
-                                    "left_stick_button_l3":'',
-                                    "right_stick_button_r3":'',
-                                  },
-                                  `Layer 1`
-                                 ),
-                                 f_o_svg(
-                                  {
-                                    "left_stick_x_axis":'',
-                                    "left_stick_y_axis":'Zoom digial (y)',
-                                    "right_stick_x_axis":'',
-                                    "right_stick_y_axis":'Move digital (x y)',
-                                    "direction_pad_up":'',
-                                    "direction_pad_left":'',
-                                    "direction_pad_down":'Contrast + -',
-                                    "direction_pad_right":'Gamma + -',
-                                    "face_button_bottom":'',
-                                    "face_button_right":'',
-                                    "face_button_left":'',
-                                    "face_button_top":'',
-                                    "left_index_finger_button_l1":'Previous Image mode',
-                                    "right_index_finger_button_r1":'Next Image mode',
-                                    "left_middle_finger_button_l2":'',
-                                    "right_middle_finger_button_r2":'',
-                                    "left_meta1_button":'',
-                                    "right_meta1_button":'',
-                                    "center_meta1_button": '',
-                                    "left_stick_button_l3":'',
-                                    "right_stick_button_r3":'',
-                                  },
-                                  `Layer 2 (Image control)`
-                                 ),
+                            // {
+                            //   class: "gamepad_controls", 
+                            //   a_o: [
+                            //     //layer1
+                            //     // f_o_svg(
+                            //     //   {
+                            //     //     "left_stick_x_axis":'left_stick_x_axis',
+                            //     //     "left_stick_y_axis":'left_stick_y_axis',
+                            //     //     "right_stick_x_axis":'right_stick_x_axis',
+                            //     //     "right_stick_y_axis":'right_stick_y_axis',
+                            //     //     "direction_pad_up":'direction_pad_up',
+                            //     //     "direction_pad_left":'direction_pad_left',
+                            //     //     "direction_pad_down":'direction_pad_down',
+                            //     //     "direction_pad_right":'direction_pad_right',
+                            //     //     "face_button_bottom":'face_button_bottom',
+                            //     //     "face_button_right":'face_button_right',
+                            //     //     "face_button_left":'face_button_left',
+                            //     //     "face_button_top":'face_button_top',
+                            //     //     "left_index_finger_button_l1":'left_index_finger_button_l1',
+                            //     //     "right_index_finger_button_r1":'right_index_finger_button_r1',
+                            //     //     "left_middle_finger_button_l2":'left_middle_finger_button_l2',
+                            //     //     "right_middle_finger_button_r2":'right_middle_finger_button_r2',
+                            //     //     "left_meta1_button":'left_meta1_button',
+                            //     //     "right_meta1_button":'right_meta1_button',
+                            //     //     "center_meta1_button": 'center_meta1_button',
+                            //     //     "left_stick_button_l3":'left_stick_button_l3',
+                            //     //     "right_stick_button_r3":'right_stick_button_r3',
+                            //     //     "right_middle_finger_button_r2":'right_middle_finger_button_r2',
+                            //     //     "left_middle_finger_button_l2":'left_middle_finger_button_l2',
+                            //     //   },
+                            //     //   `Layer test`
+                            //     //  ),
+                            //     f_o_svg(
+                            //       {
+                            //         "left_stick_x_axis":'',
+                            //         "left_stick_y_axis":'Focus (y)',
+                            //         "right_stick_x_axis":'',
+                            //         "right_stick_y_axis":'move slide (x y)',
+                            //         "direction_pad_up":'',
+                            //         "direction_pad_left":'',
+                            //         "direction_pad_down":'Move slide slow (y)',
+                            //         "direction_pad_right":'Move slide slow (x)',
+                            //         "face_button_bottom":'Take screenshot',
+                            //         "face_button_right":'Record video',
+                            //         "face_button_left":'Ask AI (GPT4)',
+                            //         "face_button_top":'Focus stack (add image)',
+                            //         "left_index_finger_button_l1":'',
+                            //         "right_index_finger_button_r1":'Finish focus stack',
+                            //         "left_middle_finger_button_l2":'',
+                            //         "right_middle_finger_button_r2":'Hold down, switch Layer 2',
+                            //         "left_meta1_button":'Reset image manipulation',
+                            //         "right_meta1_button":'show controls',
+                            //         "center_meta1_button": '',
+                            //         "left_stick_button_l3":'',
+                            //         "right_stick_button_r3":'',
+                            //       },
+                            //       `Layer 1`
+                            //      ),
+                            //      f_o_svg(
+                            //       {
+                            //         "left_stick_x_axis":'',
+                            //         "left_stick_y_axis":'Zoom digial (y)',
+                            //         "right_stick_x_axis":'',
+                            //         "right_stick_y_axis":'Move digital (x y)',
+                            //         "direction_pad_up":'',
+                            //         "direction_pad_left":'',
+                            //         "direction_pad_down":'Contrast + -',
+                            //         "direction_pad_right":'Gamma + -',
+                            //         "face_button_bottom":'',
+                            //         "face_button_right":'',
+                            //         "face_button_left":'',
+                            //         "face_button_top":'',
+                            //         "left_index_finger_button_l1":'Previous Image mode',
+                            //         "right_index_finger_button_r1":'Next Image mode',
+                            //         "left_middle_finger_button_l2":'',
+                            //         "right_middle_finger_button_r2":'',
+                            //         "left_meta1_button":'',
+                            //         "right_meta1_button":'',
+                            //         "center_meta1_button": '',
+                            //         "left_stick_button_l3":'',
+                            //         "right_stick_button_r3":'',
+                            //       },
+                            //       `Layer 2 (Image control)`
+                            //      ),
     
-                              ]
-                            },
-                            Object.assign(
-                              o_state, 
-                              {
-                                o_js__a_o_input_mapping: {
-                                  f_o_jsh: ()=>{
-                                    return {
-                                      class: 'a_o_input_mapping', 
-                                      a_o: [
-                                        
-                                        ...o_state.o_config.a_o_input_action.map(o=>{
-                                          let v_o_input_font = o_state.a_o_input_font_icon.find(
-                                            o2=>{
-                                              return o2.s_name_input == o.s_name_input__controller
-                                            }
-                                          )
+                            //   ]
+                            // },
 
-                                          return {
-                                            style: "display:flex; flex-direction:row;justify-content:space-between;align-items:center",
-                                            a_o: [
-                                              {
-                                                innerText: o.s_name_action
-                                              }, 
-                                              {
-                                                onclick: ()=>{
-                                                  o_state.o_config.o_input_action = o;
-                                                  o_state.o_js__a_o_input_mapping?._f_render();
-                                                },
-                                                s_tag: "button", 
-                                              style: "font-size: 3rem;display:flex; flex-direction:row;justify-content:space-between;align-items:center",
-                                                a_o: [
-                                                  {
-                                                    class: 'keyboard_char',
-                                                    innerText: (o_state.o_config.o_input_action == o ) ? '?': o.s_name_char_keyboard
-                                                  },
-                                                  {
-                                                    innerHTML: "&nbsp;&nbsp;&nbsp;"
-                                                  },
-                                                  {
-                                                    class: f_s_class__from_s_name_font(v_o_input_font?.s_name_font),
-                                                    innerText: (o_state.o_config.o_input_action == o ) ? '?':  v_o_input_font?.s_char
-                                                  }
-                                                ]
-                                              }
-                                              // f_o_jsh__keyicons(o.s_name_input)
-                                            ]
-                                          }
-                                        })
-                                      ]
-                                    }
-                                  }
-                                }
-                              }
-                            ).o_js__a_o_input_mapping,
-                            {
-                              class: 'a_o_input_mapping', 
-                              a_o: [
+                          //   Object.assign(
+                          //     o_state, 
+                          //     {
+                          //       o_js__a_o_input_mapping: {
+                          //         f_o_jsh: ()=>{
+                          //           let f_o_jsh = function(o, s_name){
+                          //             console.log(o)
+                          //             let v_o_input_font = o_state.a_o_input_font_icon.find(
+                          //               o2=>{
+                          //                 return o2.s_name_input == o.s_name_input__controller
+                          //               }
+                          //             )
+                          //             if(!s_name){
+                          //               s_name = o.s_name
+                          //             }
+                          //             return {
+                          //               style: "display:flex; flex-direction:row;justify-content:space-between;align-items:center",
+                          //               a_o: [
+                          //                 {
+                          //                   innerText: s_name
+                          //                 }, 
+                          //                 {
+                          //                   onclick: ()=>{
+                          //                     o_state.o_config.o_input_action = o;
+                          //                     o_state.o_js__a_o_input_mapping?._f_render();
+                          //                   },
+                          //                   s_tag: "button", 
+                          //                 style: "font-size: 3rem;display:flex; flex-direction:row;justify-content:space-between;align-items:center",
+                          //                   a_o: [
+                          //                     {
+                          //                       class: 'keyboard_char',
+                          //                       innerText: (o_state.o_config.o_input_action == o ) ? '?': o.s_name_char_keyboard
+                          //                     },
+                          //                     {
+                          //                       innerHTML: "&nbsp;&nbsp;&nbsp;"
+                          //                     },
+                          //                     {
+                          //                       class: f_s_class__from_s_name_font(v_o_input_font?.s_name_font),
+                          //                       innerText: (o_state.o_config.o_input_action == o ) ? '?':  v_o_input_font?.s_char
+                          //                     }
+                          //                   ]
+                          //                 }
+                          //                 // f_o_jsh__keyicons(o.s_name_input)
+                          //               ]
+                          //             }
+                          //           }
+                                    
+                          //           return {
+                          //             class: 'a_o_input_mapping', 
+                          //             a_o: [
+                          //               {
+                          //                 innerText: "Move slide", 
+                          //               },
+                          //               f_o_jsh(
+                          //                 o_state.o_config.a_o_input_action.find(o=>
+                          //                   o.s_name=='move_slide_x_plus'
+                          //                 ),
+                          //                 'Right'
+                          //               ),
+                          //               f_o_jsh(
+                          //                 o_state.o_config.a_o_input_action.find(o=>
+                          //                   o.s_name=='move_slide_x_minus'
+                          //                 ),
+                          //                 'Left'
+                          //               ),
+                          //               f_o_jsh(
+                          //                 o_state.o_config.a_o_input_action.find(o=>
+                          //                   o.s_name=='move_slide_y_plus'
+                          //                 ),
+                          //                 'Up'
+                          //               ),
+                          //               f_o_jsh(
+                          //                 o_state.o_config.a_o_input_action.find(o=>
+                          //                   o.s_name=='move_slide_y_minus'
+                          //                 ),
+                          //                 'Down'
+                          //               )
+                          //               // ...o_state.o_config.a_o_input_action.map(o=>)
+                          //             ]
+                          //           }
+                          //         }
+                          //       }
+                          //     }
+                          //   ).o_js__a_o_input_mapping,
+                          //   {
+                          //     class: 'a_o_input_mapping', 
+                          //     a_o: [
                                 
-                                  Object.assign(
-                                    o_state, 
-                                    {
-                                      o_js__control_mapping_overlay: {
-                                        f_o_jsh:()=>{
-                                          return {
-                                              a_o: [
-                                                {
-                                                  innerText: "Press any input to assign it to selected action"
-                                                }
-                                              ]
-                                          }
-                                        }
-                                      }
-                                    }
-                                  ).o_js__control_mapping_overlay,
-                                ...o_state.o_config.a_o_input_action.map(o=>{
-                                  return {
-                                    a_o: [
-                                      {
-                                        innerText: o.s_name_action
-                                      }, 
-                                      // f_o_jsh__keyicons(o.s_name_input)
-                                    ]
-                                  }
-                                })
-                              ]
-                            }, 
-                            Object.assign(
-                              o_state,
-                              {
-                                  o_js__s_prompt_image_ai_generic: {
-                                      f_o_jsh: ()=>{
-                                          return {
-                                              class: 'hoverable',
-                                              a_o:[   
-                                                  {
-                                                      innerText: "prompt_for_ai"
-                                                  }, 
-                                                  {
-                                                      s_tag: "input", 
-                                                      type: 'text', 
-                                                      value: o_state.s_prompt_image_ai_generic,
-                                                      oninput: (o_e)=>{
-                                                          o_state.s_prompt_image_ai_generic = o_e.target.value
-                                                      }
-                                                  }
-                                              ]
-                                          }
-                                      }
-                                  }
-                              }
+                          //         Object.assign(
+                          //           o_state, 
+                          //           {
+                          //             o_js__control_mapping_overlay: {
+                          //               f_o_jsh:()=>{
+                          //                 return {
+                          //                     a_o: [
+                          //                       {
+                          //                         innerText: "Press any input to assign it to selected action"
+                          //                       }
+                          //                     ]
+                          //                 }
+                          //               }
+                          //             }
+                          //           }
+                          //         ).o_js__control_mapping_overlay,
+                          //       ...o_state.o_config.a_o_input_action.map(o=>{
+                          //         return {
+                          //           a_o: [
+                          //             {
+                          //               innerText: o.s_name
+                          //             }, 
+                          //             // f_o_jsh__keyicons(o.s_name_input)
+                          //           ]
+                          //         }
+                          //       })
+                          //     ]
+                          //   }, 
+                          //   Object.assign(
+                          //     o_state,
+                          //     {
+                          //         o_js__s_prompt_image_ai_generic: {
+                          //             f_o_jsh: ()=>{
+                          //                 return {
+                          //                     class: 'hoverable',
+                          //                     a_o:[   
+                          //                         {
+                          //                             innerText: "prompt_for_ai"
+                          //                         }, 
+                          //                         {
+                          //                             s_tag: "input", 
+                          //                             type: 'text', 
+                          //                             value: o_state.s_prompt_image_ai_generic,
+                          //                             oninput: (o_e)=>{
+                          //                                 o_state.s_prompt_image_ai_generic = o_e.target.value
+                          //                             }
+                          //                         }
+                          //                     ]
+                          //                 }
+                          //             }
+                          //         }
+                          //     }
                           
-                          ).o_js__s_prompt_image_ai_generic,
-                          Object.assign(
-                              o_state,
-                              {
-                                  o_js__s_api_key_openai: {
-                                      f_o_jsh: ()=>{
-                                          return {
-                                              a_o:[   
-                                                  {
-                                                      innerText: "api_key_openai"
-                                                  }, 
-                                                  {
-                                                      s_tag: "input", 
-                                                      type: 'text', 
-                                                      oninput: (o_e)=>{
-                                                          o_state.s_api_key_openai = o_e.target.value
+                          // ).o_js__s_prompt_image_ai_generic,
+                          // Object.assign(
+                          //     o_state,
+                          //     {
+                          //         o_js__s_api_key_openai: {
+                          //             f_o_jsh: ()=>{
+                          //                 return {
+                          //                     a_o:[   
+                          //                         {
+                          //                             innerText: "api_key_openai"
+                          //                         }, 
+                          //                         {
+                          //                             s_tag: "input", 
+                          //                             type: 'text', 
+                          //                             oninput: (o_e)=>{
+                          //                                 o_state.s_api_key_openai = o_e.target.value
               
-                                                          clearTimeout(o_state.n_id_timeout)
-                                                          o_state.n_id_timeout = setTimeout( async ()=>{
-                                                              let o = await fetch(
-                                                                  "https://api.openai.com/v1/organizations",
-                                                                  {
-                                                                      headers: {
-                                                                          "Authorization": `Bearer ${o_state.s_api_key_openai}`
-                                                                      }
-                                                                  }    
-                                                              );
-                                                              let b_invalid = false;
-                                                              if(!o.ok){
-                                                                  b_invalid = true;
-                                                              }
-                                                              try {
-                                                                  let o_parsed = await o.json();
-                                                                  await f_o_throw_notification(o_state.o_state__notifire,`valid api key added`, 'success')
+                          //                                 clearTimeout(o_state.n_id_timeout)
+                          //                                 o_state.n_id_timeout = setTimeout( async ()=>{
+                          //                                     let o = await fetch(
+                          //                                         "https://api.openai.com/v1/organizations",
+                          //                                         {
+                          //                                             headers: {
+                          //                                                 "Authorization": `Bearer ${o_state.s_api_key_openai}`
+                          //                                             }
+                          //                                         }    
+                          //                                     );
+                          //                                     let b_invalid = false;
+                          //                                     if(!o.ok){
+                          //                                         b_invalid = true;
+                          //                                     }
+                          //                                     try {
+                          //                                         let o_parsed = await o.json();
+                          //                                         await f_o_throw_notification(o_state.o_state__notifire,`valid api key added`, 'success')
               
-                                                              } catch (error) {
-                                                                  // f_o_throw_notification('api key invalid')
-                                                                  b_invalid = true
-                                                              }
-                                                              if(b_invalid){
-                                                                  await f_o_throw_notification(o_state.o_state__notifire,`invalid api key: ${o_state.s_api_key_openai}!`, 'warning')
-                                                              }
+                          //                                     } catch (error) {
+                          //                                         // f_o_throw_notification('api key invalid')
+                          //                                         b_invalid = true
+                          //                                     }
+                          //                                     if(b_invalid){
+                          //                                         await f_o_throw_notification(o_state.o_state__notifire,`invalid api key: ${o_state.s_api_key_openai}!`, 'warning')
+                          //                                     }
               
-                                                          },3000)
-                                                      }
-                                                  }
-                                              ]
-                                          }
-                                      }
-                                  }
-                              }
+                          //                                 },3000)
+                          //                             }
+                          //                         }
+                          //                     ]
+                          //                 }
+                          //             }
+                          //         }
+                          //     }
                           
-                          ).o_js__s_api_key_openai,
-                          ...[
-                              "n_factor_scale",
-                              "n_factor_brightness",
-                              "n_factor_contrast",
-                              "n_factor_gamma",
-                              "n_x_trn_nor",
-                              "n_y_trn_nor",
-                          ].map(s_prop=>{
-                              let s_prop2 = `o_js__${s_prop}`
-                              return Object.assign(
-                                  o_state,
-                                  {
-                                      [s_prop2]: {
-                                          f_o_jsh:()=>{
-                                              return {
-                                                  a_o: [
-                                                      {
-                                                          s_tag: "label", 
-                                                          innerText: s_prop
-                                                      },
-                                                      {
-                                                          s_tag: "input",
-                                                          type: 'range', 
-                                                          step: 0.01, 
-                                                          min: -1,
-                                                          max:3.,
-                                                          value:  o_state[s_prop],
-                                                          oninput: (o_e)=>{
-                                                              let n = parseFloat(o_e.target.value)
-                                                              o_state[s_prop] = n;
-                                                          }
-                                                      }
-                                                  ]
-                                              }
-                                          }
-                                      }
-                                  }
-                              )[s_prop2]
-                          }),
+                          // ).o_js__s_api_key_openai,
+                          // ...[
+                          //     "n_factor_scale",
+                          //     "n_factor_brightness",
+                          //     "n_factor_contrast",
+                          //     "n_factor_gamma",
+                          //     "n_x_trn_nor",
+                          //     "n_y_trn_nor",
+                          // ].map(s_prop=>{
+                          //     let s_prop2 = `o_js__${s_prop}`
+                          //     return Object.assign(
+                          //         o_state,
+                          //         {
+                          //             [s_prop2]: {
+                          //                 f_o_jsh:()=>{
+                          //                     return {
+                          //                         a_o: [
+                          //                             {
+                          //                                 s_tag: "label", 
+                          //                                 innerText: s_prop
+                          //                             },
+                          //                             {
+                          //                                 s_tag: "input",
+                          //                                 type: 'range', 
+                          //                                 step: 0.01, 
+                          //                                 min: -1,
+                          //                                 max:3.,
+                          //                                 value:  o_state[s_prop],
+                          //                                 oninput: (o_e)=>{
+                          //                                     let n = parseFloat(o_e.target.value)
+                          //                                     o_state[s_prop] = n;
+                          //                                 }
+                          //                             }
+                          //                         ]
+                          //                     }
+                          //                 }
+                          //             }
+                          //         }
+                          //     )[s_prop2]
+                          // }),
               
                             Object.assign(
                                 o_state, 
