@@ -4,13 +4,13 @@ class O_keyboard_key{
       n_ms_wpn_down, 
       n_ms_wpn_up, 
       b_down, 
-      b_down_last
+      b_down__last
     ){
       this.s_name = s_name,
       this.n_ms_wpn_down = n_ms_wpn_down, 
       this.n_ms_wpn_up = n_ms_wpn_up, 
       this.b_down = b_down
-      this.b_down_last = b_down_last 
+      this.b_down__last = b_down__last 
     }
   }
   

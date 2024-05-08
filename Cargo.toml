@@ -25,3 +25,4 @@ blurz = "0.4.0"
 gethostname = "0.4.3"
 #rustls-pemfile = "0.2.3"  # Add this line
 rustls-pemfile = "2.1.2"
+dataurl = "0.1.2"

@@ -8,6 +8,7 @@ use warp::{
 use futures::{
     StreamExt, SinkExt
 };
+use dataurl::DataUrl;
 use std::{
     os::unix::fs::PermissionsExt,
     io::{
@@ -368,6 +369,35 @@ async fn f_websocket_thread(
                             if(s_name_function == "hello"){
                                 o_response.insert("s_res".to_string(), json!("World !"));
                                 o_response.insert("o_child".to_string(), json!({ "s_stdout__lsusb": "yes" }));
+                            }
+
+
+                            if(s_name_function == "f_save_screenshot"){
+
+
+
+                                if let Some(s_data_url) = v_json_parsed.get("s_data_url").and_then(|img| img.as_str()) {
+                                    // Decode the Base64 image data
+                                    let o_data_url = DataUrl::parse(s_data_url).expect(&format!("could not parse dataurl {:?}", s_data_url));
+                                    let s_mime_type = o_data_url.get_media_type();
+                                    let mut s_path_rel_file = "s_data_url";
+                                    if(s_mime_type == "image/png"){
+                                        s_path_rel_file = "data_url.png"
+                                    }
+                                    if(s_mime_type == "image/jpeg"){
+                                        s_path_rel_file = "data_url.jpeg"
+                                    }
+                                    if(s_mime_type == "image/jpg"){
+                                        s_path_rel_file = "data_url.jpg"
+                                    }
+                                    let mut file = std::fs::File::create(s_path_rel_file).unwrap();
+                                    file.write_all(&o_data_url.get_data()).unwrap();
+                                    println!("Image saved successfully.");
+                                    // Process the image bytes as needed
+                                    o_response.insert("b".to_string(), json!(true));
+
+                                }
+
                             }
 
 
