@@ -45,9 +45,11 @@ class O_keyboard_key{
   class O_input_action{
     constructor(
       s_name, 
+      s_nicename,
       s_description
     ){
         this.s_name = s_name
+        this.s_nicename = s_nicename
         this.s_description = s_description
     }
   }

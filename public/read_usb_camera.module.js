@@ -93,110 +93,137 @@ let a_s_name_font = [
 
 let o_input_action__move_slide_x_plus = new O_input_action(
   'move_slide_x_plus',
+  `Slide right`,
   ``
 );
 let o_input_action__move_slide_x_minus = new O_input_action(
   'move_slide_x_minus',
+  'Slide left',
   ``
 );
 let o_input_action__move_slide_y_plus = new O_input_action(
   'move_slide_y_plus',
+  'Slide up',
   ``
 );
 let o_input_action__move_slide_y_minus = new O_input_action(
   'move_slide_y_minus',
+  'Slide down',
   ``
 );
 let o_input_action__move_focus_plus = new O_input_action(
   'move_focus_plus',
+  'Focus in',
   ``
 );
 let o_input_action__move_focus_minus = new O_input_action(
   'move_focus_minus',
+  'Focus out',
   ``
 );
 let o_input_action__move_slide_single_step_x_plus = new O_input_action(
   'move_slide_single_step_x_plus',
+  'Slide right (one-step)',
   `Moves the slide a single step of the stepper motor, which translates to approximately 2r*pi/(number_of_steps_per_rotation) = 0.007 millimeter`
 );
 let o_input_action__move_slide_single_step_x_minus = new O_input_action(
   'move_slide_single_step_x_minus',
+  'Slide left (one-step)',
   `Moves the slide a single step of the stepper motor, which translates to approximately 2r*pi/(number_of_steps_per_rotation) = 0.007 millimeter`
 );
 let o_input_action__move_slide_single_step_y_plus = new O_input_action(
   'move_slide_single_step_y_plus',
+  'Slide up (one-step)',
   `Moves the slide a single step of the stepper motor, which translates to approximately 2r*pi/(number_of_steps_per_rotation) = 0.007 millimeter`
 );
 let o_input_action__move_slide_single_step_y_minus = new O_input_action(
   'move_slide_single_step_y_minus',
+  'Slide down (one-step)',
   `Moves the slide a single step of the stepper motor, which translates to approximately 2r*pi/(number_of_steps_per_rotation) = 0.007 millimeter`
 );
 let o_input_action__keep_hold_down_toggle_layer2 = new O_input_action(
   'keep_hold_down_toggle_camera_control',
+  'Shift to layer 2',
   `hold to to temporarily switch to a new layer`
 );
 let o_input_action__keep_hold_down_toggle_layer3 = new O_input_action(
   'keep_hold_down_toggle_image_control',
+  'Shift to layer 3',
   `hold to to temporarily switch to a new layer`
 );
 let o_input_action__toggle_settings = new O_input_action(
   'toggle_settings',
+  'Settings',
   `Press once to show the settings, press again to hide`
 );
 let o_input_action__next_image_mode = new O_input_action(
   'next_image_mode',
+  'Image mode: next',
   ``
 );
 let o_input_action__previous_image_mode = new O_input_action(
   'previous_image_mode',
+  'Image mode: prev',
   ``
 );
 let o_input_action__reset_image_manipulation = new O_input_action(
   'reset_image_manipulation',
+  'Image reset',
   ``
 );
 let o_input_action__move_digital_x_plus = new O_input_action(
   'move_digital_x_plus',
+  `Digital right`,
   ``
 );
 let o_input_action__move_digital_x_minus = new O_input_action(
   'move_digital_x_minus',
+  'Digital left',
   ``
 );
 let o_input_action__move_digital_y_plus = new O_input_action(
   'move_digital_y_plus',
+  'Digital up',
   ``
 );
 let o_input_action__move_digital_y_minus = new O_input_action(
   'move_digital_y_minus',
+  'Digital down',
   ``
 );
 let o_input_action__zoom_digital_plus = new O_input_action(
   'zoom_digital_plus',
+  `Digital zoom in`, 
   ``
 );
 let o_input_action__zoom_digital_minus = new O_input_action(
   'zoom_digital_minus',
+  `Digital zoom out`,
   ``
 );
 let o_input_action__next_action_layer = new O_input_action(
   'next_action_layer',
+  `Layer: next`,
   ``
 );
 let o_input_action__prev_action_layer = new O_input_action(
   'prev_action_layer',
+  `Layer: prev`,
   ``
 );
 let o_input_action__take_screenshot = new O_input_action(
   'take_screenshot',
+  `Screenshot`,
   ``
 );
 let o_input_action__ask_ai = new O_input_action(
   'ask_ai',
+  `AI-Help`,
   ``
 );
 let o_input_action__toggle_record_video = new O_input_action(
   'toggle_record_video',
+  `Record/Stop video`,
   ``
 );
 
@@ -354,7 +381,8 @@ let o_state = {
     ),
   ],
   o_config: {
-    b_layer_switch_type_on_click_toggle: false,
+    b_layer_switch_type_on_click_cycle_through: false,
+    b_layer_switch_keep_pressed_required: true,
     n_idx_a_o_action_layer: 0,
     n_idx_a_o_action_layer__last: 0,
     v_o_action_layer: null, 
@@ -709,15 +737,22 @@ f_add_css(
   }
   [class^="Controller"] {
     /* Your styles here */
-    font-size: 2rem;
+    font-size: 3.3em;
+    margin: 0 0 0 10px;
+
   }
   .keyboard_char {
-      padding: 0.3rem;
-      min-width: 1rem;
-      min-height: 1rem;
-      border: 2px solid white;
-      border-radius: 10px;
-      box-shadow: 4px 2px 0px ${f_s_hsla(o_variables.o_hsla__bg_hover)};
+    margin: 0 0 0 10px;
+    padding: 0.5em;
+    min-width: 1em;
+    min-height: 1em;
+    aspect-ratio: 1/1;
+    border: 1px solid ${f_s_hsla(o_variables.o_hsla__fg)};
+    border-radius: 10px;
+    display: flex;
+    align-items: top;
+    justify-content: center;
+    box-shadow: 4px 2px 0px ${f_s_hsla(o_variables.o_hsla__bg_hover)};
   }
   .gamepad_controls .layer{
     left: 50%;
@@ -743,6 +778,13 @@ f_add_css(
     position: absolute;
     top: -50px;
     left: 0;
+}
+.action_layer {
+
+  max-width:300px;
+  font-size:0.5rem;
+  position:absolute;
+  right:0;
 }
 /* Apply styles to all scrollable elements */
 ::-webkit-scrollbar {
@@ -775,11 +817,10 @@ f_add_css(
 
   .settings{
     z-index:2;
-    background: 
     padding: 0.9rem;
     overflow-y: scroll;
     overflow-x: hidden;
-    background: ${f_s_hsla(o_variables.o_hsla__fg)};
+    background: ${f_s_hsla(o_variables.o_hsla__bg)};
   }
   .right_meta1_button, .left_meta1_button{
     top: 16%;
@@ -1290,7 +1331,7 @@ async function f_start_render_loop() {
           
           if(!b_remap_input_action){
 
-            if(o_state.o_config.b_layer_switch_type_on_click_toggle){
+            if(o_state.o_config.b_layer_switch_type_on_click_cycle_through){
 
               let o_input_action_mapping__next_action_layer = o_state.o_config.a_o_input_action_mapping__layer_switch.find(o=>
                 o.o_input_action==o_input_action__next_action_layer
@@ -1337,7 +1378,6 @@ async function f_start_render_loop() {
               }
             }else{
 
-
               let o_input_action_mapping__keep_hold_down_toggle_layer2 = o_state.o_config.a_o_input_action_mapping__layer_switch.find(o=>
                 o.o_input_action==o_input_action__keep_hold_down_toggle_layer2
               )
@@ -1362,13 +1402,21 @@ async function f_start_render_loop() {
                   }
                 }
               );
+
+              let v_o_keyboard_key__o_input_action_mapping__keep_hold_down_toggle_layer2 = o_state.a_o_keyboard_key.find(o=>o.s_name == o_input_action_mapping__keep_hold_down_toggle_layer3?.s_name_char_keyboard)
+              let v_o_keyboard_key__o_input_action_mapping__keep_hold_down_toggle_layer3 = o_state.a_o_keyboard_key.find(o=>o.s_name == o_input_action_mapping__keep_hold_down_toggle_layer2?.s_name_char_keyboard)
+              let b_l2 = (v_o_input_sensor__o_input_action_mapping__keep_hold_down_toggle_layer3?.n_nor > 0 || v_o_keyboard_key__o_input_action_mapping__keep_hold_down_toggle_layer3?.b_down);
+              let b_l2__last = (v_o_input_sensor__o_input_action_mapping__keep_hold_down_toggle_layer3__last?.n_nor > 0 || v_o_keyboard_key__o_input_action_mapping__keep_hold_down_toggle_layer3?.b_down_last);
+              let b_l3 = (v_o_input_sensor__o_input_action_mapping__keep_hold_down_toggle_layer2?.n_nor > 0 || v_o_keyboard_key__o_input_action_mapping__keep_hold_down_toggle_layer2?.b_down);
+              let b_l3__last = (v_o_input_sensor__o_input_action_mapping__keep_hold_down_toggle_layer2__last?.n_nor > 0 || v_o_keyboard_key__o_input_action_mapping__keep_hold_down_toggle_layer2?.b_down_last);
+
               o_state.o_config.n_idx_a_o_action_layer = (
-                v_o_input_sensor__o_input_action_mapping__keep_hold_down_toggle_layer2?.n_nor > 0
-                && v_o_input_sensor__o_input_action_mapping__keep_hold_down_toggle_layer2__last?.n_nor == 0
+                b_l2 && ((!o_state.o_config.b_layer_switch_keep_pressed_required) ? !b_l2__last : true)
               ) ? 1 : (
-                v_o_input_sensor__o_input_action_mapping__keep_hold_down_toggle_layer3?.n_nor > 0
-                && v_o_input_sensor__o_input_action_mapping__keep_hold_down_toggle_layer3__last?.n_nor == 0 
-              ) ? 2 : 0
+                b_l3 && ((!o_state.o_config.b_layer_switch_keep_pressed_required) ? !b_l3__last : true)
+              ) ? 2 : (
+                o_state.o_config.b_layer_switch_keep_pressed_required
+              ) ? 0 : o_state.o_config.n_idx_a_o_action_layer
               
             }
             if(o_state.o_config.n_idx_a_o_action_layer != o_state.o_config.n_idx_a_o_action_layer__last){
@@ -2029,9 +2077,82 @@ document.body.appendChild(
                             o_js__o_action_layer: 
                             {
                               f_o_jsh: ()=>{
-                                let o = o_state.o_config.a_o_action_layer[o_state.o_config.n_idx_a_o_action_layer];
+                                let o_action_layer = o_state.o_config.a_o_action_layer[o_state.o_config.n_idx_a_o_action_layer];
+                                
                                 return {
-                                  innerText: `Action Layer: ${o.s_name}`
+                                  class: "action_layer hoverable",
+                                  style: "display:flex;flex-direction: column !important;align-items: flex-end;",
+                                  a_o: [
+                                    ...o_state.o_config.a_o_input_action_mapping__layer_switch.map(o_input_action_mapping=>{
+                                      let v_o_input_font = o_state.a_o_input_font_icon.find(
+                                        o2=>{
+                                          return o2.s_name_input == o_input_action_mapping.s_name_input__controller
+                                        }
+                                      )
+                                      return {
+                                        style: "display:flex; flex-direction:row;justify-content:space-between;align-items:center",
+
+                                        a_o: [
+                                          {
+                                            innerText: o_input_action_mapping.o_input_action.s_nicename
+                                          }, 
+                                          {
+                                            // s_tag: "button", 
+                                            style: "display:flex; flex-direction:row;justify-content:space-between;align-items:center",
+                                            a_o: [
+                                              {
+                                                class: 'keyboard_char',
+                                                innerText: o_input_action_mapping.s_name_char_keyboard.toUpperCase()
+                                              },
+                                              {
+                                                class: f_s_class__from_s_name_font(v_o_input_font?.s_name_font),
+                                                innerText: v_o_input_font?.s_char
+                                              }
+                                            ]
+                                          }
+                                          // f_o_jsh__keyicons(o.s_name_input)
+                                        ]
+                                      }
+
+                                    }),
+                                    {
+                                      innerText: `Action Layer: ${o_action_layer.s_name}`
+                                    },
+                                    ...o_action_layer.a_o_input_action_mapping.map(
+                                      o_input_action_mapping=>{
+                                        let v_o_input_font = o_state.a_o_input_font_icon.find(
+                                          o2=>{
+                                            return o2.s_name_input == o_input_action_mapping.s_name_input__controller
+                                          }
+                                        )
+                                        return {
+                                          style: "display:flex; flex-direction:row;justify-content:space-between;align-items:center",
+
+                                          a_o: [
+                                            {
+                                              innerText: o_input_action_mapping.o_input_action.s_nicename
+                                            }, 
+                                            {
+                                              // s_tag: "button", 
+                                              style: "display:flex; flex-direction:row;justify-content:space-between;align-items:center",
+                                              a_o: [
+                                                {
+                                                  class: 'keyboard_char',
+                                                  innerText: o_input_action_mapping.s_name_char_keyboard.toUpperCase()
+                                                },
+                                                {
+                                                  class: f_s_class__from_s_name_font(v_o_input_font?.s_name_font),
+                                                  innerText: v_o_input_font?.s_char
+                                                }
+                                              ]
+                                            }
+                                            // f_o_jsh__keyicons(o.s_name_input)
+                                          ]
+
+                                        }
+                                      }
+                                    )
+                                  ]
                                 }
                               }
                             }
@@ -2217,10 +2338,10 @@ document.body.appendChild(
                                                         {
                                                           s_tag: "button", 
                                                           onclick: ()=>{
-                                                            o_state.o_config.b_layer_switch_type_on_click_toggle = true; 
+                                                            o_state.o_config.b_layer_switch_type_on_click_cycle_through = true; 
                                                             o_state.o_js__switch_type?._f_render?.();
                                                           },
-                                                          innerHTML: (o_state.o_config.b_layer_switch_type_on_click_toggle) ? 'x': '&nbsp;', 
+                                                          innerHTML: (o_state.o_config.b_layer_switch_type_on_click_cycle_through) ? 'x': '&nbsp;', 
                                                         }, 
                                                         f_o_jsh(
                                                           o_state.o_config.a_o_input_action_mapping__layer_switch.find(o=>
@@ -2243,16 +2364,27 @@ document.body.appendChild(
                                                       style: "display:flex; flex-direction:row;justify-content:space-between;align-items:center",
                                                       a_o: [
                                                         {
-                                                          innerText: `Keep-pressed-toggle`
+                                                          innerText: `Dedicated-button-toggle`
                                                         }, 
                                                         {
                                                           s_tag: "button", 
                                                           onclick: ()=>{
-                                                            o_state.o_config.b_layer_switch_type_on_click_toggle = false; 
+                                                            o_state.o_config.b_layer_switch_type_on_click_cycle_through = false; 
                                                             o_state.o_js__switch_type?._f_render?.();
                                                           },
-                                                          innerHTML: (!o_state.o_config.b_layer_switch_type_on_click_toggle) ? 'x': '&nbsp;', 
+                                                          innerHTML: (!o_state.o_config.b_layer_switch_type_on_click_cycle_through) ? 'x': '&nbsp;', 
                                                         },
+                                                        {
+                                                          innerText: `Keep-pressed-to-toggle`
+                                                        }, 
+                                                        {
+                                                          s_tag: "button", 
+                                                          onclick: ()=>{
+                                                            o_state.o_config.b_layer_switch_keep_pressed_required = !o_state.o_config.b_layer_switch_keep_pressed_required; 
+                                                            o_state.o_js__switch_type?._f_render?.();
+                                                          },
+                                                          innerHTML: (o_state.o_config.b_layer_switch_keep_pressed_required) ? 'x': '&nbsp;', 
+                                                        }, 
                                                         f_o_jsh(
                                                           o_state.o_config.a_o_input_action_mapping__layer_switch.find(o=>
                                                             o.o_input_action==o_input_action__keep_hold_down_toggle_layer2
