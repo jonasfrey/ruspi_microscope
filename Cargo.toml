@@ -3,6 +3,17 @@ name = "gpio_project"
 version = "0.1.0"
 edition = "2021"
 
+default-run = "main"  # The name of your main binary
+
+
+[[bin]]
+name = "main"
+path = "src/bin/main.rs"
+
+
+
+
+
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
@@ -26,3 +37,4 @@ gethostname = "0.4.3"
 #rustls-pemfile = "0.2.3"  # Add this line
 rustls-pemfile = "2.1.2"
 dataurl = "0.1.2"
+

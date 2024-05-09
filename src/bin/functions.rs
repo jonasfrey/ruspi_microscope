@@ -7,6 +7,14 @@ use crate::classes::{
 use rppal::gpio::Gpio;
 use std::{
     self, 
+    fs::{
+        self,
+        create_dir_all,
+        remove_file,
+        remove_dir_all
+    },
+    path::Path,
+    io,
     sync::{
         Arc, 
         Mutex, 
@@ -28,6 +36,27 @@ use serde_json::Value;
 use super::classes::A_o_name_synonym;
 use crate::classes::O_stepper_28BYJ_48;
 
+
+pub fn f_create_or_clean_directory(path: &Path) -> io::Result<()> {
+    if path.exists() {
+        // Iterate over everything in the directory
+        for entry in fs::read_dir(path)? {
+            let entry = entry?;
+            let path = entry.path();
+            if path.is_dir() {
+                // Recursively remove directories
+                remove_dir_all(&path)?;
+            } else {
+                // Remove files
+                remove_file(&path)?;
+            }
+        }
+    } else {
+        // Create the directory if it does not exist
+        create_dir_all(path)?;
+    }
+    Ok(())
+}
 
 fn f_n_u8_sum_wrap(
     n_u8: u8, 
