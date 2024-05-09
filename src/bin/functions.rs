@@ -37,6 +37,39 @@ use super::classes::A_o_name_synonym;
 use crate::classes::O_stepper_28BYJ_48;
 
 
+pub fn f_ensure_directory(path: &Path) -> io::Result<()> {
+    if !path.exists() {
+        // Create the directory if it does not exist
+        create_dir_all(path)?;
+    }
+    Ok(())
+}
+
+pub fn f_s_extension_from_s_mime_type(s_mime_type:&str) -> String{
+
+    match s_mime_type {
+        "image/png" => String::from("png"),
+        "image/jpeg" | "image/jpg" => String::from("jpg"),
+        "image/gif" => String::from("gif"),
+        "text/plain" => String::from("txt"),
+        "text/html" => String::from("html"),
+        "text/css" => String::from("css"),
+        "text/javascript" => String::from("js"),
+        "application/json" => String::from("json"),
+        "application/xml" => String::from("xml"),
+        "application/pdf" => String::from("pdf"),
+        "application/zip" => String::from("zip"),
+        "application/msword" => String::from("doc"),
+        "application/vnd.ms-excel" => String::from("xls"),
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" => String::from("xlsx"),
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document" => String::from("docx"),
+        "audio/mpeg" => String::from("mp3"),
+        "video/mp4" => String::from("mp4"),
+        // Add more MIME types and extensions as needed
+        _ => String::from("")
+    }
+}
+
 pub fn f_create_or_clean_directory(path: &Path) -> io::Result<()> {
     if path.exists() {
         // Iterate over everything in the directory

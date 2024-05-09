@@ -313,7 +313,9 @@ let a_o_input_action = [
   o_input_action__image_gamma_plus,
   o_input_action__image_gamma_minus
   ]
+let s_ymd_hms__js_start = f_s_ymd_hms__from_n_ts_ms_utc(new Date().getTime()).split(' ').join('_');
 let o_state = {
+  a_s_url_screenshot: [],
   a_s_data_url__for_stacking: [],
   s_name_file_template: '${s_ymd_hms}',
   s_name_file_template_focus_stack: '${s_ymd_hms}_focus_stack',
@@ -458,6 +460,9 @@ let o_state = {
     ),
   ],
   o_config: {
+    s_path_rel_images: `./media/images_${s_ymd_hms__js_start.split(" ").join("_")}`,
+    s_path_rel_videos: `./media/videos_${s_ymd_hms__js_start.split(" ").join("_")}`,
+    s_path_rel_stacking: `./media/tmp_focus_stacking_images`,
     b_layer_switch_type_on_click_cycle_through: false,
     b_layer_switch_keep_pressed_required: true,
     n_idx_a_o_action_layer: 0,
@@ -1686,6 +1691,10 @@ async function f_start_render_loop() {
                             
                           ).then(o=>{
                             if(o.b == true){
+                              o_state.a_s_url_screenshot.push(o.s_path_rel)
+                              if(!o_state?.o_js__a_s_url_screenshot?._b_rendering){
+                                o_state?.o_js__a_s_url_screenshot?._f_render();
+                              }
                               o_notification_loading.then(
                                 o=>{
                                   console.log(o)
@@ -1709,13 +1718,39 @@ async function f_start_render_loop() {
                       o_state.a_s_data_url__for_stacking.push(
                         o_el_canvas.toDataURL('image/png')
                       );
-                      f_o_throw_notification(o_state.o_state__notifire,`added image to focus stack!`, 'success')
+                      f_o_throw_notification(o_state.o_state__notifire,`added image to focus stack!`, 'success');
+
                       if(!o_state?.o_js__a_s_data_url__for_stacking?._b_rendering){
                         o_state?.o_js__a_s_data_url__for_stacking?.f_render?.();
                       }
                       if(!o_state?.o_js__o_action_layer?._b_rendering){
                         o_state?.o_js__o_action_layer?._f_render();
                       }
+  
+                      // Send JSON data to WebSocket server
+                      let s_ymd_hms = f_s_ymd_hms__from_n_ts_ms_utc(new Date().getTime()).split(' ').join('_');
+    
+                      let o_req = {
+                        s_name_function: "f_add_image_to_focus_stack",
+                        s_name_file: (new Function('s_ymd_hms', `return \`${o_state.s_name_file_template_focus_stack}\``))(...[s_ymd_hms]),
+                        a_s_data_url: o_state.a_s_data_url__for_stacking
+                      };
+                      console.log(o_req)
+                      f_o_ws_response(
+                        o_req
+                        
+                      ).then(o=>{
+                        if(o.b == true){
+                          o_notification_loading.then(
+                            o=>{
+                              console.log(o)
+                              // f_clear_o_notification(o);
+                              o.n_ms_left = -1;
+                            }
+                          )
+                          f_o_throw_notification(o_state.o_state__notifire,`image has been saved`, 'success')
+                        }
+                      })
                     }
                 }
                 if(o_input_action == o_input_action__finish_focus_stack){
@@ -1723,31 +1758,7 @@ async function f_start_render_loop() {
                     b_down && !b_down__last
                   ){
                     let o_notification_loading = f_o_throw_notification(o_state.o_state__notifire,`creating focus stack`, 'loading');
-  
-                    // Send JSON data to WebSocket server
-                    let s_ymd_hms = f_s_ymd_hms__from_n_ts_ms_utc(new Date().getTime()).split(' ').join('_');
-  
-                    let o_req = {
-                      s_name_function: "f_create_focus_stack",
-                      s_name_file: (new Function('s_ymd_hms', `return \`${o_state.s_name_file_template_focus_stack}\``))(...[s_ymd_hms]),
-                      a_s_data_url: o_state.a_s_data_url__for_stacking
-                    };
-                    console.log(o_req)
-                    f_o_ws_response(
-                      o_req
-                      
-                    ).then(o=>{
-                      if(o.b == true){
-                        o_notification_loading.then(
-                          o=>{
-                            console.log(o)
-                            // f_clear_o_notification(o);
-                            o.n_ms_left = -1;
-                          }
-                        )
-                        f_o_throw_notification(o_state.o_state__notifire,`image has been saved`, 'success')
-                      }
-                    })
+
                   }
                 }
             }
@@ -2047,6 +2058,10 @@ let f_r_ser_w_cli_o_config = async function(){
 
   o_state?.o_js__a_o_usb_device?._f_render?.()
 
+  let o2 = await f_o_ws_response({
+    s_name_function: "f_b_write_s_json_o_config", 
+    s_json_o_config: JSON.stringify(o_state.o_config)
+  });
   await o
 }
 
@@ -2483,6 +2498,30 @@ document.body.appendChild(
                           class: "settings",
                           b_render: o_state.b_render__settings,
                           a_o: [
+                            Object.assign(
+                              o_state, 
+                              {
+                                o_js__a_s_url_screenshot: {
+                                  f_o_jsh:()=>{
+                                    return {
+                                      class: "screenshots_from_session",
+                                      a_o: [
+                                        {
+                                          s_tag: "h2",
+                                          innerText: "Screenshots from this session"
+                                        },
+                                        ...o_state.a_s_url_screenshot.map(s=>{
+                                          return {
+                                            s_tag: "img", 
+                                            src: s
+                                          }
+                                        })
+                                      ]
+                                    }
+                                  }
+                                }
+                              }
+                            ).o_js__a_s_url_screenshot,
 
                             // {
                             //   class: "gamepad_controls", 
