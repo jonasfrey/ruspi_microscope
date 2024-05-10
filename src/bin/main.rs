@@ -74,7 +74,8 @@ use gethostname::gethostname;
 
 const s_path_rel_file__config: &'static str = "./o_config.json";
 const s_path_rel_folder__webroot: &'static str = "./public";
-
+const s_path_rel_file__focus_stack_binary: &'static str = "./focus-stack.AppImage";
+const s_path_rel_file__image_stitching_binary: &'static str = "stitch"; // https://github.com/OpenStitching/stitching pip install stitching
 
 fn f_autogenerate_js(
     v: &serde_json::Value, 
@@ -426,64 +427,163 @@ async fn f_websocket_thread(
 
                                 }
                             }
-                            // if(s_name_function == "f_add_image_to_focus_stack"){
-
-                            //     if let Some(s_data_url) = v_json_parsed.get("s_data_url").and_then(|v| v.as_str()) {
-
-                            //         if let Some(s_name_file) = v_json_parsed.get("s_name_file").and_then(|v| v.as_str()) {
-                            //             let o_path = Path::new("./tmp_focus_stacking_images");
-                            //             f_ensure_directory(o_path);
-                            //             // Decode the Base64 image data
-                            //             let o_data_url = DataUrl::parse(s_data_url).expect(&format!("could not parse dataurl {:?}", s_data_url));
-                            //             let s_mime_type = o_data_url.get_media_type();
-                            //             let mut s_path_rel_file = format!("{}{}", s_name_file, f_s_extension_from_s_mime_type(s_mime_type));
-                            //             let mut o_file = std::fs::File::create(s_path_rel_file).unwrap();
-                            //             o_file.write_all(&o_data_url.get_data()).unwrap();
-                            //             // println!("Image saved successfully.");
-                            //             // Process the image bytes as needed
-                            //             o_response.insert("b".to_string(), json!(true));
-                            //         }
-
-                            //     }
-                            // }
-                            // if(s_name_function == "f_create_focus_stack"){
-
-                            //     if let Some(a_s_data_url) = v_json_parsed.get("a_s_data_url").and_then(|v: &Value| v.as_array()) {
-
-                            //         if let Some(s_name_file) = v_json_parsed.get("s_name_file").and_then(|v| v.as_str()) {
-
-                            //             let o_path = Path::new("./tmp_focus_stacking_images");
-                            //             f_create_or_clean_directory(o_path);
+                            if(s_name_function == "f_add_image_to_focus_stack"){
 
 
-                            //             for (n_idx,s_data_url) in a_s_data_url.iter().enumerate(){
+                                if let Some(s_data_url) = v_json_parsed.get("s_data_url").and_then(|v| v.as_str()) {
 
-                            //                 // Decode the Base64 image data
-                            //                 let o_data_url = DataUrl::parse(s_data_url.as_str().unwrap()).expect(&format!("could not parse dataurl {:?}", s_data_url));
-                            //                 let s_mime_type = o_data_url.get_media_type();
-                            //                 let mut s_path_rel_file = format!("{}",s_name_file);
-                            //                 if(s_mime_type == "image/png"){
-                            //                     s_path_rel_file = format!("{}_{}_{}", s_name_file,n_idx, ".png");
-                            //                 }
-                            //                 if(s_mime_type == "image/jpeg"){
-                            //                     s_path_rel_file = format!("{}_{}_{}", s_name_file,n_idx, ".jpeg");
-                            //                 }
-                            //                 if(s_mime_type == "image/jpg"){
-                            //                     s_path_rel_file = format!("{}_{}_{}", s_name_file,n_idx, ".jpg");
-                            //                 }
-                            //                 let o_path_file = o_path.join(s_path_rel_file);
-                            //                 let mut file = std::fs::File::create(o_path_file.as_os_str()).unwrap();
-                            //                 file.write_all(&o_data_url.get_data()).unwrap();
-                            //                 println!("Image saved successfully.");
-                            //                 // Process the image bytes as needed
-                            //             }
-                            //             o_response.insert("b".to_string(), json!(true));
-                            //         }
+                                    if let Some(s_name_file) = v_json_parsed.get("s_name_file").and_then(|v| v.as_str()) {
 
-                            //     }
-                            // }
+
+                                        let s_config_json: String = fs::read_to_string(s_path_rel_file__config).expect("Unable to read the file");
+                                        // Parse the JSON data as serde_json::Value
+                                        let v2: Value = serde_json::from_str(&s_config_json).unwrap();
+                                    
+                                        // Access the s_path property directly
+
+                                        if let (Some(s_path_rel_stacking)) = (
+                                            v2["s_path_rel_stacking"].as_str()
+                                        ) {
+
+                                            // Decode the Base64 image data
+                                            let o_data_url = DataUrl::parse(s_data_url).expect(&format!("could not parse dataurl {:?}", s_data_url));
+                                            let s_mime_type = o_data_url.get_media_type();
+                                            let o_path = PathBuf::from(format!("{}/{}/{}.{}", s_path_rel_folder__webroot,s_path_rel_stacking, s_name_file,f_s_extension_from_s_mime_type(s_mime_type)));
+                                            f_ensure_directory(&o_path.parent().unwrap());
+                                            println!("{:?}", o_path);
+                                            let mut o_file = std::fs::File::create(&o_path).unwrap();
+                                            o_file.write_all(&o_data_url.get_data()).unwrap();
+                                            // println!("Image saved successfully.");
+                                            // Process the image bytes as needed
+                                            o_response.insert("b".to_string(), json!(true));
+                                            o_response.insert("s_path_rel".to_string(), json!(
+                                                (o_path.iter().skip(2).collect::<PathBuf>())
+                                            ));
+                                        } else {
+                                            println!("Required paths are not specified or not strings in the JSON");
+                                        }
+
+
+                                    }
+
+                                }
+                            }
+                            if(s_name_function == "f_create_focus_stack"){
+                                let s_config_json: String = fs::read_to_string(s_path_rel_file__config).expect("Unable to read the file");
+                                // Parse the JSON data as serde_json::Value
+                                let v2: Value = serde_json::from_str(&s_config_json).unwrap();
                             
+                                // Access the s_path property directly
 
+                                if let (Some(s_path_rel_stacking)) = (
+                                    v2["s_path_rel_stacking"].as_str()
+                                ) {
+
+                                    println!("asdf");
+                                    let o_path = PathBuf::from(format!("{}/{}", s_path_rel_folder__webroot,s_path_rel_stacking));
+                                    let o_path_result_image = PathBuf::from(format!("./{}/{}/{}.{}", 
+                                    s_path_rel_folder__webroot,
+                                    v2["s_path_rel_images"].as_str().unwrap(),
+                                    v_json_parsed["s_name_file"].as_str().unwrap(), 
+                                    "jpg"
+                                    ));
+                                    let s_path_images = o_path.as_os_str();
+                                    let mut o_command = Command::new(s_path_rel_file__focus_stack_binary);
+                                    // o_command.arg("[options]"); // Replace "[options]" with any actual options you need
+                                    f_ensure_directory(&o_path_result_image.parent().unwrap());
+
+                                    o_command.arg(format!("--output={}", 
+                                    &o_path_result_image.display()
+                                    ));
+                                    println!("--output={}", 
+                                    &o_path_result_image.display()
+                                    );
+                                
+                                    // Read filenames from the directory and add them as arguments
+                                    let a_o_entry = fs::read_dir(s_path_images).unwrap();
+                                    for o_entry in a_o_entry {
+                                        let o_entry = o_entry.unwrap();
+                                        let path = o_entry.path();
+                                        if path.is_file() 
+                                        // && path.extension().map_or(false, |ext| ext == "jpg")
+                                        {
+                                            o_command.arg(path);
+                                        }
+                                    }
+                                
+                                    // Execute the command
+                                        // Log the command with its arguments
+                                    println!("Executing command: {:?}", o_command);
+                                    let o_output = o_command.output().unwrap();
+                                    println!("Output: {:?}", String::from_utf8_lossy(&o_output.stdout));
+                                    println!("Error: {:?}", String::from_utf8_lossy(&o_output.stderr));
+
+
+
+                                    // after done clear tmp dir 
+                                    f_create_or_clean_directory(&o_path);
+
+                                } else {
+                                    println!("Required paths are not specified or not strings in the JSON");
+                                }
+
+
+                            }
+
+                            if(s_name_function == "f_add_iamge_to_image_stitch"){
+                                
+                                let s_config_json: String = fs::read_to_string(s_path_rel_file__config).expect("Unable to read the file");
+                                let v_config: Value = serde_json::from_str(&s_config_json).unwrap();
+
+                                let o_data_url = DataUrl::parse(v_json_parsed["s_data_url"].as_str().unwrap()).unwrap();
+                                let s_mime_type = o_data_url.get_media_type();
+                                let o_path = PathBuf::from(format!(
+                                    "{}/{}/{}.{}",
+                                    s_path_rel_folder__webroot,
+                                    v_config["s_path_rel_stitching"].as_str().unwrap(),
+                                    v_json_parsed["s_name_file"].as_str().unwrap(),
+                                    f_s_extension_from_s_mime_type(s_mime_type))
+                                );
+                                f_ensure_directory(&o_path.parent().unwrap());
+                                println!("{:?}", o_path);
+                                let mut o_file = std::fs::File::create(&o_path).unwrap();
+                                o_file.write_all(&o_data_url.get_data()).unwrap();
+
+                                o_response.insert("b".to_string(), json!(true));
+
+
+                            }
+                            if(s_name_function == "f_update_image_stitching_result"){
+                                let s_config_json: String = fs::read_to_string(s_path_rel_file__config).expect("Unable to read the file");
+                                let v_config: Value = serde_json::from_str(&s_config_json).unwrap();
+
+                                let o_path = PathBuf::from(format!(
+                                    "{}/{}",
+                                    s_path_rel_folder__webroot,
+                                    v_config["s_path_rel_stitching"].as_str().unwrap()
+                                ));
+                                f_ensure_directory(&o_path.parent().unwrap());
+                                println!("{:?}", o_path);
+
+                                let mut o_command = Command::new(s_path_rel_file__image_stitching_binary);
+                                // o_command.arg("[options]"); // Replace "[options]" with any actual options you need
+
+                                o_command.arg(format!("{}/*", 
+                                &o_path.parent().unwrap().display()
+                                ));
+                            
+                                // Execute the command
+                                    // Log the command with its arguments
+                                println!("Executing command: {:?}", o_command);
+                                let o_output = o_command.output().unwrap();
+                                println!("Output: {:?}", String::from_utf8_lossy(&o_output.stdout));
+                                println!("Error: {:?}", String::from_utf8_lossy(&o_output.stderr));
+
+
+                                // println!("Image saved successfully.");
+                                // Process the image bytes as needed
+                                o_response.insert("b".to_string(), json!(true));
+                            }
 
                             if(s_name_function == "f_s_json_o_config"){
                                 o_response.insert("s_json_o_config".to_string(), json!(f_s_json_o_config()));
