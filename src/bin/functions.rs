@@ -37,6 +37,49 @@ use super::classes::A_o_name_synonym;
 use crate::classes::O_stepper_28BYJ_48;
 
 
+pub fn f_b_contains_image_file_suffix(file_name: &str) -> bool {
+    let extensions = ["png", "jpg", "jpeg", "gif", "bmp", "tiff", "webp"];
+    extensions.iter().any(|&ext| file_name.ends_with(ext))
+}
+
+pub fn f_b_directory_contains_more_than_one_image(dir: &Path) -> bool {
+    let mut image_count = 0;
+    
+    if let Ok(entries) = fs::read_dir(dir) {
+        for entry in entries {
+            if let Ok(entry) = entry {
+                let file_name = entry.file_name();
+                let file_name_str = file_name.to_string_lossy();
+                
+                if f_b_contains_image_file_suffix(&file_name_str) {
+                    image_count += 1;
+                    if image_count > 1 {
+                        return true;
+                    }
+                }
+            }
+        }
+    }
+    false
+}
+pub fn f_move_files(src_dir: &Path, dest_dir: &Path) -> io::Result<()> {
+
+    f_ensure_directory(dest_dir);
+
+    for entry in fs::read_dir(src_dir)? {
+        let entry = entry?;
+        let src_path = entry.path();
+        if src_path.is_file() {
+            if let Some(file_name) = src_path.file_name() {
+                let dest_path = dest_dir.join(file_name);
+                fs::rename(&src_path, &dest_path)?;
+            }
+        }
+    }
+
+    Ok(())
+}
+
 pub fn f_ensure_directory(path: &Path) -> io::Result<()> {
     if !path.exists() {
         // Create the directory if it does not exist

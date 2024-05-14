@@ -28,6 +28,8 @@ use std::{
         File
     },
     time::{
+        SystemTime,
+        UNIX_EPOCH,
         Duration
     },
     process::{Command}, 
@@ -64,7 +66,10 @@ use functions::{
     f_o_input_sensor_from_s_name, 
     f_ensure_directory,
     f_s_extension_from_s_mime_type,
-    f_create_or_clean_directory
+    f_create_or_clean_directory,
+    f_b_contains_image_file_suffix,
+    f_b_directory_contains_more_than_one_image, 
+    f_move_files
 };
 use classes::{
     ControlCommand, O_input_device, SendData
@@ -75,7 +80,8 @@ use gethostname::gethostname;
 const s_path_rel_file__config: &'static str = "./o_config.json";
 const s_path_rel_folder__webroot: &'static str = "./public";
 const s_path_rel_file__focus_stack_binary: &'static str = "./focus-stack.AppImage";
-const s_path_rel_file__image_stitching_binary: &'static str = "stitch"; // https://github.com/OpenStitching/stitching pip install stitching
+// const s_path_rel_file__image_stitching_binary: &'static str = "stitch"; // https://github.com/OpenStitching/stitching pip install stitching
+const s_path_rel_file__image_stitching_binary: &'static str = "python3"; 
 
 fn f_autogenerate_js(
     v: &serde_json::Value, 
@@ -412,6 +418,7 @@ async fn f_websocket_thread(
                                             f_ensure_directory(&o_path.parent().unwrap());
                                             let mut o_file = std::fs::File::create(&o_path).unwrap();
                                             o_file.write_all(&o_data_url.get_data()).unwrap();
+                                            fs::set_permissions(&o_path, fs::Permissions::from_mode(0o777)).unwrap();
                                             // println!("Image saved successfully.");
                                             // Process the image bytes as needed
                                             o_response.insert("b".to_string(), json!(true));
@@ -453,6 +460,8 @@ async fn f_websocket_thread(
                                             println!("{:?}", o_path);
                                             let mut o_file = std::fs::File::create(&o_path).unwrap();
                                             o_file.write_all(&o_data_url.get_data()).unwrap();
+                                            fs::set_permissions(&o_path, fs::Permissions::from_mode(0o777)).unwrap();
+
                                             // println!("Image saved successfully.");
                                             // Process the image bytes as needed
                                             o_response.insert("b".to_string(), json!(true));
@@ -545,11 +554,60 @@ async fn f_websocket_thread(
                                     f_s_extension_from_s_mime_type(s_mime_type))
                                 );
                                 f_ensure_directory(&o_path.parent().unwrap());
+                                fs::set_permissions(&o_path.parent().unwrap(), fs::Permissions::from_mode(0o777)).unwrap();
+
                                 println!("{:?}", o_path);
                                 let mut o_file = std::fs::File::create(&o_path).unwrap();
                                 o_file.write_all(&o_data_url.get_data()).unwrap();
 
                                 o_response.insert("b".to_string(), json!(true));
+                                if(f_b_directory_contains_more_than_one_image(o_path.parent().unwrap())){
+                                    
+                                    // Get the current time
+                                    let o_system_time_now = SystemTime::now();
+                                    // Get the duration since the Unix epoch
+                                    let o = o_system_time_now.duration_since(UNIX_EPOCH)
+                                        .expect("Time went backwards");
+                                    // Convert the duration to milliseconds
+                                    let o_ts = o.as_millis();
+                                    // Format the filename
+                                    let s_name_file = format!("{}_substich_result.png", o_ts);
+
+                                    let mut o_command = Command::new("python3");
+                                    o_command.arg("image_stitch.py");
+                                    o_command.arg("-i");
+                                    o_command.arg(o_path.parent().unwrap().as_os_str().to_str().unwrap());
+                                    o_command.arg("-o");
+                                    o_command.arg(o_path.parent().unwrap().join(s_name_file.clone()));
+
+                                    println!("Executing command: {:?}", o_command);
+                                    let o_output = o_command.output().unwrap();
+                                    println!("Output: {:?}", String::from_utf8_lossy(&o_output.stdout));
+                                    println!("Error: {:?}", String::from_utf8_lossy(&o_output.stderr));
+
+                                    let o_path_archive = Path::new(v_config["s_path_rel_archive"].as_str().unwrap());
+                                    if(o_output.status.success()){
+                                        f_ensure_directory(o_path_archive);
+                                        for o_entry in fs::read_dir(o_path.parent().unwrap()).unwrap() {
+                                            let o_entry = o_entry.unwrap();
+                                            let src_path = o_entry.path();
+                                            if src_path.is_file() {
+                                                if let Some(s_name_file2) = src_path.file_name() {
+                                                    if(s_name_file2.to_str().unwrap() != s_name_file){
+                                                        let dest_path = o_path_archive.join(s_name_file2);
+                                                        fs::rename(&src_path, &dest_path).unwrap();
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        o_response.insert("s_path_rel".to_string(), json!(
+                                            (o_path.parent().unwrap().join(s_name_file.clone()).iter().skip(2).collect::<PathBuf>())
+                                        ));
+                                    }
+                                }
+                                // if there are more than 1 images try to create a 'substich'
+                                // if substitch successfull remove the images and keep the substitch
+
 
 
                             }
@@ -563,15 +621,30 @@ async fn f_websocket_thread(
                                     v_config["s_path_rel_stitching"].as_str().unwrap()
                                 ));
                                 f_ensure_directory(&o_path.parent().unwrap());
+                                fs::set_permissions(&o_path.parent().unwrap(), fs::Permissions::from_mode(0o777)).unwrap();
+
                                 println!("{:?}", o_path);
 
-                                let mut o_command = Command::new(s_path_rel_file__image_stitching_binary);
-                                // o_command.arg("[options]"); // Replace "[options]" with any actual options you need
+                                // Get the current time
+                                let o_system_time_now = SystemTime::now();
+                                
+                                // Get the duration since the Unix epoch
+                                let o = o_system_time_now.duration_since(UNIX_EPOCH)
+                                    .expect("Time went backwards");
+                                
+                                // Convert the duration to milliseconds
+                                let o_ts = o.as_millis();
+                                
+                                // Format the filename
+                                let s_name_file = format!("{}_substich_result.png", o_ts);
 
-                                o_command.arg(format!("{}/*", 
-                                &o_path.parent().unwrap().display()
-                                ));
-                            
+                                let mut o_command = Command::new("python3");
+                                o_command.arg("image_stitch.py");
+                                o_command.arg("-i");
+                                o_command.arg("public/media/tmp_image_stitching_images/");
+                                o_command.arg("-o");
+                                o_command.arg(s_name_file);
+
                                 // Execute the command
                                     // Log the command with its arguments
                                 println!("Executing command: {:?}", o_command);
