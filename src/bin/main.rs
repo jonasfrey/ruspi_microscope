@@ -574,11 +574,11 @@ async fn f_websocket_thread(
                                     let s_name_file = format!("{}_substich_result.png", o_ts);
 
                                     let mut o_command = Command::new("python3");
-                                    o_command.arg("image_stitch.py");
+                                    o_command.arg("image_stitching/image_stitch.py");
                                     o_command.arg("-i");
                                     o_command.arg(o_path.parent().unwrap().as_os_str().to_str().unwrap());
                                     o_command.arg("-o");
-                                    o_command.arg(o_path.parent().unwrap().join(s_name_file.clone()));
+                                    o_command.arg(o_path.parent().unwrap().parent().unwrap().join(s_name_file.clone()));
 
                                     println!("Executing command: {:?}", o_command);
                                     let o_output = o_command.output().unwrap();
@@ -586,24 +586,24 @@ async fn f_websocket_thread(
                                     println!("Error: {:?}", String::from_utf8_lossy(&o_output.stderr));
 
                                     let o_path_archive = Path::new(v_config["s_path_rel_archive"].as_str().unwrap());
-                                    if(o_output.status.success()){
-                                        f_ensure_directory(o_path_archive);
-                                        for o_entry in fs::read_dir(o_path.parent().unwrap()).unwrap() {
-                                            let o_entry = o_entry.unwrap();
-                                            let src_path = o_entry.path();
-                                            if src_path.is_file() {
-                                                if let Some(s_name_file2) = src_path.file_name() {
-                                                    if(s_name_file2.to_str().unwrap() != s_name_file){
-                                                        let dest_path = o_path_archive.join(s_name_file2);
-                                                        fs::rename(&src_path, &dest_path).unwrap();
-                                                    }
-                                                }
-                                            }
-                                        }
-                                        o_response.insert("s_path_rel".to_string(), json!(
-                                            (o_path.parent().unwrap().join(s_name_file.clone()).iter().skip(2).collect::<PathBuf>())
-                                        ));
-                                    }
+                                    // if(o_output.status.success()){
+                                    //     f_ensure_directory(o_path_archive);
+                                    //     for o_entry in fs::read_dir(o_path.parent().unwrap()).unwrap() {
+                                    //         let o_entry = o_entry.unwrap();
+                                    //         let src_path = o_entry.path();
+                                    //         if src_path.is_file() {
+                                    //             if let Some(s_name_file2) = src_path.file_name() {
+                                    //                 if(s_name_file2.to_str().unwrap() != s_name_file){
+                                    //                     let dest_path = o_path_archive.join(s_name_file2);
+                                    //                     fs::rename(&src_path, &dest_path).unwrap();
+                                    //                 }
+                                    //             }
+                                    //         }
+                                    //     }
+                                    //     o_response.insert("s_path_rel".to_string(), json!(
+                                    //         (o_path.parent().unwrap().join(s_name_file.clone()).iter().skip(2).collect::<PathBuf>())
+                                    //     ));
+                                    // }
                                 }
                                 // if there are more than 1 images try to create a 'substich'
                                 // if substitch successfull remove the images and keep the substitch
