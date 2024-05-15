@@ -561,31 +561,31 @@ async fn f_websocket_thread(
                                 o_file.write_all(&o_data_url.get_data()).unwrap();
 
                                 o_response.insert("b".to_string(), json!(true));
-                                if(f_b_directory_contains_more_than_one_image(o_path.parent().unwrap())){
+                                // if(f_b_directory_contains_more_than_one_image(o_path.parent().unwrap())){
                                     
-                                    // Get the current time
-                                    let o_system_time_now = SystemTime::now();
-                                    // Get the duration since the Unix epoch
-                                    let o = o_system_time_now.duration_since(UNIX_EPOCH)
-                                        .expect("Time went backwards");
-                                    // Convert the duration to milliseconds
-                                    let o_ts = o.as_millis();
-                                    // Format the filename
-                                    let s_name_file = format!("{}_substich_result.png", o_ts);
+                                //     // Get the current time
+                                //     let o_system_time_now = SystemTime::now();
+                                //     // Get the duration since the Unix epoch
+                                //     let o = o_system_time_now.duration_since(UNIX_EPOCH)
+                                //         .expect("Time went backwards");
+                                //     // Convert the duration to milliseconds
+                                //     let o_ts = o.as_millis();
+                                //     // Format the filename
+                                //     let s_name_file = format!("{}_substich_result.png", o_ts);
 
-                                    let mut o_command = Command::new("python3");
-                                    o_command.arg("image_stitching/image_stitch.py");
-                                    o_command.arg("-i");
-                                    o_command.arg(o_path.parent().unwrap().as_os_str().to_str().unwrap());
-                                    o_command.arg("-o");
-                                    o_command.arg(o_path.parent().unwrap().parent().unwrap().join(s_name_file.clone()));
+                                //     let mut o_command = Command::new("python3");
+                                //     o_command.arg("image_stitching/image_stitch.py");
+                                //     o_command.arg("-i");
+                                //     o_command.arg(o_path.parent().unwrap().as_os_str().to_str().unwrap());
+                                //     o_command.arg("-o");
+                                //     o_command.arg(o_path.parent().unwrap().parent().unwrap().join(s_name_file.clone()));
 
-                                    println!("Executing command: {:?}", o_command);
-                                    let o_output = o_command.output().unwrap();
-                                    println!("Output: {:?}", String::from_utf8_lossy(&o_output.stdout));
-                                    println!("Error: {:?}", String::from_utf8_lossy(&o_output.stderr));
+                                //     println!("Executing command: {:?}", o_command);
+                                //     let o_output = o_command.output().unwrap();
+                                //     println!("Output: {:?}", String::from_utf8_lossy(&o_output.stdout));
+                                //     println!("Error: {:?}", String::from_utf8_lossy(&o_output.stderr));
 
-                                    let o_path_archive = Path::new(v_config["s_path_rel_archive"].as_str().unwrap());
+                                //     let o_path_archive = Path::new(v_config["s_path_rel_archive"].as_str().unwrap());
                                     // if(o_output.status.success()){
                                     //     f_ensure_directory(o_path_archive);
                                     //     for o_entry in fs::read_dir(o_path.parent().unwrap()).unwrap() {
@@ -604,7 +604,7 @@ async fn f_websocket_thread(
                                     //         (o_path.parent().unwrap().join(s_name_file.clone()).iter().skip(2).collect::<PathBuf>())
                                     //     ));
                                     // }
-                                }
+                                // }
                                 // if there are more than 1 images try to create a 'substich'
                                 // if substitch successfull remove the images and keep the substitch
 
@@ -616,41 +616,35 @@ async fn f_websocket_thread(
                                 let v_config: Value = serde_json::from_str(&s_config_json).unwrap();
 
                                 let o_path = PathBuf::from(format!(
-                                    "{}/{}",
+                                    "{}/{}/{}.{}",
                                     s_path_rel_folder__webroot,
-                                    v_config["s_path_rel_stitching"].as_str().unwrap()
-                                ));
-                                f_ensure_directory(&o_path.parent().unwrap());
-                                fs::set_permissions(&o_path.parent().unwrap(), fs::Permissions::from_mode(0o777)).unwrap();
-
-                                println!("{:?}", o_path);
-
+                                    v_config["s_path_rel_stitching"].as_str().unwrap(),
+                                    v_json_parsed["s_name_file"].as_str().unwrap(),
+                                    ".tmp")
+                                );
                                 // Get the current time
                                 let o_system_time_now = SystemTime::now();
-                                
                                 // Get the duration since the Unix epoch
                                 let o = o_system_time_now.duration_since(UNIX_EPOCH)
                                     .expect("Time went backwards");
-                                
                                 // Convert the duration to milliseconds
                                 let o_ts = o.as_millis();
-                                
                                 // Format the filename
                                 let s_name_file = format!("{}_substich_result.png", o_ts);
 
                                 let mut o_command = Command::new("python3");
-                                o_command.arg("image_stitch.py");
+                                o_command.arg("image_stitching/image_stitch.py");
                                 o_command.arg("-i");
-                                o_command.arg("public/media/tmp_image_stitching_images/");
+                                o_command.arg(o_path.parent().unwrap().as_os_str().to_str().unwrap());
                                 o_command.arg("-o");
-                                o_command.arg(s_name_file);
+                                o_command.arg(o_path.parent().unwrap().parent().unwrap().join(s_name_file.clone()));
 
-                                // Execute the command
-                                    // Log the command with its arguments
                                 println!("Executing command: {:?}", o_command);
                                 let o_output = o_command.output().unwrap();
                                 println!("Output: {:?}", String::from_utf8_lossy(&o_output.stdout));
                                 println!("Error: {:?}", String::from_utf8_lossy(&o_output.stderr));
+
+                                let o_path_archive = Path::new(v_config["s_path_rel_archive"].as_str().unwrap());
 
 
                                 // println!("Image saved successfully.");

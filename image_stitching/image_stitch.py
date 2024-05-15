@@ -37,7 +37,11 @@ stitcher = cv2.createStitcher(
 # Reduce cropping by setting the compositing resolution to 'full resolution'
 # stitcher.setCompositingResol(-1)  # This sets stitching at full available resolution
 
-(status, stitched) = stitcher.stitch(images)
+# Create masks for each image where non-black pixels are marked as valid (255)
+masks = [np.where(cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) > 0, 255, 0).astype(np.uint8) for img in images]
+
+
+(status, stitched) = stitcher.stitch(images, masks)
 
 
 if status == cv2.Stitcher_OK:
