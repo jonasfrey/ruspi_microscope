@@ -128,3 +128,14 @@ export CPLUS_INCLUDE_PATH="/usr/include/c++/[gccversionhere]:/usr/include/x86_64
 ```rust
 
 ```
+
+## AI custom modes
+the user can add custom input actions. theese contain of a string that is giving to the ai and a string that is coming back. for example 
+
+s_ai_request: `count all objects in this image`
+s_ai_response (will be generated): `in the image there can be seen 10 pollen grains`
+
+
+## automatic stitching
+at a certain interval (for example every second), an image will be sent to the server. on the server the image will be compared to the main stitch, if the translation can be found (which means the image is already part of the main stitch) and if the translation plus the image size would exceed the mainstitch(with a certain threshhold) image this means the new image would successffully extend the mainstitch image therefore it will be added to the stitches and the mainstitch will be updated.
+with this running continiously in the background it should be possible to automatically generate a 'minimap' of the slide. 

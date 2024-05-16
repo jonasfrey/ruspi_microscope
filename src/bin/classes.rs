@@ -86,9 +86,59 @@ pub struct SendData{
     pub v_o_input_device: Option<O_input_device>
 }
 
-
 #[derive(Clone)]
 pub struct O_stepper_28BYJ_48_control_data{
     pub s_prop_name__string_value: String,
     pub v_string_value: String,
+}
+
+// pub n_ts_ms_ut__created: u64, 
+// pub n_ts_ms_ut__updated: u64,
+
+#[derive(Clone)]
+pub struct O_image{
+    pub n_id: u32, 
+    pub s_path_abs_file: String,
+    pub n_ts_ms_ut__created: u64, 
+    pub n_ts_ms_ut__updated: u64
+}
+#[derive(Clone)]
+pub struct O_image_description{
+    pub n_id: u32, 
+    pub s_description: String, 
+    pub n_micrometer_x_axis: f64,
+    pub b_ai_estimated: bool
+}
+
+#[derive(Clone)]
+pub struct O_image_object{
+    pub n_id: u32, 
+    pub s_name: String,
+    pub s_description: String, 
+    pub n_id_o_spacial_information_nor: u64, 
+    pub b_ai_estimated: bool
+}
+
+#[derive(Clone)]
+pub struct O_image_description_o_image_object{
+    pub n_id: u32, 
+    pub n_id_o_image_description: u64, 
+    pub n_id_o_image_object: u64, 
+    pub n_ts_ms_ut__created: u64, 
+    pub n_ts_ms_ut__updated: u64
+}
+
+#[derive(Clone)]
+pub struct O_spacial_information_nor{
+    pub n_id: u32, 
+    pub o_trn: O_vec2,
+    pub o_scl: O_vec2,
+    pub n_ts_ms_ut__created: u64, 
+    pub n_ts_ms_ut__updated: u64
+}
+
+#[derive(Clone)]
+pub struct O_vec2{
+    pub n_x: f64,
+    pub n_y: f64,
 }

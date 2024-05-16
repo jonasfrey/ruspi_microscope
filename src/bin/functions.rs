@@ -14,7 +14,10 @@ use std::{
         remove_dir_all
     },
     path::Path,
-    io,
+    io::{
+        self, 
+        Write
+    },
     sync::{
         Arc, 
         Mutex, 
@@ -25,7 +28,11 @@ use std::{
         Instant,
         Duration
     },
-    thread
+    thread, 
+    process::{
+        Command
+    },
+    env
 };
 use serde::{
     Deserialize,
@@ -37,6 +44,48 @@ use super::classes::A_o_name_synonym;
 use crate::classes::O_stepper_28BYJ_48;
 
 
+pub fn f_install_denojs()-> io::Result<()>{
+   // Run the installation command
+   let status = Command::new("sh")
+   .arg("-c")
+   .arg("curl -fsSL https://deno.land/install.sh | sh")
+   .status()
+   .expect("Failed to execute install script");
+
+    if !status.success() {
+    eprintln!("Installation script failed");
+    return Err(io::Error::new(io::ErrorKind::Other, "Installation failed"));
+    }
+
+    // Add Deno to the PATH environment variable
+    let home_dir = env::var("HOME").expect("Failed to get HOME directory");
+    let deno_bin_path = format!("{}/.deno/bin", home_dir);
+    let current_path = env::var("PATH").expect("Failed to get PATH environment variable");
+
+    if !current_path.contains(&deno_bin_path) {
+    let new_path = format!("{}:{}", deno_bin_path, current_path);
+    env::set_var("PATH", new_path);
+    println!("Deno binary added to PATH.");
+    } else {
+    println!("Deno binary is already in PATH.");
+    }
+
+    // Verify the installation
+    let output = Command::new("deno")
+    .arg("--version")
+    .output()
+    .expect("Failed to execute Deno");
+
+    if output.status.success() {
+    println!("Deno installed successfully:");
+    io::stdout().write_all(&output.stdout)?;
+    } else {
+    println!("Failed to install Deno:");
+    io::stderr().write_all(&output.stderr)?;
+    }
+
+    Ok(())
+}
 pub fn f_b_contains_image_file_suffix(file_name: &str) -> bool {
     let extensions = ["png", "jpg", "jpeg", "gif", "bmp", "tiff", "webp"];
     extensions.iter().any(|&ext| file_name.ends_with(ext))
