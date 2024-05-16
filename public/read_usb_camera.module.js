@@ -1031,6 +1031,7 @@ o_variables.o_hsla__fg_hover = new O_vec4(
 o_variables.n_rem_font_size_base = 1.5 // adjust font size, other variables can also be adapted before adding the css to the dom
 o_variables.n_rem_padding_interactive_elements = 0.5; // adjust padding for interactive elements 
 window.o_variables = o_variables
+o_variables.n_rem_padding_interactive_elements = 0.2;
 f_add_css(
   `
   ${a_s_name_font.map(s=>{
@@ -1045,6 +1046,16 @@ f_add_css(
     `
   }).join('\n')}
 
+  .a_o{
+    display:flex;
+    flex-direction:column;
+  }
+  .o{
+    margin-bottom: 1rem;
+  }
+  .o:nth-child(odd) {
+    background: rgba(0,0,0,0.1);
+  }
   .overlay{
     position:fixed;
     width: 100vw;
@@ -2861,44 +2872,73 @@ document.body.appendChild(
                                   [`o_js__${s_name_array}`]: {
                                     f_o_jsh: ()=>{
                                       return {
-                                        class: `${s_name_array}`,
+                                        class: `a_o ${s_name_array}`,
                                         a_o: [
                                           {
                                             innerText: `${s_name_array}`,
                                           }, 
-                                          ...[...o_state[s_name_array], new o_s_name_class[s_name_model]].map(o=>{
+                                          ...[...o_state[s_name_array], new o_s_name_class[s_name_model]].map((o,n_idx)=>{
+                                            let b_new_instance = n_idx == o_state[s_name_array].length
+                                            if(b_new_instance){
+                                              o.n_u32_id = o_state[s_name_array].at(-1).n_u32_id+1;
+                                            }
                                             return {
-                                              class: s_name_model.toLowerCase(),
+                                              class: `o ${s_name_model.toLowerCase()}`,
                                               style: [
-                                                `display:flex`
+                                                `display:flex`, 
+                                                `flex-direction: column`
                                               ].join(';'),
-                                              a_o: Object.keys(o).map(s_name_prop=>{
-                                                return {
-                                                  a_o: [
-                                                    {
-                                                      s_tag: 'label',
-                                                      innerText: `${s_name_prop}`,
-                                                    }, 
-                                                    {
-                                                      s_tag: "input", 
-                                                      value: o[s_name_prop],
-                                                      oninput: (o_e)=>{
-                                                        let v = o_e.target.value;
-                                                        if(s_name_prop.indexOf('n_f') == 0){
-                                                            v = parseFloat(v)
+                                              a_o: 
+                                              [
+                                                ...Object.keys(o).map(s_name_prop=>{
+                                                  return {
+                                                    a_o: [
+                                                      {
+                                                        s_tag: 'label',
+                                                        innerText: `${s_name_prop}`,
+                                                      }, 
+                                                      {
+                                                        s_tag: "input", 
+                                                        value: o[s_name_prop],
+                                                        oninput: (o_e)=>{
+                                                          let v = o_e.target.value;
+                                                          if(s_name_prop.indexOf('n_f') == 0){
+                                                              v = parseFloat(v)
+                                                          }
+                                                          if(s_name_prop.indexOf('n_u') == 0){
+                                                            v = parseInt(v)
+                                                          }
+                                                          if(s_name_prop.indexOf('b_') == 0){
+                                                              v = (v == 'true') ? true : (parseInt(v) == 1) ? true : false;
+                                                          }
+                                                          o[s_name_prop] = v;
                                                         }
-                                                        if(s_name_prop.indexOf('n_u') == 0){
-                                                          v = parseInt(v)
-                                                        }
-                                                        if(s_name_prop.indexOf('b_') == 0){
-                                                            v = (v == 'true') ? true : (parseInt(v) == 1) ? true : false;
-                                                        }
-                                                        o[s_name_prop] = v;
-                                                      }
+                                                      }, 
+                                                      
+                                                    ]
+                                                  }
+                                                }),
+                                                {
+                                                  s_tag: 'button',
+                                                  onclick: async ()=>{
+
+                                                    if(b_new_instance){
+                                                      o_state[s_name_array].push(o);
                                                     }
-                                                  ]
+
+                                                    let o = await f_o_ws_response({
+                                                      s_name_function: "f_b_write_s_json", 
+                                                      s_path_rel: `${s_name_array}.json`,
+                                                      s_json: JSON.stringify(o_state[s_name_array])
+                                                    });
+
+                                                    await o_state[`o_js__${s_name_array}`]._f_render();
+                                                    
+                                                  }, 
+                                                  innerText: (b_new_instance) ? "Create new" : "Update existing"
                                                 }
-                                              })
+                                              ] 
+                                              
                                             }
                                           })
                                         ]
