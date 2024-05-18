@@ -10,3 +10,14 @@ The final part consist of a ring. Each led is then mounted onto a 'developable s
 The CAD files can be exported in the onshape webapplication by anyone. 
 A pre-exported file of each part is here : 
 https://drive.google.com/drive/folders/1DpNsnJN1ukpRQEzLvkSHA0xLCEApQeo3
+
+Filament: i use PETG whis is more flexible (usefull for bending the foldable surfaces) and also withstands a bit more of temperature before deforming (melting). The softening temperature or temperature resistance of PETG is 85 ºC, i will measure the temperature of the LED lights with a thremal camera and will update this post later. 
+
+I also did two erlier versions: 
+V1: this version has wires that can be bent to adjust the led position. the wires were to thick and to loong and therefore the adjusting of the LED lights was unpractical. 
+![](./v1.jpeg)
+
+
+V2: this was just a ring of smd LEDs placed around the objective. The light was hitting perpendicular to the specimen (came 90degrees from the side). 
+![](./v2.jpeg)
+
