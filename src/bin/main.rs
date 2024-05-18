@@ -606,7 +606,7 @@ async fn f_websocket_thread(
                             }
 
                             if(s_name_function == "f_s_read_text_file"){
-                                o_response.insert("s_json".to_string(), json!(f_s_read_text_file(
+                                o_response.insert("s_text".to_string(), json!(f_s_read_text_file(
                                     v_json_parsed["s_path_rel"].as_str().unwrap(),
                                 )));
                             }
@@ -614,7 +614,7 @@ async fn f_websocket_thread(
                             if(s_name_function == "f_b_write_s_text_file"){
 
                                 f_b_write_s_text_file(
-                                    v_json_parsed["s_json"].as_str().unwrap(),
+                                    v_json_parsed["s_text"].as_str().unwrap(),
                                     v_json_parsed["s_path_rel"].as_str().unwrap()
                                 );
                                 o_response.insert("b".to_string(), json!(true));
