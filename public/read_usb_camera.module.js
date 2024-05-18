@@ -435,7 +435,7 @@ let s_ymd_hms__js_start = f_s_ymd_hms__from_n_ts_ms_utc(new Date().getTime()).sp
   
         let s_name_array = `a_${s.toLowerCase()}` 
         let o = await f_o_ws_response({
-          s_name_function: "f_s_json_read",
+          s_name_function: "f_s_read_text_file",
           s_path_rel: `${s_name_array}.json`
         });
         let a_o = []
@@ -586,6 +586,9 @@ let s_ymd_hms__js_start = f_s_ymd_hms__from_n_ts_ms_utc(new Date().getTime()).sp
     ),
   ],
   o_config: {
+    n_u32_id__O_microscope_brand: 1,
+    n_u32_id__O_microscope_objective: 1,
+    n_u32_id__O_microscope: 1,
     s_path_rel_images: `./media/images_${s_ymd_hms__js_start.split(" ").join("_")}`,
     s_path_rel_videos: `./media/videos_${s_ymd_hms__js_start.split(" ").join("_")}`,
     s_path_rel_stacking: `./media/tmp_focus_stacking_images`,
@@ -2348,10 +2351,18 @@ let f_add_text_to_image = async function(s_data_url){
     image.src = s_data_url;
   })
 }
+let f_update_o_from_n_u32_id = function(s_name_model, n_u32_id){
+  let o = o_state[`a_${s_name_model.toLowerCase()}`].find(
+    o=>{
+      return o?.n_u32_id == n_u32_id
+    }
+  )
+  o_state[s_name_model.toLowerCase()] = o; 
+}
 let f_r_ser_w_cli_o_config = async function(){
   //r_ser_w_cli // read server , write client
   let o = await f_o_ws_response({
-    s_name_function: "f_s_json_read",
+    s_name_function: "f_s_read_text_file",
     s_path_rel: 'o_config.json'
   });
   let o_config = JSON.parse(o.s_json);
@@ -2364,8 +2375,15 @@ let f_r_ser_w_cli_o_config = async function(){
 
   o_state?.o_js__a_o_usb_device?._f_render?.()
 
+  [
+    "O_microscope_brand",
+    "O_microscope_objective",
+    "O_microscope"
+  ].forEach(s_name_model=>{
+    f_update_o_from_n_u32_id(s_name_model, o_state?.[`n_u32_id__${s_name_model}`])
+  })
   let o2 = await f_o_ws_response({
-    s_name_function: "f_b_write_s_json", 
+    s_name_function: "f_b_write_s_text_file", 
     s_path_rel: 'o_config.json',
     s_json: JSON.stringify(o_state.o_config)
   });
@@ -2434,7 +2452,7 @@ let o_microscope__GenericModel = new O_microscope(1, 'ModelX', o_microscope_bran
     }
     if(b_update){
       let o = await f_o_ws_response({
-        s_name_function: "f_b_write_s_json", 
+        s_name_function: "f_b_write_s_text_file", 
         s_path_rel: `${s_name_array}.json`,
         s_json: JSON.stringify(o_state[s_name_array])
       });
@@ -2493,7 +2511,10 @@ o_ws.addEventListener('close', function (event) {
 });
 
 
-
+let a_s_name_property_timestamp = [
+  'n_u64_ts_ms_ut__created',
+  `n_u64_ts_ms_ut__updated`
+]
 
 
 o_state.f_captureAndSendImage = function() {
@@ -2865,88 +2886,43 @@ document.body.appendChild(
                               "O_microscope_objective",
                               "O_microscope",
                             ].map(s_name_model=>{
-                              let s_name_array = `a_${s_name_model.toLowerCase()}`;
+                              let s_name_prop_array = `a_${s_name_model.toLowerCase()}`
+                              let s_name_prop_o_js = `o_js__${s_name_model.toLowerCase()}`
                               return Object.assign(
-                                o_state, 
+                                o_state,
                                 {
-                                  [`o_js__${s_name_array}`]: {
-                                    f_o_jsh: ()=>{
+                                  [s_name_prop_o_js]:{
+                                    f_o_jsh:()=>{
                                       return {
-                                        class: `a_o ${s_name_array}`,
                                         a_o: [
                                           {
-                                            innerText: `${s_name_array}`,
-                                          }, 
-                                          ...[...o_state[s_name_array], new o_s_name_class[s_name_model]].map((o,n_idx)=>{
-                                            let b_new_instance = n_idx == o_state[s_name_array].length
-                                            if(b_new_instance){
-                                              o.n_u32_id = o_state[s_name_array].at(-1).n_u32_id+1;
-                                            }
-                                            return {
-                                              class: `o ${s_name_model.toLowerCase()}`,
-                                              style: [
-                                                `display:flex`, 
-                                                `flex-direction: column`
-                                              ].join(';'),
-                                              a_o: 
-                                              [
-                                                ...Object.keys(o).map(s_name_prop=>{
-                                                  return {
-                                                    a_o: [
-                                                      {
-                                                        s_tag: 'label',
-                                                        innerText: `${s_name_prop}`,
-                                                      }, 
-                                                      {
-                                                        s_tag: "input", 
-                                                        value: o[s_name_prop],
-                                                        oninput: (o_e)=>{
-                                                          let v = o_e.target.value;
-                                                          if(s_name_prop.indexOf('n_f') == 0){
-                                                              v = parseFloat(v)
-                                                          }
-                                                          if(s_name_prop.indexOf('n_u') == 0){
-                                                            v = parseInt(v)
-                                                          }
-                                                          if(s_name_prop.indexOf('b_') == 0){
-                                                              v = (v == 'true') ? true : (parseInt(v) == 1) ? true : false;
-                                                          }
-                                                          o[s_name_prop] = v;
-                                                        }
-                                                      }, 
-                                                      
-                                                    ]
-                                                  }
-                                                }),
-                                                {
-                                                  s_tag: 'button',
-                                                  onclick: async ()=>{
-
-                                                    if(b_new_instance){
-                                                      o_state[s_name_array].push(o);
-                                                    }
-
-                                                    let o = await f_o_ws_response({
-                                                      s_name_function: "f_b_write_s_json", 
-                                                      s_path_rel: `${s_name_array}.json`,
-                                                      s_json: JSON.stringify(o_state[s_name_array])
-                                                    });
-
-                                                    await o_state[`o_js__${s_name_array}`]._f_render();
-                                                    
-                                                  }, 
-                                                  innerText: (b_new_instance) ? "Create new" : "Update existing"
+                                            innerText: s_name_model,
+                                          },
+                                          {
+                                            s_tag: "select", 
+                                            a_o: [
+                                              o_state[s_name_prop_array].map(o=>{
+                                                return {
+                                                  s_tag: 'option', 
+                                                  innerText: o[Object.keys(o).sort().reverse()[0]], 
+                                                  ...((o_state?.[s_name_model.toLowerCase()] == o)?
+                                                    {selected: true} : {}), 
+                                                    value: o.n_u32_id
                                                 }
-                                              ] 
-                                              
+                                              })
+                                            ],
+                                            oninput: (o_e)=>{
+                                              let n_u32_id = parseInt(o_e.target.value)
+                                              f_update_o_from_n_u32_id(s_name_model, n_u32_id);
+                                              o_config[`n_u32_id__${s_name_model}`] = n_u32_id;
                                             }
-                                          })
+                                          }
                                         ]
                                       }
                                     }
                                   }
                                 }
-                              )[`o_js__${s_name_array}`]
+                              )[s_name_prop_o_js]
                             }),
                             Object.assign(
                               o_state, 
@@ -3318,7 +3294,7 @@ document.body.appendChild(
                                                     o_state.o_config.n_id_vendor = o_usb_device.n_id_vendor
                                                     o_state.o_config.n_id_product = o_usb_device.n_id_product
                                                     let o = f_o_ws_response({
-                                                      s_name_function: "f_b_write_s_json", 
+                                                      s_name_function: "f_b_write_s_text_file", 
                                                       s_path_rel: 'o_config.json',
                                                       s_json: JSON.stringify(o_state.o_config)
                                                     });
@@ -3343,6 +3319,106 @@ document.body.appendChild(
                                     }
                                 }
                             ).o_js__a_o_usb_device,
+                            [
+                              "O_microscope_brand",
+                              "O_microscope_objective",
+                              "O_microscope",
+                            ].map(s_name_model=>{
+                              let s_name_array = `a_${s_name_model.toLowerCase()}`;
+                              return Object.assign(
+                                o_state, 
+                                {
+                                  [`o_js__${s_name_array}`]: {
+                                    f_o_jsh: ()=>{
+                                      return {
+                                        class: `a_o ${s_name_array}`,
+                                        a_o: [
+                                          {
+                                            innerText: `${s_name_array}`,
+                                          }, 
+                                          ...[...o_state[s_name_array], new o_s_name_class[s_name_model]].map((o,n_idx)=>{
+                                            let b_new_instance = n_idx == o_state[s_name_array].length
+                                            if(b_new_instance){
+                                              Object.keys(o).forEach(s=>o[s] = 'enter new value...')
+                                              o.n_u32_id = o_state[s_name_array].at(-1).n_u32_id+1;
+                                            }
+                                            return {
+                                              class: `o ${s_name_model.toLowerCase()} hoverable`,
+                                              style: [
+                                                `display:flex`, 
+                                                `flex-direction: column`,
+                                                `align-items:normal`
+                                              ].join(';'),
+                                              a_o: 
+                                              [
+                                                ...Object.keys(o).filter(s=>!a_s_name_property_timestamp.includes(s)).map(s_name_prop=>{
+                                                  return {
+                                                    style: [
+                                                      `display:flex`,
+                                                      `align-items:flex-end`
+                                                    ].join(";"),
+                                                    a_o: [
+                                                      {
+                                                        style: 'width: 50%; text-align:right;',
+                                                        a_o:[
+                                                          {
+                                                            style: `overflow-wrap:break-word`,
+                                                            innerText: `${s_name_prop}`,
+                                                          }
+                                                        ]
+                                                      },
+                                                      {
+                                                        style: 'width:50%',
+                                                        s_tag: "input", 
+                                                        value: o[s_name_prop],
+                                                        oninput: (o_e)=>{
+                                                          let v = o_e.target.value;
+                                                          if(s_name_prop.indexOf('n_f') == 0){
+                                                              v = parseFloat(v)
+                                                          }
+                                                          if(s_name_prop.indexOf('n_u') == 0){
+                                                            v = parseInt(v)
+                                                          }
+                                                          if(s_name_prop.indexOf('b_') == 0){
+                                                              v = (v == 'true') ? true : (parseInt(v) == 1) ? true : false;
+                                                          }
+                                                          o[s_name_prop] = v;
+                                                        }
+                                                      }, 
+                                                      
+                                                    ]
+                                                  }
+                                                }),
+                                                {
+                                                  s_tag: 'button',
+                                                  onclick: async ()=>{
+
+                                                    if(b_new_instance){
+                                                      o_state[s_name_array].push(o);
+                                                    }
+
+                                                    let o = await f_o_ws_response({
+                                                      s_name_function: "f_b_write_s_text_file", 
+                                                      s_path_rel: `${s_name_array}.json`,
+                                                      s_json: JSON.stringify(o_state[s_name_array])
+                                                    });
+
+                                                    await o_state[`o_js__${s_name_array}`]._f_render();
+                                                    
+                                                  }, 
+                                                  innerText: (b_new_instance) ? "Create new" : "Update existing"
+                                                }
+                                              ] 
+                                              
+                                            }
+                                          })
+                                        ]
+                                      }
+                                    }
+                                  }
+                                }
+                              )[`o_js__${s_name_array}`]
+                            }),
                           ]
                         }
                       }
