@@ -278,7 +278,7 @@ fn f_usb_read_thread(
 }
 
 
-fn f_b_write_s_json(s_str: &str, s_path_rel: &str) -> bool{
+fn f_b_write_s_text_file(s_str: &str, s_path_rel: &str) -> bool{
     let mut file = File::create(s_path_rel).expect("Failed to create file");
 
     file.write_all(s_str.as_bytes()).expect("Failed to write to file");
@@ -290,7 +290,7 @@ fn f_b_write_s_json(s_str: &str, s_path_rel: &str) -> bool{
     // println!("Data written to {}", s_path_rel_file__config);
 }
 
-fn f_s_json_read(s_path_rel: &str) -> String {
+fn f_s_read_text_file(s_path_rel: &str) -> String {
     match fs::read_to_string(s_path_rel) {
         Ok(s_content) => s_content,
         Err(e) => {
@@ -605,16 +605,16 @@ async fn f_websocket_thread(
                                 o_response.insert("b".to_string(), json!(true));
                             }
 
-                            if(s_name_function == "f_s_json_read"){
-                                o_response.insert("s_json".to_string(), json!(f_s_json_read(
+                            if(s_name_function == "f_s_read_text_file"){
+                                o_response.insert("s_text".to_string(), json!(f_s_read_text_file(
                                     v_json_parsed["s_path_rel"].as_str().unwrap(),
                                 )));
                             }
 
-                            if(s_name_function == "f_b_write_s_json"){
+                            if(s_name_function == "f_b_write_s_text_file"){
 
-                                f_b_write_s_json(
-                                    v_json_parsed["s_json"].as_str().unwrap(),
+                                f_b_write_s_text_file(
+                                    v_json_parsed["s_text"].as_str().unwrap(),
                                     v_json_parsed["s_path_rel"].as_str().unwrap()
                                 );
                                 o_response.insert("b".to_string(), json!(true));
