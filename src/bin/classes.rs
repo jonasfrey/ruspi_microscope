@@ -140,5 +140,5 @@ pub struct O_spacial_information_nor{
 #[derive(Clone)]
 pub struct O_vec2{
     pub n_x: f64,
-    pub n_y: f64,
+    pub n_y: f64
 }

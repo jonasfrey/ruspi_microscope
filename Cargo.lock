@@ -474,6 +474,7 @@ dependencies = [
  "futures",
  "gethostname",
  "image",
+ "lazy_static",
  "rppal",
  "rusb",
  "rustls 0.20.9",
