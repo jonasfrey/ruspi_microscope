@@ -107,43 +107,43 @@ pub static ref s_name_ws_action__f_switch_usb_device: String = String::from("f_s
                 pub static ref o_microscope_brand__GenericBrand: O_microscope_brand = O_microscope_brand{
                     n_u32_id: 1 as u32,
 s_name: String::from("GenericBrand"),
-n_u64_ts_ms_ut__created: 1716388744191 as u64,
-n_u64_ts_ms_ut__updated: 1716388744191 as u64
+n_u64_ts_ms_ut__created: 1716477685842 as u64,
+n_u64_ts_ms_ut__updated: 1716477685842 as u64
                 }
                 ;
                 pub static ref o_microscope_brand__Olympus: O_microscope_brand = O_microscope_brand{
                     n_u32_id: 2 as u32,
 s_name: String::from("Olympus"),
-n_u64_ts_ms_ut__created: 1716388744191 as u64,
-n_u64_ts_ms_ut__updated: 1716388744191 as u64
+n_u64_ts_ms_ut__created: 1716477685842 as u64,
+n_u64_ts_ms_ut__updated: 1716477685842 as u64
                 }
                 ;
                 pub static ref o_microscope_brand__Bresser: O_microscope_brand = O_microscope_brand{
                     n_u32_id: 3 as u32,
 s_name: String::from("Bresser"),
-n_u64_ts_ms_ut__created: 1716388744191 as u64,
-n_u64_ts_ms_ut__updated: 1716388744191 as u64
+n_u64_ts_ms_ut__created: 1716477685842 as u64,
+n_u64_ts_ms_ut__updated: 1716477685842 as u64
                 }
                 ;
                 pub static ref o_microscope_brand__Nikon: O_microscope_brand = O_microscope_brand{
                     n_u32_id: 4 as u32,
 s_name: String::from("Nikon"),
-n_u64_ts_ms_ut__created: 1716388744191 as u64,
-n_u64_ts_ms_ut__updated: 1716388744191 as u64
+n_u64_ts_ms_ut__created: 1716477685842 as u64,
+n_u64_ts_ms_ut__updated: 1716477685842 as u64
                 }
                 ;
                 pub static ref o_microscope_brand__Zeiss: O_microscope_brand = O_microscope_brand{
                     n_u32_id: 5 as u32,
 s_name: String::from("Zeiss"),
-n_u64_ts_ms_ut__created: 1716388744191 as u64,
-n_u64_ts_ms_ut__updated: 1716388744191 as u64
+n_u64_ts_ms_ut__created: 1716477685842 as u64,
+n_u64_ts_ms_ut__updated: 1716477685842 as u64
                 }
                 ;
                 pub static ref o_microscope_brand__Leica: O_microscope_brand = O_microscope_brand{
                     n_u32_id: 6 as u32,
 s_name: String::from("Leica"),
-n_u64_ts_ms_ut__created: 1716388744191 as u64,
-n_u64_ts_ms_ut__updated: 1716388744191 as u64
+n_u64_ts_ms_ut__created: 1716477685842 as u64,
+n_u64_ts_ms_ut__updated: 1716477685842 as u64
                 }
                 ;
                 pub static ref o_microscope_objective__4x_Objective: O_microscope_objective = O_microscope_objective{
@@ -156,8 +156,8 @@ n_f64_focal_length: 17 as f64,
 n_f64_field_of_view: 4.5 as f64,
 b_plan_apochromatic: false as bool,
 s_tube_length: String::from("160mm"),
-n_u64_ts_ms_ut__created: 1716388744191 as u64,
-n_u64_ts_ms_ut__updated: 1716388744191 as u64
+n_u64_ts_ms_ut__created: 1716477685842 as u64,
+n_u64_ts_ms_ut__updated: 1716477685842 as u64
                 }
                 ;
                 pub static ref o_microscope_objective__10x_Objective: O_microscope_objective = O_microscope_objective{
@@ -170,8 +170,8 @@ n_f64_focal_length: 16 as f64,
 n_f64_field_of_view: 2 as f64,
 b_plan_apochromatic: false as bool,
 s_tube_length: String::from("160mm"),
-n_u64_ts_ms_ut__created: 1716388744191 as u64,
-n_u64_ts_ms_ut__updated: 1716388744191 as u64
+n_u64_ts_ms_ut__created: 1716477685842 as u64,
+n_u64_ts_ms_ut__updated: 1716477685842 as u64
                 }
                 ;
                 pub static ref o_microscope_objective__20x_Objective: O_microscope_objective = O_microscope_objective{
@@ -184,8 +184,8 @@ n_f64_focal_length: 15 as f64,
 n_f64_field_of_view: 1 as f64,
 b_plan_apochromatic: true as bool,
 s_tube_length: String::from("160mm"),
-n_u64_ts_ms_ut__created: 1716388744191 as u64,
-n_u64_ts_ms_ut__updated: 1716388744191 as u64
+n_u64_ts_ms_ut__created: 1716477685842 as u64,
+n_u64_ts_ms_ut__updated: 1716477685842 as u64
                 }
                 ;
                 pub static ref o_microscope_objective__40x_Objective: O_microscope_objective = O_microscope_objective{
@@ -198,15 +198,15 @@ n_f64_focal_length: 14 as f64,
 n_f64_field_of_view: 0.5 as f64,
 b_plan_apochromatic: true as bool,
 s_tube_length: String::from("160mm"),
-n_u64_ts_ms_ut__created: 1716388744191 as u64,
-n_u64_ts_ms_ut__updated: 1716388744191 as u64
+n_u64_ts_ms_ut__created: 1716477685842 as u64,
+n_u64_ts_ms_ut__updated: 1716477685842 as u64
                 }
                 ;
                 pub static ref o_microscope__ModelX: O_microscope = O_microscope{
                     n_u32_id: 1 as u32,
 s_model: String::from("ModelX"),
 n_u32_id__O_microscope_brand: 1 as u32,
-n_u64_ts_ms_ut__created: 1716388744191 as u64
+n_u64_ts_ms_ut__created: 1716477685842 as u64
                 }
                 ;
                 pub static ref o_input_action__move_slide_x_plus: O_input_action = O_input_action{
@@ -468,6 +468,174 @@ s_nicename: String::from("Image brightness minus"),
 s_description: String::from("")
                 }
                 ;
+                pub static ref o_input_action__usb_camera_exposureMode_next: O_input_action = O_input_action{
+                    n_u32_id: 38 as u32,
+s_name: String::from("usb_camera_exposureMode_next"),
+s_nicename: String::from("auto, manual"),
+s_description: String::from("")
+                }
+                ;
+                pub static ref o_input_action__usb_camera_exposureMode_previous: O_input_action = O_input_action{
+                    n_u32_id: 39 as u32,
+s_name: String::from("usb_camera_exposureMode_previous"),
+s_nicename: String::from("auto, manual"),
+s_description: String::from("")
+                }
+                ;
+                pub static ref o_input_action__usb_camera_exposureTime_plus: O_input_action = O_input_action{
+                    n_u32_id: 40 as u32,
+s_name: String::from("usb_camera_exposureTime_plus"),
+s_nicename: String::from("Time in seconds for exposure"),
+s_description: String::from("")
+                }
+                ;
+                pub static ref o_input_action__usb_camera_exposureTime_minus: O_input_action = O_input_action{
+                    n_u32_id: 41 as u32,
+s_name: String::from("usb_camera_exposureTime_minus"),
+s_nicename: String::from("Time in seconds for exposure"),
+s_description: String::from("")
+                }
+                ;
+                pub static ref o_input_action__usb_camera_whiteBalanceMode_next: O_input_action = O_input_action{
+                    n_u32_id: 42 as u32,
+s_name: String::from("usb_camera_whiteBalanceMode_next"),
+s_nicename: String::from("auto, manual"),
+s_description: String::from("")
+                }
+                ;
+                pub static ref o_input_action__usb_camera_whiteBalanceMode_previous: O_input_action = O_input_action{
+                    n_u32_id: 43 as u32,
+s_name: String::from("usb_camera_whiteBalanceMode_previous"),
+s_nicename: String::from("auto, manual"),
+s_description: String::from("")
+                }
+                ;
+                pub static ref o_input_action__usb_camera_whiteBalance_plus: O_input_action = O_input_action{
+                    n_u32_id: 44 as u32,
+s_name: String::from("usb_camera_whiteBalance_plus"),
+s_nicename: String::from("Color temperature in Kelvin"),
+s_description: String::from("")
+                }
+                ;
+                pub static ref o_input_action__usb_camera_whiteBalance_minus: O_input_action = O_input_action{
+                    n_u32_id: 44 as u32,
+s_name: String::from("usb_camera_whiteBalance_minus"),
+s_nicename: String::from("Color temperature in Kelvin"),
+s_description: String::from("")
+                }
+                ;
+                pub static ref o_input_action__usb_camera_focusMode_next: O_input_action = O_input_action{
+                    n_u32_id: 45 as u32,
+s_name: String::from("usb_camera_focusMode_next"),
+s_nicename: String::from("auto, manual"),
+s_description: String::from("")
+                }
+                ;
+                pub static ref o_input_action__usb_camera_focusMode_previous: O_input_action = O_input_action{
+                    n_u32_id: 46 as u32,
+s_name: String::from("usb_camera_focusMode_previous"),
+s_nicename: String::from("auto, manual"),
+s_description: String::from("")
+                }
+                ;
+                pub static ref o_input_action__usb_camera_focusDistance_plus: O_input_action = O_input_action{
+                    n_u32_id: 47 as u32,
+s_name: String::from("usb_camera_focusDistance_plus"),
+s_nicename: String::from("Distance for focus"),
+s_description: String::from("")
+                }
+                ;
+                pub static ref o_input_action__usb_camera_focusDistance_minus: O_input_action = O_input_action{
+                    n_u32_id: 48 as u32,
+s_name: String::from("usb_camera_focusDistance_minus"),
+s_nicename: String::from("Distance for focus"),
+s_description: String::from("")
+                }
+                ;
+                pub static ref o_input_action__usb_camera_brightness_plus: O_input_action = O_input_action{
+                    n_u32_id: 49 as u32,
+s_name: String::from("usb_camera_brightness_plus"),
+s_nicename: String::from("Brightness level"),
+s_description: String::from("")
+                }
+                ;
+                pub static ref o_input_action__usb_camera_brightness_minus: O_input_action = O_input_action{
+                    n_u32_id: 50 as u32,
+s_name: String::from("usb_camera_brightness_minus"),
+s_nicename: String::from("Brightness level"),
+s_description: String::from("")
+                }
+                ;
+                pub static ref o_input_action__usb_camera_contrast_minus: O_input_action = O_input_action{
+                    n_u32_id: 51 as u32,
+s_name: String::from("usb_camera_contrast_minus"),
+s_nicename: String::from("Contrast level"),
+s_description: String::from("")
+                }
+                ;
+                pub static ref o_input_action__usb_camera_contrast_plus: O_input_action = O_input_action{
+                    n_u32_id: 52 as u32,
+s_name: String::from("usb_camera_contrast_plus"),
+s_nicename: String::from("Contrast level"),
+s_description: String::from("")
+                }
+                ;
+                pub static ref o_input_action__usb_camera_saturation_minus: O_input_action = O_input_action{
+                    n_u32_id: 53 as u32,
+s_name: String::from("usb_camera_saturation_minus"),
+s_nicename: String::from("Saturation level"),
+s_description: String::from("")
+                }
+                ;
+                pub static ref o_input_action__usb_camera_saturation_plus: O_input_action = O_input_action{
+                    n_u32_id: 54 as u32,
+s_name: String::from("usb_camera_saturation_plus"),
+s_nicename: String::from("Saturation level"),
+s_description: String::from("")
+                }
+                ;
+                pub static ref o_input_action__usb_camera_sharpness_minus: O_input_action = O_input_action{
+                    n_u32_id: 55 as u32,
+s_name: String::from("usb_camera_sharpness_minus"),
+s_nicename: String::from("Sharpness level"),
+s_description: String::from("")
+                }
+                ;
+                pub static ref o_input_action__usb_camera_sharpness_plus: O_input_action = O_input_action{
+                    n_u32_id: 56 as u32,
+s_name: String::from("usb_camera_sharpness_plus"),
+s_nicename: String::from("Sharpness level"),
+s_description: String::from("")
+                }
+                ;
+                pub static ref o_input_action__usb_camera_zoom_minus: O_input_action = O_input_action{
+                    n_u32_id: 57 as u32,
+s_name: String::from("usb_camera_zoom_minus"),
+s_nicename: String::from("Zoom level"),
+s_description: String::from("")
+                }
+                ;
+                pub static ref o_input_action__usb_camera_zoom_plus: O_input_action = O_input_action{
+                    n_u32_id: 58 as u32,
+s_name: String::from("usb_camera_zoom_plus"),
+s_nicename: String::from("Zoom level"),
+s_description: String::from("")
+                }
+                ;
+                pub static ref o_input_action__usb_camera_torch_next: O_input_action = O_input_action{
+                    n_u32_id: 58 as u32,
+s_name: String::from("usb_camera_torch_next"),
+s_nicename: String::from("Boolean for turning on/off the torch (if supported ) "),
+s_description: String::from("")
+                }
+                ;
+                pub static ref o_input_action__usb_camera_torch_previous: O_input_action = O_input_action{
+                    n_u32_id: 59 as u32,
+s_name: String::from("usb_camera_torch_previous"),
+s_nicename: String::from("Boolean for turning on/off the torch (if supported ) "),
+s_description: String::from("")
+                }
+                ;
 pub static ref a_o_microscope_brand: Vec<&'static O_microscope_brand> = vec![
                 &*o_microscope_brand__GenericBrand,
 &*o_microscope_brand__Olympus,
@@ -527,7 +695,31 @@ pub static ref a_o_microscope_brand: Vec<&'static O_microscope_brand> = vec![
 &*o_input_action__image_contrast_plus,
 &*o_input_action__image_contrast_minus,
 &*o_input_action__image_gamma_plus,
-&*o_input_action__image_gamma_minus
+&*o_input_action__image_gamma_minus,
+&*o_input_action__usb_camera_exposureMode_next,
+&*o_input_action__usb_camera_exposureMode_previous,
+&*o_input_action__usb_camera_exposureTime_plus,
+&*o_input_action__usb_camera_exposureTime_minus,
+&*o_input_action__usb_camera_whiteBalanceMode_next,
+&*o_input_action__usb_camera_whiteBalanceMode_previous,
+&*o_input_action__usb_camera_whiteBalance_plus,
+&*o_input_action__usb_camera_whiteBalance_minus,
+&*o_input_action__usb_camera_focusMode_next,
+&*o_input_action__usb_camera_focusMode_previous,
+&*o_input_action__usb_camera_focusDistance_plus,
+&*o_input_action__usb_camera_focusDistance_minus,
+&*o_input_action__usb_camera_brightness_plus,
+&*o_input_action__usb_camera_brightness_minus,
+&*o_input_action__usb_camera_contrast_minus,
+&*o_input_action__usb_camera_contrast_plus,
+&*o_input_action__usb_camera_saturation_minus,
+&*o_input_action__usb_camera_saturation_plus,
+&*o_input_action__usb_camera_sharpness_minus,
+&*o_input_action__usb_camera_sharpness_plus,
+&*o_input_action__usb_camera_zoom_minus,
+&*o_input_action__usb_camera_zoom_plus,
+&*o_input_action__usb_camera_torch_next,
+&*o_input_action__usb_camera_torch_previous
             ];pub static ref a_o_image_object: Vec<&'static O_image_object> = vec![
                 
             ];pub static ref a_o_image_description_o_image_object: Vec<&'static O_image_description_o_image_object> = vec![

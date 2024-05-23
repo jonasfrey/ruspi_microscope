@@ -524,8 +524,152 @@ o_o_model_info.O_input_action =
                 "image_gamma_minus",
                 "Image brightness minus",
                 ""
-            ]
-        
+            ],
+            [
+                38,
+                "usb_camera_exposureMode_next",
+                `auto, manual`,
+                ""    
+            ],
+            [
+                39,
+                "usb_camera_exposureMode_previous",
+                `auto, manual`,
+                ""    
+            ],
+            [
+                40,
+                "usb_camera_exposureTime_plus",
+                `Time in seconds for exposure`,
+                ""    
+            ],
+            [
+                41,
+                "usb_camera_exposureTime_minus",
+                `Time in seconds for exposure`,
+                ""    
+            ],
+            [
+                42,
+                "usb_camera_whiteBalanceMode_next",
+                `auto, manual`,
+                ""    
+            ],
+            [
+                43,
+                "usb_camera_whiteBalanceMode_previous",
+                `auto, manual`,
+                ""    
+            ],
+            [
+                44,
+                "usb_camera_whiteBalance_plus",
+                `Color temperature in Kelvin`,
+                ""    
+            ],
+            [
+                44,
+                "usb_camera_whiteBalance_minus",
+                `Color temperature in Kelvin`,
+                ""    
+            ],
+            [
+                45,
+                "usb_camera_focusMode_next",
+                `auto, manual`,
+                ""    
+            ],
+            [
+                46,
+                "usb_camera_focusMode_previous",
+                `auto, manual`,
+                ""    
+            ],
+            [
+                47,
+                "usb_camera_focusDistance_plus",
+                `Distance for focus`,
+                ""    
+            ],
+            [
+                48,
+                "usb_camera_focusDistance_minus",
+                `Distance for focus`,
+                ""    
+            ],
+            [
+                49,
+                "usb_camera_brightness_plus",
+                `Brightness level`,
+                ""    
+            ],
+            [
+                50,
+                "usb_camera_brightness_minus",
+                `Brightness level`,
+                ""    
+            ],
+            [
+                51,
+                "usb_camera_contrast_minus",
+                `Contrast level`,
+                ""    
+            ],
+            [
+                52,
+                "usb_camera_contrast_plus",
+                `Contrast level`,
+                ""    
+            ],
+            [
+                53,
+                "usb_camera_saturation_minus",
+                `Saturation level`,
+                ""    
+            ],
+            [
+                54,
+                "usb_camera_saturation_plus",
+                `Saturation level`,
+                ""    
+            ],
+            [
+                55,
+                "usb_camera_sharpness_minus",
+                `Sharpness level`,
+                ""    
+            ],
+            [
+                56,
+                "usb_camera_sharpness_plus",
+                `Sharpness level`,
+                ""    
+            ],
+            [
+                57,
+                "usb_camera_zoom_minus",
+                `Zoom level`,
+                ""    
+            ],
+            [
+                58,
+                "usb_camera_zoom_plus",
+                `Zoom level`,
+                ""    
+            ],
+            [
+                58,
+                "usb_camera_torch_next",
+                `Boolean for turning on/off the torch (if supported ) `,
+                ""    
+            ],
+            [
+                59,
+                "usb_camera_torch_previous",
+                `Boolean for turning on/off the torch (if supported ) `,
+                ""    
+            ] 
+
 		]
 	);
     
