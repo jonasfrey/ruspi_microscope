@@ -1,3 +1,4 @@
 /target
 o_config.json
 /public/media
+*.gitignored*

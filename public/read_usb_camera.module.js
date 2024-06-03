@@ -27,14 +27,14 @@ import {
 
 import {
   f_o_html__and_make_renderable,
-}from 'https://deno.land/x/f_o_html_from_o_js@3.0/mod.js'
+}from 'https://deno.land/x/f_o_html_from_o_js@3.3/mod.js'
 
 import {
     f_o_js as f_o_js__notifire, 
     f_o_throw_notification,
     f_clear_all_notifications,
     f_clear_o_notification
-}from "https://deno.land/x/f_o_html_from_o_js@3.1/localhost/jsh_modules/notifire/mod.js"
+}from "https://deno.land/x/f_o_html_from_o_js@3.3/localhost/jsh_modules/notifire/mod.js"
 
 import {
   f_n_idx_binding_from_params,
@@ -1058,6 +1058,7 @@ let f_try_start_webcam = async function(){
     });
     o_el_vid.srcObject = stream;
     o_state.o_video_track = stream.getVideoTracks()[0];
+    console.log(o_state.o_video_track)
     let o_s_name_o_capability = o_state.o_video_track.getCapabilities();
     o_state.a_o_video_capabilities = Object.keys(o_s_name_o_capability)
     .filter(s=>typeof o_s_name_o_capability[s] != 'string')
@@ -1142,17 +1143,6 @@ async function f_start_render_loop() {
           });
           // console.log(a_o_el_under_cursor_virtual)
           // process input from controller 
-          let v_o_l2 = (o_state?.v_o_input_device?.a_o_input_sensor?.find(o=> o.s_name == "left_middle_finger_button_l2"));
-
-          let v__o_l1 = (o_state?.v_o_input_device?.a_o_input_sensor?.find(o=> o.s_name == "left_index_finger_button_l1"));
-          let v__o_l1__last = (o_state?.v_o_input_device__last?.a_o_input_sensor?.find(o=> o.s_name == "left_index_finger_button_l1"));
-          let v__o_r1 = (o_state?.v_o_input_device?.a_o_input_sensor?.find(o=> o.s_name == "right_index_finger_button_r1"));
-          let v__o_r1__last = (o_state?.v_o_input_device__last?.a_o_input_sensor?.find(o=> o.s_name == "right_index_finger_button_r1"));
-
-          let v_o__right_meta1_button = (o_state?.v_o_input_device?.a_o_input_sensor?.find(o=> o.s_name == "right_meta1_button"));
-          let v_o__right_meta1_button_last = (o_state?.v_o_input_device__last?.a_o_input_sensor?.find(o=> o.s_name == "right_meta1_button"));
-          let v_o__left_meta1_button = (o_state?.v_o_input_device?.a_o_input_sensor?.find(o=> o.s_name == "left_meta1_button"));
-          let v_o__left_meta1_button_last = (o_state?.v_o_input_device__last?.a_o_input_sensor?.find(o=> o.s_name == "left_meta1_button"));
 
           let v_o_keyboard_key__esc = null;
           let b_remap_input_action = o_state.o_config.o_input_action != null;
@@ -1855,7 +1845,6 @@ let f_r_ser_w_cli_o_config = async function(){
   //   // the config will overwrite stuff that becomes misleading and confusing and nasty for development
   //   o_state.o_config = Object.assign(o_state.o_config, o_config);
   // }
-  o_state.o_config.a_o_input_action = o_config_tmp_original.a_o_input_action;
 
   o_state?.o_js__a_o_usb_device?._f_render?.()
 

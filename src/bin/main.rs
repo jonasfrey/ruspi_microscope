@@ -38,7 +38,8 @@ use std::{
     sync::{
         mpsc, Arc, Mutex
     },
-    thread
+    thread, 
+    env
 };
 use serde_json::{
     json, 
@@ -72,7 +73,9 @@ use functions::{
     f_b_contains_image_file_suffix,
     f_b_directory_contains_more_than_one_image, 
     f_move_files, 
-    f_install_denojs
+    f_install_denojs, 
+    f_set_process_name,
+    f_kill_existing_instances,
 };
 use classes::{
     ControlCommand, O_input_device, SendData
@@ -731,9 +734,18 @@ async fn f_websocket_thread(
 
 #[tokio::main]
 async fn main() {
-
+    let n_port = 3030;
     
+    // try to kill already running programs / webservers
+    let current_exe = env::current_exe().unwrap();
+    let process_name = current_exe.file_name().unwrap().to_str().unwrap();
+    
+    // Set the process name (optional, depending on the system)
+    f_set_process_name(process_name);
 
+    if f_kill_existing_instances(process_name) {
+        println!("An existing instance was killed.");
+    }
     f_install_denojs();
     //raspi pinout pin layout 
     // |----------------------|----------------------|
@@ -830,7 +842,7 @@ async fn main() {
         // RSA
         .cert_path("cert.pem")
         .key_path("key.pem")
-        .run((a_n_ip, 3030))
+        .run((a_n_ip, n_port))
     );
     println!("webserver running at http://127.0.0.1:3030/");
     println!("websocket running at ws://127.0.0.1:3030/ws");

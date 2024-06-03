@@ -17,6 +17,8 @@ path = "src/bin/main.rs"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+sysinfo = "0.21"
+nix = "0.23"
 lazy_static = "1.4.0"
 rppal = "0.13.1" # Check for the latest version on crates.io
 # read usb with rust

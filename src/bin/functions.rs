@@ -4,7 +4,15 @@ use crate::classes::{
     O_input_sensor_value,
     O_num_str_value
 };
+
+
 use rppal::gpio::Gpio;
+use sysinfo::{ProcessExt, System, SystemExt};
+use nix::{
+    libc,
+    sys::signal::{kill, Signal},
+    unistd::Pid
+};
 use std::{
     self, 
     fs::{
@@ -327,6 +335,38 @@ pub fn f_o_input_sensor_from_s_name<'a>(o_input_device: &'a O_input_device, s_na
         }
     }
 }
+pub fn f_kill_existing_instances(process_name: &str) -> bool {
+    let mut system = System::new_all();
+    system.refresh_all();
+
+    let current_pid = std::process::id();
+    let mut process_killed = false;
+
+    // Iterate through all processes
+    for (pid, process) in system.processes() {
+        if process.name() == process_name && *pid as u32 != current_pid {
+            println!("Found existing instance with PID {}. Killing it.", pid);
+            // Kill the process
+            match kill(Pid::from_raw(*pid as i32), Signal::SIGINT) {
+                Ok(_) => {
+                    println!("Successfully sent SIGINT to process {}", pid);
+                    process_killed = true;
+                },
+                Err(e) => println!("Failed to send SIGINT to process {}: {}", pid, e),
+            }
+        }
+    }
+
+    process_killed
+}
+pub fn f_set_process_name(name: &str) {
+    let cname = std::ffi::CString::new(name).unwrap();
+    unsafe {
+        libc::prctl(libc::PR_SET_NAME, cname.as_ptr(), 0, 0, 0);
+    }
+}
+
+
 
 pub fn f_b_bool_button_down(
     o_input_device: &mut O_input_device,
