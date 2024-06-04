@@ -1,0 +1,511 @@
+{
+    "s_path_rel_images": "./media/images_2024-05-16_17:32:02",
+    "s_path_rel_videos": "./media/videos_2024-05-16_17:32:02",
+    "s_path_rel_stacking": "./media/tmp_focus_stacking_images",
+    "s_path_rel_stitching": "./media/tmp_image_stitching_images",
+    "s_path_rel_archive": "./media/archive",
+    "b_layer_switch_type_on_click_cycle_through": false,
+    "b_layer_switch_keep_pressed_required": true,
+    "n_idx_a_o_action_layer": 0,
+    "n_idx_a_o_action_layer__last": 0,
+    "v_o_action_layer": null,
+    "a_o_input_action_mapping__layer_switch": [
+        {
+            "o_input_action": {
+                "s_name": "keep_hold_down_toggle_camera_control",
+                "s_nicename": "Shift to layer 2",
+                "s_description": "hold to to temporarily switch to a new layer"
+            },
+            "s_name_input__controller": "left_middle_finger_button_l2",
+            "s_name_char_keyboard": "1",
+            "v_o_keyboard_key": null,
+            "v_o_input_sensor": null,
+            "v_o_input_sensor_last": null
+        },
+        {
+            "o_input_action": {
+                "s_name": "keep_hold_down_toggle_image_control",
+                "s_nicename": "Shift to layer 3",
+                "s_description": "hold to to temporarily switch to a new layer"
+            },
+            "s_name_input__controller": "left_index_finger_button_l1",
+            "s_name_char_keyboard": "2",
+            "v_o_keyboard_key": null,
+            "v_o_input_sensor": null,
+            "v_o_input_sensor_last": null
+        },
+        {
+            "o_input_action": {
+                "s_name": "next_action_layer",
+                "s_nicename": "Layer: next",
+                "s_description": "Switch to the next action layer"
+            },
+            "s_name_input__controller": "left_index_finger_button_l1",
+            "s_name_char_keyboard": "1",
+            "v_o_keyboard_key": null,
+            "v_o_input_sensor": null,
+            "v_o_input_sensor_last": null
+        },
+        {
+            "o_input_action": {
+                "s_name": "prev_action_layer",
+                "s_nicename": "Layer: prev",
+                "s_description": "Switch to the previous action layer"
+            },
+            "s_name_input__controller": "right_index_finger_button_r1",
+            "s_name_char_keyboard": "2",
+            "v_o_keyboard_key": null,
+            "v_o_input_sensor": null,
+            "v_o_input_sensor_last": null
+        }
+    ],
+    "a_o_action_layer": [
+        {
+            "v_o_input_action": null,
+            "s_name": "microscope control",
+            "a_o_input_action_mapping": [
+                {
+                    "o_input_action": {
+                        "s_name": "move_slide_x_plus",
+                        "s_nicename": "Slide right",
+                        "s_description": "Physically move the slide (only if the mic is motorized)"
+                    },
+                    "s_name_input__controller": "right_stick_x_axis",
+                    "s_name_char_keyboard": "l",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "s_name": "move_slide_x_minus",
+                        "s_nicename": "Slide left",
+                        "s_description": ""
+                    },
+                    "s_name_input__controller": "right_stick_x_axis",
+                    "s_name_char_keyboard": "j",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "s_name": "move_slide_y_plus",
+                        "s_nicename": "Slide up",
+                        "s_description": ""
+                    },
+                    "s_name_input__controller": "right_stick_y_axis",
+                    "s_name_char_keyboard": "i",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "s_name": "move_slide_y_minus",
+                        "s_nicename": "Slide down",
+                        "s_description": ""
+                    },
+                    "s_name_input__controller": "right_stick_y_axis",
+                    "s_name_char_keyboard": "k",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "s_name": "move_focus_plus",
+                        "s_nicename": "Focus in",
+                        "s_description": ""
+                    },
+                    "s_name_input__controller": "left_stick_y_axis",
+                    "s_name_char_keyboard": "o",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "s_name": "move_focus_minus",
+                        "s_nicename": "Focus out",
+                        "s_description": "Physically turn the focus know (only if the mic is motorized)"
+                    },
+                    "s_name_input__controller": "left_stick_y_axis",
+                    "s_name_char_keyboard": "u",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "s_name": "move_slide_single_step_x_plus",
+                        "s_nicename": "Slide right (one-step)",
+                        "s_description": "Moves the slide a single step of the stepper motor, which translates to approximately 2r*pi/(number_of_steps_per_rotation) = 0.007 millimeter"
+                    },
+                    "s_name_input__controller": "direction_pad_right",
+                    "s_name_char_keyboard": "l",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "s_name": "move_slide_single_step_x_minus",
+                        "s_nicename": "Slide left (one-step)",
+                        "s_description": "Moves the slide a single step of the stepper motor, which translates to approximately 2r*pi/(number_of_steps_per_rotation) = 0.007 millimeter"
+                    },
+                    "s_name_input__controller": "direction_pad_left",
+                    "s_name_char_keyboard": "h",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "s_name": "move_slide_single_step_y_plus",
+                        "s_nicename": "Slide up (one-step)",
+                        "s_description": "Moves the slide a single step of the stepper motor, which translates to approximately 2r*pi/(number_of_steps_per_rotation) = 0.007 millimeter"
+                    },
+                    "s_name_input__controller": "direction_pad_up",
+                    "s_name_char_keyboard": "i",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "s_name": "move_slide_single_step_y_minus",
+                        "s_nicename": "Slide down (one-step)",
+                        "s_description": "Moves the slide a single step of the stepper motor, which translates to approximately 2r*pi/(number_of_steps_per_rotation) = 0.007 millimeter"
+                    },
+                    "s_name_input__controller": "direction_pad_down",
+                    "s_name_char_keyboard": "k",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "s_name": "reset_image_manipulation",
+                        "s_nicename": "Image reset",
+                        "s_description": ""
+                    },
+                    "s_name_input__controller": "left_meta1_button",
+                    "s_name_char_keyboard": "r",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "s_name": "toggle_settings",
+                        "s_nicename": "Settings",
+                        "s_description": "Press once to show the settings, press again to hide"
+                    },
+                    "s_name_input__controller": "center_meta1_button",
+                    "s_name_char_keyboard": "Escape",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "s_name": "take_screenshot",
+                        "s_nicename": "Screenshot",
+                        "s_description": "Take a simple screnshot"
+                    },
+                    "s_name_input__controller": "face_button_bottom",
+                    "s_name_char_keyboard": "7",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "s_name": "toggle_record_video",
+                        "s_nicename": "Record/Stop video",
+                        "s_description": ""
+                    },
+                    "s_name_input__controller": "face_button_right",
+                    "s_name_char_keyboard": "8",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "s_name": "ask_ai",
+                        "s_nicename": "AI-Help",
+                        "s_description": "Let AI detect common image features and estimation of size dont yet fully trust it, its GPT Vision AI its not that good yet (but its fun for sure!!!)"
+                    },
+                    "s_name_input__controller": "face_button_top",
+                    "s_name_char_keyboard": "9",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "s_name": "add_image_to_focus_stack",
+                        "s_nicename": "Add image to focus stack",
+                        "s_description": ""
+                    },
+                    "s_name_input__controller": "face_button_left",
+                    "s_name_char_keyboard": "0",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "s_name": "finish_focus_stack",
+                        "s_nicename": "Finish focus stack",
+                        "s_description": ""
+                    },
+                    "s_name_input__controller": "right_meta1_button",
+                    "s_name_char_keyboard": "-",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "s_name": "add_image_to_image_stitch",
+                        "s_nicename": "Add image to image stitch",
+                        "s_description": "Add an image to the image stitching result which autmotically updates in the background after each addition of an image"
+                    },
+                    "s_name_input__controller": "right_stick_button_r3",
+                    "s_name_char_keyboard": "=",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "s_name": "clear_image_stitch",
+                        "s_nicename": "Clear image stitch",
+                        "s_description": "clears the current image stitching result, no worries it will be saved!"
+                    },
+                    "s_name_input__controller": "left_stick_button_l3",
+                    "s_name_char_keyboard": "]",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                }
+            ]
+        },
+        {
+            "v_o_input_action": null,
+            "s_name": "image control",
+            "a_o_input_action_mapping": [
+                {
+                    "o_input_action": {
+                        "s_name": "move_digital_x_plus",
+                        "s_nicename": "Digital right",
+                        "s_description": ""
+                    },
+                    "s_name_input__controller": "right_stick_x_axis",
+                    "s_name_char_keyboard": "l",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "s_name": "move_digital_x_minus",
+                        "s_nicename": "Digital left",
+                        "s_description": ""
+                    },
+                    "s_name_input__controller": "right_stick_x_axis",
+                    "s_name_char_keyboard": "j",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "s_name": "move_digital_y_plus",
+                        "s_nicename": "Digital up",
+                        "s_description": ""
+                    },
+                    "s_name_input__controller": "right_stick_y_axis",
+                    "s_name_char_keyboard": "i",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "s_name": "move_digital_y_minus",
+                        "s_nicename": "Digital down",
+                        "s_description": "Perform a digital movement, may be handy for showing and pointing out interesting image regions"
+                    },
+                    "s_name_input__controller": "right_stick_y_axis",
+                    "s_name_char_keyboard": "k",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "s_name": "zoom_digital_plus",
+                        "s_nicename": "Digital zoom in",
+                        "s_description": ""
+                    },
+                    "s_name_input__controller": "left_stick_y_axis",
+                    "s_name_char_keyboard": "o",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "s_name": "zoom_digital_minus",
+                        "s_nicename": "Digital zoom out",
+                        "s_description": "Perform a digital zoom, may be handy for showing and pointing out interesting image regions"
+                    },
+                    "s_name_input__controller": "left_stick_y_axis",
+                    "s_name_char_keyboard": "u",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "s_name": "image_brightness_plus",
+                        "s_nicename": "Image brightness plus",
+                        "s_description": ""
+                    },
+                    "s_name_input__controller": "direction_pad_right",
+                    "s_name_char_keyboard": "l",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "s_name": "image_brightness_minus",
+                        "s_nicename": "Image brightness minus",
+                        "s_description": ""
+                    },
+                    "s_name_input__controller": "direction_pad_left",
+                    "s_name_char_keyboard": "h",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "s_name": "image_contrast_plus",
+                        "s_nicename": "Image brightness plus",
+                        "s_description": ""
+                    },
+                    "s_name_input__controller": "direction_pad_up",
+                    "s_name_char_keyboard": "i",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "s_name": "image_contrast_minus",
+                        "s_nicename": "Image brightness minus",
+                        "s_description": ""
+                    },
+                    "s_name_input__controller": "direction_pad_down",
+                    "s_name_char_keyboard": "k",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "s_name": "image_gamma_plus",
+                        "s_nicename": "Image brightness plus",
+                        "s_description": ""
+                    },
+                    "s_name_input__controller": "left_meta1_button",
+                    "s_name_char_keyboard": "r",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "s_name": "image_gamma_minus",
+                        "s_nicename": "Image brightness minus",
+                        "s_description": ""
+                    },
+                    "s_name_input__controller": "center_meta1_button",
+                    "s_name_char_keyboard": "ESC",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "s_name": "reset_image_manipulation",
+                        "s_nicename": "Image reset",
+                        "s_description": ""
+                    },
+                    "s_name_input__controller": "left_meta1_button",
+                    "s_name_char_keyboard": "r",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "s_name": "next_image_mode",
+                        "s_nicename": "Image mode: next",
+                        "s_description": "Cycle throught the image modes"
+                    },
+                    "s_name_input__controller": "right_index_finger_button_r1",
+                    "s_name_char_keyboard": "y",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                }
+            ]
+        },
+        {
+            "v_o_input_action": null,
+            "s_name": "cursor  control",
+            "a_o_input_action_mapping": []
+        }
+    ],
+    "o_input_action": {}
+}
