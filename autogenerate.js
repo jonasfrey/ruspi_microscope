@@ -365,13 +365,13 @@ o_o_model_info.O_input_action =
             ],
             [
                 11,
-                "keep_hold_down_toggle_camera_control",
+                "keep_hold_down_toggle_layer2",
                 "Shift to layer 2",
                 "hold to to temporarily switch to a new layer"
             ],
             [
                 12,
-                "keep_hold_down_toggle_image_control",
+                "keep_hold_down_toggle_layer3",
                 "Shift to layer 3",
                 "hold to to temporarily switch to a new layer"
             ],

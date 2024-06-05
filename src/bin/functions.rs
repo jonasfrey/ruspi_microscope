@@ -52,8 +52,24 @@ use super::classes::A_o_name_synonym;
 use crate::classes::O_stepper_28BYJ_48;
 
 
+pub fn f_b_denojs_installed()-> bool{
+
+    let o_output = Command::new("deno")
+        .arg("info")
+        .output();
+
+    match o_output {
+        Ok(o_out) => o_out.status.success(),
+        Err(_) => false,
+    }
+}
 pub fn f_install_denojs()-> io::Result<()>{
    // Run the installation command
+   
+   if(f_b_denojs_installed()){
+    println!("Denojs already installed");
+    return Ok(());
+   }
    let status = Command::new("sh")
    .arg("-c")
    .arg("curl -fsSL https://deno.land/install.sh | sh")
