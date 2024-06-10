@@ -295,7 +295,7 @@ fn f_b_write_s_text_file(s_str: &str, s_path_rel: &str) -> bool{
     file.write_all(s_str.as_bytes()).expect("Failed to write to file");
 
 
-    fs::set_permissions(s_path_rel, fs::Permissions::from_mode(0o777)).unwrap();
+    fs::set_permissions(s_path_rel, fs::Permissions::from_mode(0o777));
 
     return true;
     // println!("Data written to {}", s_path_rel_file__config);
@@ -631,7 +631,11 @@ async fn f_websocket_thread(
                                 if let Some(s_command) = v_json_parsed.get("s_command").and_then(|v: &serde_json::Value| v.as_str()) {
 
                                     let a_s_arg :Vec<&str> = s_command.split_whitespace().collect();
-                                    let a_s_command_allowed = ["lsusb", "touch lol_test"];
+                                    let a_s_command_allowed = [
+                                        "lsusb",
+                                        "touch lol_test",
+                                        "git log -1 --pretty=%H"
+                                    ];
                                     if !a_s_command_allowed.contains(&s_command) {
                                         let sresp = format!("command '{}' not allowed, allowed are {:?}", s_command, a_s_command_allowed);
                                         o_tx_sender_clone.send(sresp);

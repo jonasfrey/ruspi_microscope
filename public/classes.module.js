@@ -13,6 +13,48 @@ class O_keyboard_key{
       this.b_down__last = b_down__last 
     }
   }
+
+  class O_video_capability{
+    constructor(
+      s_name, 
+      v_min, 
+      v_max, 
+      v_step
+    ){
+      this.s_name = s_name, 
+      this.v_min = v_min, 
+      this.v_max = v_max, 
+      this.v_step = v_step
+    }
+  }
+  class O_resolution{
+    constructor(
+      n_scl_x_px,
+      n_scl_y_px, 
+      s_name
+    ){
+      this.n_scl_x_px = n_scl_x_px
+      this.n_scl_y_px = n_scl_y_px
+      this.s_name = s_name
+    }
+  }
+  class O_camera{
+    constructor(
+      s_deviceId, // eg "55f0f7a4eefe176b2bada32b43c0426c001583656fc094aedbead085e4d8cbd4"
+      s_groupId, // eg "637242ea10febbf55cf50000e39f3b026fec7ecc120420485e659f2b98534760"
+      s_kind,// eg. "videoinput"
+      s_label, // eg "HY-500B (0ac8:3420)"
+      a_o_video_capability, 
+      a_o_resolution
+    ){
+      this.s_deviceId = s_deviceId
+      this.s_groupId = s_groupId
+      this.s_kind = s_kind
+      this.s_label = s_label
+      this.a_o_video_capability = a_o_video_capability
+      this.a_o_resolution = a_o_resolution
+    }
+  }
   
   
   class O_input_font_icon{
@@ -60,5 +102,8 @@ class O_keyboard_key{
     O_keyboard_key,
     O_input_font_icon,
     O_input_action_mapping,
-    O_input_action
+    O_input_action, 
+    O_camera,
+    O_video_capability, 
+    O_resolution
   }
