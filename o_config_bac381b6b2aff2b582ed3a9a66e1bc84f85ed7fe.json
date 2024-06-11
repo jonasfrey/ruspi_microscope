@@ -1,0 +1,1085 @@
+{
+    "a_o_camera": [
+        {
+            "s_deviceId": "55f0f7a4eefe176b2bada32b43c0426c001583656fc094aedbead085e4d8cbd4",
+            "s_groupId": "a38971ada0610f6435f02932715d3e83b2e663b9f59bdab87d99ef8cb80c57af",
+            "s_kind": "videoinput",
+            "s_label": "HY-500B (0ac8:3420)",
+            "a_o_video_capability": [
+                {
+                    "s_name": "aspectRatio",
+                    "v_min": 0.00051440329218107,
+                    "v_max": 2592,
+                    "v_current_value": 0.00051440329218107,
+                    "o_cap": {
+                        "max": 2592,
+                        "min": 0.00051440329218107
+                    }
+                },
+                {
+                    "s_name": "brightness",
+                    "v_min": -64,
+                    "v_max": 64,
+                    "v_step": 1,
+                    "v_current_value": -64,
+                    "o_cap": {
+                        "max": 64,
+                        "min": -64,
+                        "step": 1
+                    }
+                },
+                {
+                    "s_name": "colorTemperature",
+                    "v_min": 2800,
+                    "v_max": 6500,
+                    "v_step": 1,
+                    "v_current_value": 2800,
+                    "o_cap": {
+                        "max": 6500,
+                        "min": 2800,
+                        "step": 1
+                    }
+                },
+                {
+                    "s_name": "contrast",
+                    "v_min": 0,
+                    "v_max": 64,
+                    "v_step": 1,
+                    "v_current_value": 0,
+                    "o_cap": {
+                        "max": 64,
+                        "min": 0,
+                        "step": 1
+                    }
+                },
+                {
+                    "s_name": "exposureMode",
+                    "o_cap": [
+                        "manual",
+                        "continuous"
+                    ]
+                },
+                {
+                    "s_name": "exposureTime",
+                    "v_min": 1,
+                    "v_max": 5000,
+                    "v_step": 1,
+                    "v_current_value": 1,
+                    "o_cap": {
+                        "max": 5000,
+                        "min": 1,
+                        "step": 1
+                    }
+                },
+                {
+                    "s_name": "facingMode",
+                    "o_cap": []
+                },
+                {
+                    "s_name": "frameRate",
+                    "v_min": 0,
+                    "v_max": 30,
+                    "v_current_value": 0,
+                    "o_cap": {
+                        "max": 30,
+                        "min": 0
+                    }
+                },
+                {
+                    "s_name": "height",
+                    "v_min": 1,
+                    "v_max": 1944,
+                    "v_current_value": 1,
+                    "o_cap": {
+                        "max": 1944,
+                        "min": 1
+                    }
+                },
+                {
+                    "s_name": "resizeMode",
+                    "o_cap": [
+                        "none",
+                        "crop-and-scale"
+                    ]
+                },
+                {
+                    "s_name": "saturation",
+                    "v_min": 0,
+                    "v_max": 128,
+                    "v_step": 1,
+                    "v_current_value": 0,
+                    "o_cap": {
+                        "max": 128,
+                        "min": 0,
+                        "step": 1
+                    }
+                },
+                {
+                    "s_name": "sharpness",
+                    "v_min": 0,
+                    "v_max": 255,
+                    "v_step": 1,
+                    "v_current_value": 0,
+                    "o_cap": {
+                        "max": 255,
+                        "min": 0,
+                        "step": 1
+                    }
+                },
+                {
+                    "s_name": "whiteBalanceMode",
+                    "o_cap": [
+                        "manual",
+                        "continuous"
+                    ]
+                },
+                {
+                    "s_name": "width",
+                    "v_min": 1,
+                    "v_max": 2592,
+                    "v_current_value": 1,
+                    "o_cap": {
+                        "max": 2592,
+                        "min": 1
+                    }
+                }
+            ],
+            "a_o_resolution": [
+                {
+                    "n_scl_x_px": 2560,
+                    "n_scl_y_px": 1440,
+                    "s_name": "QHD"
+                },
+                {
+                    "n_scl_x_px": 1920,
+                    "n_scl_y_px": 1080,
+                    "s_name": "1080p(FHD)"
+                },
+                {
+                    "n_scl_x_px": 1280,
+                    "n_scl_y_px": 720,
+                    "s_name": "720p(HD)"
+                },
+                {
+                    "n_scl_x_px": 320,
+                    "n_scl_y_px": 240,
+                    "s_name": "QVGA"
+                },
+                {
+                    "n_scl_x_px": 160,
+                    "n_scl_y_px": 120,
+                    "s_name": "QQVGA"
+                }
+            ],
+            "n_idx_a_o_resolution": 0
+        },
+        {
+            "s_deviceId": "ca8728b081d798017d57b19f008e9b18571b9163e6051800e9835253cb8044c6",
+            "s_groupId": "7254094a60bd17d483841b4d258020100433b2566d4b86cbc3fdb6ea786bddca",
+            "s_kind": "videoinput",
+            "s_label": "SKT-MS200C-13A (9015:200c)",
+            "a_o_video_capability": [
+                {
+                    "s_name": "aspectRatio",
+                    "v_min": 0.0008333333333333334,
+                    "v_max": 1600,
+                    "v_current_value": 0.0008333333333333334,
+                    "o_cap": {
+                        "max": 1600,
+                        "min": 0.0008333333333333334
+                    }
+                },
+                {
+                    "s_name": "brightness",
+                    "v_min": -64,
+                    "v_max": 64,
+                    "v_step": 1,
+                    "v_current_value": -64,
+                    "o_cap": {
+                        "max": 64,
+                        "min": -64,
+                        "step": 1
+                    }
+                },
+                {
+                    "s_name": "colorTemperature",
+                    "v_min": 2800,
+                    "v_max": 6500,
+                    "v_step": 1,
+                    "v_current_value": 2800,
+                    "o_cap": {
+                        "max": 6500,
+                        "min": 2800,
+                        "step": 1
+                    }
+                },
+                {
+                    "s_name": "contrast",
+                    "v_min": 0,
+                    "v_max": 64,
+                    "v_step": 1,
+                    "v_current_value": 0,
+                    "o_cap": {
+                        "max": 64,
+                        "min": 0,
+                        "step": 1
+                    }
+                },
+                {
+                    "s_name": "exposureMode",
+                    "o_cap": [
+                        "manual",
+                        "continuous"
+                    ]
+                },
+                {
+                    "s_name": "exposureTime",
+                    "v_min": 1,
+                    "v_max": 5000,
+                    "v_step": 1,
+                    "v_current_value": 1,
+                    "o_cap": {
+                        "max": 5000,
+                        "min": 1,
+                        "step": 1
+                    }
+                },
+                {
+                    "s_name": "facingMode",
+                    "o_cap": []
+                },
+                {
+                    "s_name": "frameRate",
+                    "v_min": 0,
+                    "v_max": 30,
+                    "v_current_value": 0,
+                    "o_cap": {
+                        "max": 30,
+                        "min": 0
+                    }
+                },
+                {
+                    "s_name": "height",
+                    "v_min": 1,
+                    "v_max": 1200,
+                    "v_current_value": 1,
+                    "o_cap": {
+                        "max": 1200,
+                        "min": 1
+                    }
+                },
+                {
+                    "s_name": "resizeMode",
+                    "o_cap": [
+                        "none",
+                        "crop-and-scale"
+                    ]
+                },
+                {
+                    "s_name": "saturation",
+                    "v_min": 1,
+                    "v_max": 128,
+                    "v_step": 1,
+                    "v_current_value": 1,
+                    "o_cap": {
+                        "max": 128,
+                        "min": 1,
+                        "step": 1
+                    }
+                },
+                {
+                    "s_name": "sharpness",
+                    "v_min": 0,
+                    "v_max": 6,
+                    "v_step": 1,
+                    "v_current_value": 0,
+                    "o_cap": {
+                        "max": 6,
+                        "min": 0,
+                        "step": 1
+                    }
+                },
+                {
+                    "s_name": "whiteBalanceMode",
+                    "o_cap": [
+                        "manual",
+                        "continuous"
+                    ]
+                },
+                {
+                    "s_name": "width",
+                    "v_min": 1,
+                    "v_max": 1600,
+                    "v_current_value": 1,
+                    "o_cap": {
+                        "max": 1600,
+                        "min": 1
+                    }
+                }
+            ],
+            "a_o_resolution": [
+                {
+                    "n_scl_x_px": 1280,
+                    "n_scl_y_px": 720,
+                    "s_name": "720p(HD)"
+                },
+                {
+                    "n_scl_x_px": 320,
+                    "n_scl_y_px": 240,
+                    "s_name": "QVGA"
+                },
+                {
+                    "n_scl_x_px": 160,
+                    "n_scl_y_px": 120,
+                    "s_name": "QQVGA"
+                }
+            ],
+            "n_idx_a_o_resolution": 0
+        },
+        {
+            "s_deviceId": "0330d17c709cfd5258061e5fe0ee7634798ece9684cc235815944f5298b799de",
+            "s_groupId": "71575351b854599a913116afc5b4af7b5b24ddd739c60a0aac0661dd42b6fc14",
+            "s_kind": "videoinput",
+            "s_label": "USB2.0 PC CAMERA (1908:2311)",
+            "a_o_video_capability": [
+                {
+                    "s_name": "aspectRatio",
+                    "v_min": 0.0020833333333333333,
+                    "v_max": 640,
+                    "v_current_value": 0.0020833333333333333,
+                    "o_cap": {
+                        "max": 640,
+                        "min": 0.0020833333333333333
+                    }
+                },
+                {
+                    "s_name": "brightness",
+                    "v_min": 0,
+                    "v_max": 255,
+                    "v_step": 1,
+                    "v_current_value": 0,
+                    "o_cap": {
+                        "max": 255,
+                        "min": 0,
+                        "step": 1
+                    }
+                },
+                {
+                    "s_name": "contrast",
+                    "v_min": 0,
+                    "v_max": 255,
+                    "v_step": 1,
+                    "v_current_value": 0,
+                    "o_cap": {
+                        "max": 255,
+                        "min": 0,
+                        "step": 1
+                    }
+                },
+                {
+                    "s_name": "facingMode",
+                    "o_cap": []
+                },
+                {
+                    "s_name": "frameRate",
+                    "v_min": 0,
+                    "v_max": 30,
+                    "v_current_value": 0,
+                    "o_cap": {
+                        "max": 30,
+                        "min": 0
+                    }
+                },
+                {
+                    "s_name": "height",
+                    "v_min": 1,
+                    "v_max": 480,
+                    "v_current_value": 1,
+                    "o_cap": {
+                        "max": 480,
+                        "min": 1
+                    }
+                },
+                {
+                    "s_name": "resizeMode",
+                    "o_cap": [
+                        "none",
+                        "crop-and-scale"
+                    ]
+                },
+                {
+                    "s_name": "saturation",
+                    "v_min": 0,
+                    "v_max": 255,
+                    "v_step": 1,
+                    "v_current_value": 0,
+                    "o_cap": {
+                        "max": 255,
+                        "min": 0,
+                        "step": 1
+                    }
+                },
+                {
+                    "s_name": "sharpness",
+                    "v_min": 0,
+                    "v_max": 15,
+                    "v_step": 1,
+                    "v_current_value": 0,
+                    "o_cap": {
+                        "max": 15,
+                        "min": 0,
+                        "step": 1
+                    }
+                },
+                {
+                    "s_name": "width",
+                    "v_min": 1,
+                    "v_max": 640,
+                    "v_current_value": 1,
+                    "o_cap": {
+                        "max": 640,
+                        "min": 1
+                    }
+                }
+            ],
+            "a_o_resolution": [
+                {
+                    "n_scl_x_px": 320,
+                    "n_scl_y_px": 240,
+                    "s_name": "QVGA"
+                },
+                {
+                    "n_scl_x_px": 160,
+                    "n_scl_y_px": 120,
+                    "s_name": "QQVGA"
+                }
+            ],
+            "n_idx_a_o_resolution": 0
+        }
+    ],
+    "s_git_commit": "bac381b6b2aff2b582ed3a9a66e1bc84f85ed7fe",
+    "n_idx_a_o_camera": 0,
+    "n_idx_a_s_image_mode": 0,
+    "a_s_image_mode": [
+        "rgba_normal",
+        "rgba_inverted",
+        "red_channel_only",
+        "green_channel_only",
+        "blue_channel_only",
+        "edge_detection",
+        "sharpen",
+        "gaussian_blur",
+        "emboss",
+        "outline_edge"
+    ],
+    "n_ms_config_auto_background_save_interval": 3000,
+    "n_factor_scale": 1,
+    "n_factor_brightness": 1,
+    "n_factor_contrast": 1,
+    "n_factor_gamma": 1,
+    "n_x_trn_nor": 0,
+    "n_y_trn_nor": 0,
+    "s_path_rel_images": "./media/images_2024-06-12_00:19:41",
+    "s_path_rel_videos": "./media/videos_2024-06-12_00:19:41",
+    "s_path_rel_stacking": "./media/tmp_focus_stacking_images",
+    "s_path_rel_stitching": "./media/tmp_image_stitching_images",
+    "s_path_rel_archive": "./media/archive",
+    "b_layer_switch_type_on_click_cycle_through": false,
+    "b_layer_switch_keep_pressed_required": true,
+    "n_idx_a_o_action_layer": 0,
+    "n_idx_a_o_action_layer__last": 0,
+    "v_o_action_layer": null,
+    "a_o_input_action_mapping__layer_switch": [
+        {
+            "o_input_action": {
+                "n_u32_id": 11,
+                "s_name": "keep_hold_down_toggle_layer2",
+                "s_nicename": "Shift to layer 2",
+                "s_description": "hold to to temporarily switch to a new layer"
+            },
+            "s_name_input__controller": "left_middle_finger_button_l2",
+            "s_name_char_keyboard": "1",
+            "v_o_keyboard_key": null,
+            "v_o_input_sensor": null,
+            "v_o_input_sensor_last": null
+        },
+        {
+            "o_input_action": {
+                "n_u32_id": 12,
+                "s_name": "keep_hold_down_toggle_layer3",
+                "s_nicename": "Shift to layer 3",
+                "s_description": "hold to to temporarily switch to a new layer"
+            },
+            "s_name_input__controller": "left_index_finger_button_l1",
+            "s_name_char_keyboard": "2",
+            "v_o_keyboard_key": null,
+            "v_o_input_sensor": null,
+            "v_o_input_sensor_last": null
+        },
+        {
+            "o_input_action": {
+                "n_u32_id": 23,
+                "s_name": "next_action_layer",
+                "s_nicename": "Layer: next",
+                "s_description": "Switch to the next action layer"
+            },
+            "s_name_input__controller": "left_index_finger_button_l1",
+            "s_name_char_keyboard": "1",
+            "v_o_keyboard_key": null,
+            "v_o_input_sensor": null,
+            "v_o_input_sensor_last": null
+        },
+        {
+            "o_input_action": {
+                "n_u32_id": 24,
+                "s_name": "prev_action_layer",
+                "s_nicename": "Layer: prev",
+                "s_description": "Switch to the previous action layer"
+            },
+            "s_name_input__controller": "right_index_finger_button_r1",
+            "s_name_char_keyboard": "2",
+            "v_o_keyboard_key": null,
+            "v_o_input_sensor": null,
+            "v_o_input_sensor_last": null
+        }
+    ],
+    "a_o_action_layer": [
+        {
+            "v_o_input_action": null,
+            "s_name": "microscope control",
+            "a_o_input_action_mapping": [
+                {
+                    "o_input_action": {
+                        "n_u32_id": 1,
+                        "s_name": "move_slide_x_plus",
+                        "s_nicename": "Slide right",
+                        "s_description": "Physically move the slide (only if the mic is motorized)"
+                    },
+                    "s_name_input__controller": "right_stick_x_axis",
+                    "s_name_char_keyboard": "l",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "n_u32_id": 2,
+                        "s_name": "move_slide_x_minus",
+                        "s_nicename": "Slide left",
+                        "s_description": ""
+                    },
+                    "s_name_input__controller": "right_stick_x_axis",
+                    "s_name_char_keyboard": "j",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "n_u32_id": 3,
+                        "s_name": "move_slide_y_plus",
+                        "s_nicename": "Slide up",
+                        "s_description": ""
+                    },
+                    "s_name_input__controller": "right_stick_y_axis",
+                    "s_name_char_keyboard": "i",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "n_u32_id": 4,
+                        "s_name": "move_slide_y_minus",
+                        "s_nicename": "Slide down",
+                        "s_description": ""
+                    },
+                    "s_name_input__controller": "right_stick_y_axis",
+                    "s_name_char_keyboard": "k",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "n_u32_id": 5,
+                        "s_name": "move_focus_plus",
+                        "s_nicename": "Focus in",
+                        "s_description": ""
+                    },
+                    "s_name_input__controller": "left_stick_y_axis",
+                    "s_name_char_keyboard": "o",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "n_u32_id": 6,
+                        "s_name": "move_focus_minus",
+                        "s_nicename": "Focus out",
+                        "s_description": "Physically turn the focus know (only if the mic is motorized)"
+                    },
+                    "s_name_input__controller": "left_stick_y_axis",
+                    "s_name_char_keyboard": "u",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "n_u32_id": 7,
+                        "s_name": "move_slide_single_step_x_plus",
+                        "s_nicename": "Slide right (one-step)",
+                        "s_description": "Moves the slide a single step of the stepper motor, which translates to approximately 2r*pi/(number_of_steps_per_rotation) = 0.007 millimeter"
+                    },
+                    "s_name_input__controller": "direction_pad_right",
+                    "s_name_char_keyboard": "l",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "n_u32_id": 8,
+                        "s_name": "move_slide_single_step_x_minus",
+                        "s_nicename": "Slide left (one-step)",
+                        "s_description": "Moves the slide a single step of the stepper motor, which translates to approximately 2r*pi/(number_of_steps_per_rotation) = 0.007 millimeter"
+                    },
+                    "s_name_input__controller": "direction_pad_left",
+                    "s_name_char_keyboard": "h",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "n_u32_id": 9,
+                        "s_name": "move_slide_single_step_y_plus",
+                        "s_nicename": "Slide up (one-step)",
+                        "s_description": "Moves the slide a single step of the stepper motor, which translates to approximately 2r*pi/(number_of_steps_per_rotation) = 0.007 millimeter"
+                    },
+                    "s_name_input__controller": "direction_pad_up",
+                    "s_name_char_keyboard": "i",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "n_u32_id": 10,
+                        "s_name": "move_slide_single_step_y_minus",
+                        "s_nicename": "Slide down (one-step)",
+                        "s_description": "Moves the slide a single step of the stepper motor, which translates to approximately 2r*pi/(number_of_steps_per_rotation) = 0.007 millimeter"
+                    },
+                    "s_name_input__controller": "direction_pad_down",
+                    "s_name_char_keyboard": "k",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "n_u32_id": 16,
+                        "s_name": "reset_image_manipulation",
+                        "s_nicename": "Image reset",
+                        "s_description": ""
+                    },
+                    "s_name_input__controller": "left_meta1_button",
+                    "s_name_char_keyboard": "r",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "n_u32_id": 13,
+                        "s_name": "toggle_settings",
+                        "s_nicename": "Settings",
+                        "s_description": "Press once to show the settings, press again to hide"
+                    },
+                    "s_name_input__controller": "center_meta1_button",
+                    "s_name_char_keyboard": "Escape",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "n_u32_id": 25,
+                        "s_name": "take_screenshot",
+                        "s_nicename": "Screenshot",
+                        "s_description": "Take a simple screnshot"
+                    },
+                    "s_name_input__controller": "face_button_bottom",
+                    "s_name_char_keyboard": "7",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "n_u32_id": 31,
+                        "s_name": "toggle_record_video",
+                        "s_nicename": "Record/Stop video",
+                        "s_description": ""
+                    },
+                    "s_name_input__controller": "face_button_right",
+                    "s_name_char_keyboard": "8",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "n_u32_id": 26,
+                        "s_name": "ask_ai",
+                        "s_nicename": "AI-Help",
+                        "s_description": "Let AI detect common image features and estimation of size dont yet fully trust it, its GPT Vision AI its not that good yet (but its fun for sure!!!)"
+                    },
+                    "s_name_input__controller": "face_button_top",
+                    "s_name_char_keyboard": "9",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "n_u32_id": 27,
+                        "s_name": "add_image_to_focus_stack",
+                        "s_nicename": "Add image to focus stack",
+                        "s_description": ""
+                    },
+                    "s_name_input__controller": "face_button_left",
+                    "s_name_char_keyboard": "0",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "n_u32_id": 30,
+                        "s_name": "finish_focus_stack",
+                        "s_nicename": "Finish focus stack",
+                        "s_description": ""
+                    },
+                    "s_name_input__controller": "right_meta1_button",
+                    "s_name_char_keyboard": "-",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "n_u32_id": 28,
+                        "s_name": "add_image_to_image_stitch",
+                        "s_nicename": "Add image to image stitch",
+                        "s_description": "Add an image to the image stitching result which autmotically updates in the background after each addition of an image"
+                    },
+                    "s_name_input__controller": "right_stick_button_r3",
+                    "s_name_char_keyboard": "=",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "n_u32_id": 29,
+                        "s_name": "clear_image_stitch",
+                        "s_nicename": "Clear image stitch",
+                        "s_description": "clears the current image stitching result, no worries it will be saved!"
+                    },
+                    "s_name_input__controller": "left_stick_button_l3",
+                    "s_name_char_keyboard": "]",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                }
+            ]
+        },
+        {
+            "v_o_input_action": null,
+            "s_name": "image control",
+            "a_o_input_action_mapping": [
+                {
+                    "o_input_action": {
+                        "n_u32_id": 17,
+                        "s_name": "move_digital_x_plus",
+                        "s_nicename": "Digital right",
+                        "s_description": ""
+                    },
+                    "s_name_input__controller": "right_stick_x_axis",
+                    "s_name_char_keyboard": "l",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "n_u32_id": 18,
+                        "s_name": "move_digital_x_minus",
+                        "s_nicename": "Digital left",
+                        "s_description": ""
+                    },
+                    "s_name_input__controller": "right_stick_x_axis",
+                    "s_name_char_keyboard": "j",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "n_u32_id": 19,
+                        "s_name": "move_digital_y_plus",
+                        "s_nicename": "Digital up",
+                        "s_description": ""
+                    },
+                    "s_name_input__controller": "right_stick_y_axis",
+                    "s_name_char_keyboard": "i",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "n_u32_id": 20,
+                        "s_name": "move_digital_y_minus",
+                        "s_nicename": "Digital down",
+                        "s_description": "Perform a digital movement, may be handy for showing and pointing out interesting image regions"
+                    },
+                    "s_name_input__controller": "right_stick_y_axis",
+                    "s_name_char_keyboard": "k",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "n_u32_id": 21,
+                        "s_name": "zoom_digital_plus",
+                        "s_nicename": "Digital zoom in",
+                        "s_description": ""
+                    },
+                    "s_name_input__controller": "left_stick_y_axis",
+                    "s_name_char_keyboard": "o",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "n_u32_id": 22,
+                        "s_name": "zoom_digital_minus",
+                        "s_nicename": "Digital zoom out",
+                        "s_description": "Perform a digital zoom, may be handy for showing and pointing out interesting image regions"
+                    },
+                    "s_name_input__controller": "left_stick_y_axis",
+                    "s_name_char_keyboard": "u",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "n_u32_id": 32,
+                        "s_name": "image_brightness_plus",
+                        "s_nicename": "Image brightness plus",
+                        "s_description": ""
+                    },
+                    "s_name_input__controller": "direction_pad_right",
+                    "s_name_char_keyboard": "d",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "n_u32_id": 33,
+                        "s_name": "image_brightness_minus",
+                        "s_nicename": "Image brightness minus",
+                        "s_description": ""
+                    },
+                    "s_name_input__controller": "direction_pad_left",
+                    "s_name_char_keyboard": "a",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "n_u32_id": 34,
+                        "s_name": "image_contrast_plus",
+                        "s_nicename": "Image brightness plus",
+                        "s_description": ""
+                    },
+                    "s_name_input__controller": "direction_pad_up",
+                    "s_name_char_keyboard": "w",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "n_u32_id": 35,
+                        "s_name": "image_contrast_minus",
+                        "s_nicename": "Image brightness minus",
+                        "s_description": ""
+                    },
+                    "s_name_input__controller": "direction_pad_down",
+                    "s_name_char_keyboard": "s",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "n_u32_id": 36,
+                        "s_name": "image_gamma_plus",
+                        "s_nicename": "Image brightness plus",
+                        "s_description": ""
+                    },
+                    "s_name_input__controller": "left_meta1_button",
+                    "s_name_char_keyboard": "q",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "n_u32_id": 37,
+                        "s_name": "image_gamma_minus",
+                        "s_nicename": "Image brightness minus",
+                        "s_description": ""
+                    },
+                    "s_name_input__controller": "center_meta1_button",
+                    "s_name_char_keyboard": "e",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "n_u32_id": 16,
+                        "s_name": "reset_image_manipulation",
+                        "s_nicename": "Image reset",
+                        "s_description": ""
+                    },
+                    "s_name_input__controller": "left_meta1_button",
+                    "s_name_char_keyboard": "r",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "n_u32_id": 14,
+                        "s_name": "next_image_mode",
+                        "s_nicename": "Image mode: next",
+                        "s_description": "Cycle throught the image modes"
+                    },
+                    "s_name_input__controller": "right_index_finger_button_r1",
+                    "s_name_char_keyboard": "y",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                }
+            ]
+        },
+        {
+            "v_o_input_action": null,
+            "s_name": "camera control",
+            "a_o_input_action_mapping": [
+                {
+                    "o_input_action": {
+                        "n_u32_id": 60,
+                        "s_name": "usb_camera_next",
+                        "s_nicename": "switch to next camera",
+                        "s_description": ""
+                    },
+                    "s_name_input__controller": "right_middle_finger_button_r2",
+                    "s_name_char_keyboard": "o",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "n_u32_id": 61,
+                        "s_name": "usb_camera_previous",
+                        "s_nicename": "switch to previous camera",
+                        "s_description": ""
+                    },
+                    "s_name_input__controller": "left_middle_finger_button_l2",
+                    "s_name_char_keyboard": "u",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "n_u32_id": 62,
+                        "s_name": "usb_camera_resolution_next",
+                        "s_nicename": "switch to next available resolution of the camera",
+                        "s_description": ""
+                    },
+                    "s_name_input__controller": "direction_pad_left",
+                    "s_name_char_keyboard": "j",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "n_u32_id": 63,
+                        "s_name": "usb_camera_resolution_previous",
+                        "s_nicename": "switch to previous available resolution of the camera",
+                        "s_description": ""
+                    },
+                    "s_name_input__controller": "direction_pad_right",
+                    "s_name_char_keyboard": "l",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                }
+            ]
+        }
+    ],
+    "o_input_action": null
+}

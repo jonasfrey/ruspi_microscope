@@ -668,7 +668,31 @@ o_o_model_info.O_input_action =
                 "usb_camera_torch_previous",
                 `Boolean for turning on/off the torch (if supported ) `,
                 ""    
-            ] 
+            ], 
+            [
+                60,
+                "usb_camera_next",
+                `switch to next camera`,
+                ""    
+            ], 
+            [
+                61,
+                "usb_camera_previous",
+                `switch to previous camera`,
+                ""    
+            ], 
+            [
+                62,
+                "usb_camera_resolution_next",
+                `switch to next available resolution of the camera`,
+                ""    
+            ], 
+            [
+                63,
+                "usb_camera_resolution_previous",
+                `switch to previous available resolution of the camera`,
+                ""    
+            ], 
 
 		]
 	);

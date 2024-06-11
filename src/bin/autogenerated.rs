@@ -107,43 +107,43 @@ pub static ref s_name_ws_action__f_switch_usb_device: String = String::from("f_s
                 pub static ref o_microscope_brand__GenericBrand: O_microscope_brand = O_microscope_brand{
                     n_u32_id: 1 as u32,
 s_name: String::from("GenericBrand"),
-n_u64_ts_ms_ut__created: 1718098832318 as u64,
-n_u64_ts_ms_ut__updated: 1718098832318 as u64
+n_u64_ts_ms_ut__created: 1718142939826 as u64,
+n_u64_ts_ms_ut__updated: 1718142939826 as u64
                 }
                 ;
                 pub static ref o_microscope_brand__Olympus: O_microscope_brand = O_microscope_brand{
                     n_u32_id: 2 as u32,
 s_name: String::from("Olympus"),
-n_u64_ts_ms_ut__created: 1718098832318 as u64,
-n_u64_ts_ms_ut__updated: 1718098832318 as u64
+n_u64_ts_ms_ut__created: 1718142939826 as u64,
+n_u64_ts_ms_ut__updated: 1718142939826 as u64
                 }
                 ;
                 pub static ref o_microscope_brand__Bresser: O_microscope_brand = O_microscope_brand{
                     n_u32_id: 3 as u32,
 s_name: String::from("Bresser"),
-n_u64_ts_ms_ut__created: 1718098832318 as u64,
-n_u64_ts_ms_ut__updated: 1718098832318 as u64
+n_u64_ts_ms_ut__created: 1718142939826 as u64,
+n_u64_ts_ms_ut__updated: 1718142939826 as u64
                 }
                 ;
                 pub static ref o_microscope_brand__Nikon: O_microscope_brand = O_microscope_brand{
                     n_u32_id: 4 as u32,
 s_name: String::from("Nikon"),
-n_u64_ts_ms_ut__created: 1718098832318 as u64,
-n_u64_ts_ms_ut__updated: 1718098832318 as u64
+n_u64_ts_ms_ut__created: 1718142939826 as u64,
+n_u64_ts_ms_ut__updated: 1718142939826 as u64
                 }
                 ;
                 pub static ref o_microscope_brand__Zeiss: O_microscope_brand = O_microscope_brand{
                     n_u32_id: 5 as u32,
 s_name: String::from("Zeiss"),
-n_u64_ts_ms_ut__created: 1718098832318 as u64,
-n_u64_ts_ms_ut__updated: 1718098832318 as u64
+n_u64_ts_ms_ut__created: 1718142939826 as u64,
+n_u64_ts_ms_ut__updated: 1718142939826 as u64
                 }
                 ;
                 pub static ref o_microscope_brand__Leica: O_microscope_brand = O_microscope_brand{
                     n_u32_id: 6 as u32,
 s_name: String::from("Leica"),
-n_u64_ts_ms_ut__created: 1718098832318 as u64,
-n_u64_ts_ms_ut__updated: 1718098832318 as u64
+n_u64_ts_ms_ut__created: 1718142939826 as u64,
+n_u64_ts_ms_ut__updated: 1718142939826 as u64
                 }
                 ;
                 pub static ref o_microscope_objective__4x_Objective: O_microscope_objective = O_microscope_objective{
@@ -156,8 +156,8 @@ n_f64_focal_length: 17 as f64,
 n_f64_field_of_view: 4.5 as f64,
 b_plan_apochromatic: false as bool,
 s_tube_length: String::from("160mm"),
-n_u64_ts_ms_ut__created: 1718098832318 as u64,
-n_u64_ts_ms_ut__updated: 1718098832318 as u64
+n_u64_ts_ms_ut__created: 1718142939826 as u64,
+n_u64_ts_ms_ut__updated: 1718142939826 as u64
                 }
                 ;
                 pub static ref o_microscope_objective__10x_Objective: O_microscope_objective = O_microscope_objective{
@@ -170,8 +170,8 @@ n_f64_focal_length: 16 as f64,
 n_f64_field_of_view: 2 as f64,
 b_plan_apochromatic: false as bool,
 s_tube_length: String::from("160mm"),
-n_u64_ts_ms_ut__created: 1718098832318 as u64,
-n_u64_ts_ms_ut__updated: 1718098832318 as u64
+n_u64_ts_ms_ut__created: 1718142939826 as u64,
+n_u64_ts_ms_ut__updated: 1718142939826 as u64
                 }
                 ;
                 pub static ref o_microscope_objective__20x_Objective: O_microscope_objective = O_microscope_objective{
@@ -184,8 +184,8 @@ n_f64_focal_length: 15 as f64,
 n_f64_field_of_view: 1 as f64,
 b_plan_apochromatic: true as bool,
 s_tube_length: String::from("160mm"),
-n_u64_ts_ms_ut__created: 1718098832318 as u64,
-n_u64_ts_ms_ut__updated: 1718098832318 as u64
+n_u64_ts_ms_ut__created: 1718142939826 as u64,
+n_u64_ts_ms_ut__updated: 1718142939826 as u64
                 }
                 ;
                 pub static ref o_microscope_objective__40x_Objective: O_microscope_objective = O_microscope_objective{
@@ -198,15 +198,15 @@ n_f64_focal_length: 14 as f64,
 n_f64_field_of_view: 0.5 as f64,
 b_plan_apochromatic: true as bool,
 s_tube_length: String::from("160mm"),
-n_u64_ts_ms_ut__created: 1718098832318 as u64,
-n_u64_ts_ms_ut__updated: 1718098832318 as u64
+n_u64_ts_ms_ut__created: 1718142939826 as u64,
+n_u64_ts_ms_ut__updated: 1718142939826 as u64
                 }
                 ;
                 pub static ref o_microscope__ModelX: O_microscope = O_microscope{
                     n_u32_id: 1 as u32,
 s_model: String::from("ModelX"),
 n_u32_id__O_microscope_brand: 1 as u32,
-n_u64_ts_ms_ut__created: 1718098832318 as u64
+n_u64_ts_ms_ut__created: 1718142939826 as u64
                 }
                 ;
                 pub static ref o_input_action__move_slide_x_plus: O_input_action = O_input_action{
@@ -636,6 +636,34 @@ s_nicename: String::from("Boolean for turning on/off the torch (if supported ) "
 s_description: String::from("")
                 }
                 ;
+                pub static ref o_input_action__usb_camera_next: O_input_action = O_input_action{
+                    n_u32_id: 60 as u32,
+s_name: String::from("usb_camera_next"),
+s_nicename: String::from("switch to next camera"),
+s_description: String::from("")
+                }
+                ;
+                pub static ref o_input_action__usb_camera_previous: O_input_action = O_input_action{
+                    n_u32_id: 61 as u32,
+s_name: String::from("usb_camera_previous"),
+s_nicename: String::from("switch to previous camera"),
+s_description: String::from("")
+                }
+                ;
+                pub static ref o_input_action__usb_camera_resolution_next: O_input_action = O_input_action{
+                    n_u32_id: 62 as u32,
+s_name: String::from("usb_camera_resolution_next"),
+s_nicename: String::from("switch to next available resolution of the camera"),
+s_description: String::from("")
+                }
+                ;
+                pub static ref o_input_action__usb_camera_resolution_previous: O_input_action = O_input_action{
+                    n_u32_id: 63 as u32,
+s_name: String::from("usb_camera_resolution_previous"),
+s_nicename: String::from("switch to previous available resolution of the camera"),
+s_description: String::from("")
+                }
+                ;
 pub static ref a_o_microscope_brand: Vec<&'static O_microscope_brand> = vec![
                 &*o_microscope_brand__GenericBrand,
 &*o_microscope_brand__Olympus,
@@ -719,7 +747,11 @@ pub static ref a_o_microscope_brand: Vec<&'static O_microscope_brand> = vec![
 &*o_input_action__usb_camera_zoom_minus,
 &*o_input_action__usb_camera_zoom_plus,
 &*o_input_action__usb_camera_torch_next,
-&*o_input_action__usb_camera_torch_previous
+&*o_input_action__usb_camera_torch_previous,
+&*o_input_action__usb_camera_next,
+&*o_input_action__usb_camera_previous,
+&*o_input_action__usb_camera_resolution_next,
+&*o_input_action__usb_camera_resolution_previous
             ];pub static ref a_o_image_object: Vec<&'static O_image_object> = vec![
                 
             ];pub static ref a_o_image_description_o_image_object: Vec<&'static O_image_description_o_image_object> = vec![

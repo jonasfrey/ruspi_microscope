@@ -17,16 +17,20 @@ class O_keyboard_key{
   class O_video_capability{
     constructor(
       s_name, 
-      v_min, 
-      v_max, 
-      v_step, 
-      v_current_value
+      v_n_min, 
+      v_n_max, 
+      v_n_step, 
+      v_a_v_option,
+      v_n_current_value, 
+      v_n_idx_current_value
     ){
-      this.s_name = s_name, 
-      this.v_min = v_min, 
-      this.v_max = v_max, 
-      this.v_step = v_step
-      this.v_current_value = v_current_value
+      this.s_name = s_name
+      this.v_n_min = v_n_min
+      this.v_n_max = v_n_max
+      this.v_n_step = v_n_step
+      this.v_a_v_option = v_a_v_option
+      this.v_n_current_value = v_n_current_value
+      this.v_n_idx_current_value = v_n_idx_current_value
     }
   }
   class O_resolution{
