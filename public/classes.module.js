@@ -19,12 +19,14 @@ class O_keyboard_key{
       s_name, 
       v_min, 
       v_max, 
-      v_step
+      v_step, 
+      v_current_value
     ){
       this.s_name = s_name, 
       this.v_min = v_min, 
       this.v_max = v_max, 
       this.v_step = v_step
+      this.v_current_value = v_current_value
     }
   }
   class O_resolution{
@@ -45,7 +47,8 @@ class O_keyboard_key{
       s_kind,// eg. "videoinput"
       s_label, // eg "HY-500B (0ac8:3420)"
       a_o_video_capability, 
-      a_o_resolution
+      a_o_resolution, 
+      n_idx_a_o_resolution
     ){
       this.s_deviceId = s_deviceId
       this.s_groupId = s_groupId
@@ -53,6 +56,7 @@ class O_keyboard_key{
       this.s_label = s_label
       this.a_o_video_capability = a_o_video_capability
       this.a_o_resolution = a_o_resolution
+      this.n_idx_a_o_resolution = n_idx_a_o_resolution
     }
   }
   
