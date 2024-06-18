@@ -1,147 +1,429 @@
 {
     "a_o_camera": [
         {
-            "s_deviceId": "55f0f7a4eefe176b2bada32b43c0426c001583656fc094aedbead085e4d8cbd4",
-            "s_groupId": "a38971ada0610f6435f02932715d3e83b2e663b9f59bdab87d99ef8cb80c57af",
+            "s_deviceId": "39a97a33b81904946450def0453715d1847fe851422c1148e909472e2dc20ed5",
+            "s_groupId": "e2aea6759a0684cd1f3b8fcb35b0536f4f5feb4ef68dd0ccf90236675d5c5407",
             "s_kind": "videoinput",
-            "s_label": "HY-500B (0ac8:3420)",
+            "s_label": "Webcam (1d6c:1278)",
             "a_o_video_capability": [
                 {
                     "s_name": "aspectRatio",
-                    "v_min": 0.00051440329218107,
-                    "v_max": 2592,
-                    "v_current_value": 0.00051440329218107,
-                    "o_cap": {
-                        "max": 2592,
-                        "min": 0.00051440329218107
-                    }
+                    "v_n_min": 0.0006944444444444445,
+                    "v_n_max": 2560,
+                    "v_a_v_option": null,
+                    "v_n_current_value": 0.0006944444444444445,
+                    "v_n_idx_v_a_v_option": null
                 },
                 {
                     "s_name": "brightness",
-                    "v_min": -64,
-                    "v_max": 64,
-                    "v_step": 1,
-                    "v_current_value": -64,
-                    "o_cap": {
-                        "max": 64,
-                        "min": -64,
-                        "step": 1
-                    }
+                    "v_n_min": 1,
+                    "v_n_max": 255,
+                    "v_n_step": 1,
+                    "v_a_v_option": null,
+                    "v_n_current_value": 1,
+                    "v_n_idx_v_a_v_option": null
                 },
                 {
                     "s_name": "colorTemperature",
-                    "v_min": 2800,
-                    "v_max": 6500,
-                    "v_step": 1,
-                    "v_current_value": 2800,
-                    "o_cap": {
-                        "max": 6500,
-                        "min": 2800,
-                        "step": 1
-                    }
+                    "v_n_min": 2800,
+                    "v_n_max": 6500,
+                    "v_n_step": 1,
+                    "v_a_v_option": null,
+                    "v_n_current_value": 2800,
+                    "v_n_idx_v_a_v_option": null
                 },
                 {
                     "s_name": "contrast",
-                    "v_min": 0,
-                    "v_max": 64,
-                    "v_step": 1,
-                    "v_current_value": 0,
-                    "o_cap": {
-                        "max": 64,
-                        "min": 0,
-                        "step": 1
-                    }
+                    "v_n_min": 1,
+                    "v_n_max": 255,
+                    "v_n_step": 1,
+                    "v_a_v_option": null,
+                    "v_n_current_value": 1,
+                    "v_n_idx_v_a_v_option": null
                 },
                 {
                     "s_name": "exposureMode",
-                    "o_cap": [
+                    "v_a_v_option": [
                         "manual",
                         "continuous"
-                    ]
+                    ],
+                    "v_n_current_value": null,
+                    "v_n_idx_v_a_v_option": 0
                 },
                 {
                     "s_name": "exposureTime",
-                    "v_min": 1,
-                    "v_max": 5000,
-                    "v_step": 1,
-                    "v_current_value": 1,
-                    "o_cap": {
-                        "max": 5000,
-                        "min": 1,
-                        "step": 1
-                    }
+                    "v_n_min": 5,
+                    "v_n_max": 2500,
+                    "v_n_step": 1,
+                    "v_a_v_option": null,
+                    "v_n_current_value": 5,
+                    "v_n_idx_v_a_v_option": null
                 },
                 {
                     "s_name": "facingMode",
-                    "o_cap": []
+                    "v_a_v_option": [],
+                    "v_n_current_value": null,
+                    "v_n_idx_v_a_v_option": 0
                 },
                 {
                     "s_name": "frameRate",
-                    "v_min": 0,
-                    "v_max": 30,
-                    "v_current_value": 0,
-                    "o_cap": {
-                        "max": 30,
-                        "min": 0
-                    }
+                    "v_n_min": 0,
+                    "v_n_max": 30,
+                    "v_a_v_option": null,
+                    "v_n_current_value": 0,
+                    "v_n_idx_v_a_v_option": null
                 },
                 {
                     "s_name": "height",
-                    "v_min": 1,
-                    "v_max": 1944,
-                    "v_current_value": 1,
-                    "o_cap": {
-                        "max": 1944,
-                        "min": 1
-                    }
+                    "v_n_min": 1,
+                    "v_n_max": 1440,
+                    "v_a_v_option": null,
+                    "v_n_current_value": 1,
+                    "v_n_idx_v_a_v_option": null
                 },
                 {
                     "s_name": "resizeMode",
-                    "o_cap": [
+                    "v_a_v_option": [
                         "none",
                         "crop-and-scale"
-                    ]
+                    ],
+                    "v_n_current_value": null,
+                    "v_n_idx_v_a_v_option": 0
                 },
                 {
                     "s_name": "saturation",
-                    "v_min": 0,
-                    "v_max": 128,
-                    "v_step": 1,
-                    "v_current_value": 0,
-                    "o_cap": {
-                        "max": 128,
-                        "min": 0,
-                        "step": 1
-                    }
+                    "v_n_min": 1,
+                    "v_n_max": 255,
+                    "v_n_step": 1,
+                    "v_a_v_option": null,
+                    "v_n_current_value": 1,
+                    "v_n_idx_v_a_v_option": null
                 },
                 {
                     "s_name": "sharpness",
-                    "v_min": 0,
-                    "v_max": 255,
-                    "v_step": 1,
-                    "v_current_value": 0,
-                    "o_cap": {
-                        "max": 255,
-                        "min": 0,
-                        "step": 1
-                    }
+                    "v_n_min": 1,
+                    "v_n_max": 255,
+                    "v_n_step": 1,
+                    "v_a_v_option": null,
+                    "v_n_current_value": 1,
+                    "v_n_idx_v_a_v_option": null
                 },
                 {
                     "s_name": "whiteBalanceMode",
-                    "o_cap": [
+                    "v_a_v_option": [
                         "manual",
                         "continuous"
-                    ]
+                    ],
+                    "v_n_current_value": null,
+                    "v_n_idx_v_a_v_option": 0
                 },
                 {
                     "s_name": "width",
-                    "v_min": 1,
-                    "v_max": 2592,
-                    "v_current_value": 1,
-                    "o_cap": {
-                        "max": 2592,
-                        "min": 1
-                    }
+                    "v_n_min": 1,
+                    "v_n_max": 2560,
+                    "v_a_v_option": null,
+                    "v_n_current_value": 1,
+                    "v_n_idx_v_a_v_option": null
+                }
+            ],
+            "a_o_resolution": [
+                {
+                    "n_scl_x_px": 2560,
+                    "n_scl_y_px": 1440,
+                    "s_name": "QHD"
+                },
+                {
+                    "n_scl_x_px": 1920,
+                    "n_scl_y_px": 1080,
+                    "s_name": "1080p(FHD)"
+                },
+                {
+                    "n_scl_x_px": 1280,
+                    "n_scl_y_px": 720,
+                    "s_name": "720p(HD)"
+                },
+                {
+                    "n_scl_x_px": 320,
+                    "n_scl_y_px": 240,
+                    "s_name": "QVGA"
+                },
+                {
+                    "n_scl_x_px": 160,
+                    "n_scl_y_px": 120,
+                    "s_name": "QQVGA"
+                }
+            ],
+            "n_idx_a_o_resolution": 1
+        },
+        {
+            "s_deviceId": "000f9470bc3e40ece889ab3deb1b6f2feaa89bdea22a252f10e313af4735485b",
+            "s_groupId": "f5ef6aeb8ef80a9c0d5fc4dda80a676e7d3b24ba4ef1a7f7c042b1c217ff6e95",
+            "s_kind": "videoinput",
+            "s_label": "MikrOkularHD (058f:3822)",
+            "a_o_video_capability": [
+                {
+                    "s_name": "aspectRatio",
+                    "v_n_min": 0.001388888888888889,
+                    "v_n_max": 1280,
+                    "v_a_v_option": null,
+                    "v_n_current_value": 0.001388888888888889,
+                    "v_n_idx_v_a_v_option": null
+                },
+                {
+                    "s_name": "brightness",
+                    "v_n_min": -127,
+                    "v_n_max": 128,
+                    "v_n_step": 1,
+                    "v_a_v_option": null,
+                    "v_n_current_value": -127,
+                    "v_n_idx_v_a_v_option": null
+                },
+                {
+                    "s_name": "colorTemperature",
+                    "v_n_min": 2500,
+                    "v_n_max": 7000,
+                    "v_n_step": 1,
+                    "v_a_v_option": null,
+                    "v_n_current_value": 2500,
+                    "v_n_idx_v_a_v_option": null
+                },
+                {
+                    "s_name": "contrast",
+                    "v_n_min": 0,
+                    "v_n_max": 30,
+                    "v_n_step": 1,
+                    "v_a_v_option": null,
+                    "v_n_current_value": 0,
+                    "v_n_idx_v_a_v_option": null
+                },
+                {
+                    "s_name": "exposureMode",
+                    "v_a_v_option": [
+                        "manual",
+                        "continuous"
+                    ],
+                    "v_n_current_value": null,
+                    "v_n_idx_v_a_v_option": 0
+                },
+                {
+                    "s_name": "exposureTime",
+                    "v_n_min": 78,
+                    "v_n_max": 3125,
+                    "v_n_step": 1,
+                    "v_a_v_option": null,
+                    "v_n_current_value": 78,
+                    "v_n_idx_v_a_v_option": null
+                },
+                {
+                    "s_name": "facingMode",
+                    "v_a_v_option": [],
+                    "v_n_current_value": null,
+                    "v_n_idx_v_a_v_option": 0
+                },
+                {
+                    "s_name": "frameRate",
+                    "v_n_min": 0,
+                    "v_n_max": 30,
+                    "v_a_v_option": null,
+                    "v_n_current_value": 0,
+                    "v_n_idx_v_a_v_option": null
+                },
+                {
+                    "s_name": "height",
+                    "v_n_min": 1,
+                    "v_n_max": 720,
+                    "v_a_v_option": null,
+                    "v_n_current_value": 1,
+                    "v_n_idx_v_a_v_option": null
+                },
+                {
+                    "s_name": "resizeMode",
+                    "v_a_v_option": [
+                        "none",
+                        "crop-and-scale"
+                    ],
+                    "v_n_current_value": null,
+                    "v_n_idx_v_a_v_option": 0
+                },
+                {
+                    "s_name": "saturation",
+                    "v_n_min": 0,
+                    "v_n_max": 127,
+                    "v_n_step": 1,
+                    "v_a_v_option": null,
+                    "v_n_current_value": 0,
+                    "v_n_idx_v_a_v_option": null
+                },
+                {
+                    "s_name": "sharpness",
+                    "v_n_min": 0,
+                    "v_n_max": 60,
+                    "v_n_step": 1,
+                    "v_a_v_option": null,
+                    "v_n_current_value": 0,
+                    "v_n_idx_v_a_v_option": null
+                },
+                {
+                    "s_name": "whiteBalanceMode",
+                    "v_a_v_option": [
+                        "manual",
+                        "continuous"
+                    ],
+                    "v_n_current_value": null,
+                    "v_n_idx_v_a_v_option": 0
+                },
+                {
+                    "s_name": "width",
+                    "v_n_min": 1,
+                    "v_n_max": 1280,
+                    "v_a_v_option": null,
+                    "v_n_current_value": 1,
+                    "v_n_idx_v_a_v_option": null
+                }
+            ],
+            "a_o_resolution": [
+                {
+                    "n_scl_x_px": 1280,
+                    "n_scl_y_px": 720,
+                    "s_name": "720p(HD)"
+                },
+                {
+                    "n_scl_x_px": 320,
+                    "n_scl_y_px": 240,
+                    "s_name": "QVGA"
+                },
+                {
+                    "n_scl_x_px": 160,
+                    "n_scl_y_px": 120,
+                    "s_name": "QQVGA"
+                }
+            ],
+            "n_idx_a_o_resolution": 0
+        },
+        {
+            "s_deviceId": "558eb8174bc0da9996009981599a1ac7019351021feaae8813e19f61d685b945",
+            "s_groupId": "3a638c1b6090bad5a385fd03d747cb5534120a63a0240353ae50765e169c70e1",
+            "s_kind": "videoinput",
+            "s_label": " ACR010 USB Webcam (0c45:6368)",
+            "a_o_video_capability": [
+                {
+                    "s_name": "aspectRatio",
+                    "v_n_min": 0.00051440329218107,
+                    "v_n_max": 2592,
+                    "v_a_v_option": null,
+                    "v_n_current_value": 0.00051440329218107,
+                    "v_n_idx_v_a_v_option": null
+                },
+                {
+                    "s_name": "brightness",
+                    "v_n_min": -64,
+                    "v_n_max": 64,
+                    "v_n_step": 1,
+                    "v_a_v_option": null,
+                    "v_n_current_value": -64,
+                    "v_n_idx_v_a_v_option": null
+                },
+                {
+                    "s_name": "colorTemperature",
+                    "v_n_min": 2800,
+                    "v_n_max": 6500,
+                    "v_n_step": 1,
+                    "v_a_v_option": null,
+                    "v_n_current_value": 2800,
+                    "v_n_idx_v_a_v_option": null
+                },
+                {
+                    "s_name": "contrast",
+                    "v_n_min": 0,
+                    "v_n_max": 64,
+                    "v_n_step": 1,
+                    "v_a_v_option": null,
+                    "v_n_current_value": 0,
+                    "v_n_idx_v_a_v_option": null
+                },
+                {
+                    "s_name": "exposureMode",
+                    "v_a_v_option": [
+                        "manual",
+                        "continuous"
+                    ],
+                    "v_n_current_value": null,
+                    "v_n_idx_v_a_v_option": 0
+                },
+                {
+                    "s_name": "exposureTime",
+                    "v_n_min": 1,
+                    "v_n_max": 5000,
+                    "v_n_step": 1,
+                    "v_a_v_option": null,
+                    "v_n_current_value": 1,
+                    "v_n_idx_v_a_v_option": null
+                },
+                {
+                    "s_name": "facingMode",
+                    "v_a_v_option": [],
+                    "v_n_current_value": null,
+                    "v_n_idx_v_a_v_option": 0
+                },
+                {
+                    "s_name": "frameRate",
+                    "v_n_min": 0,
+                    "v_n_max": 30,
+                    "v_a_v_option": null,
+                    "v_n_current_value": 0,
+                    "v_n_idx_v_a_v_option": null
+                },
+                {
+                    "s_name": "height",
+                    "v_n_min": 1,
+                    "v_n_max": 1944,
+                    "v_a_v_option": null,
+                    "v_n_current_value": 1,
+                    "v_n_idx_v_a_v_option": null
+                },
+                {
+                    "s_name": "resizeMode",
+                    "v_a_v_option": [
+                        "none",
+                        "crop-and-scale"
+                    ],
+                    "v_n_current_value": null,
+                    "v_n_idx_v_a_v_option": 0
+                },
+                {
+                    "s_name": "saturation",
+                    "v_n_min": 0,
+                    "v_n_max": 128,
+                    "v_n_step": 1,
+                    "v_a_v_option": null,
+                    "v_n_current_value": 0,
+                    "v_n_idx_v_a_v_option": null
+                },
+                {
+                    "s_name": "sharpness",
+                    "v_n_min": 0,
+                    "v_n_max": 6,
+                    "v_n_step": 1,
+                    "v_a_v_option": null,
+                    "v_n_current_value": 0,
+                    "v_n_idx_v_a_v_option": null
+                },
+                {
+                    "s_name": "whiteBalanceMode",
+                    "v_a_v_option": [
+                        "manual",
+                        "continuous"
+                    ],
+                    "v_n_current_value": null,
+                    "v_n_idx_v_a_v_option": 0
+                },
+                {
+                    "s_name": "width",
+                    "v_n_min": 1,
+                    "v_n_max": 2592,
+                    "v_a_v_option": null,
+                    "v_n_current_value": 1,
+                    "v_n_idx_v_a_v_option": null
                 }
             ],
             "a_o_resolution": [
@@ -172,292 +454,9 @@
                 }
             ],
             "n_idx_a_o_resolution": 0
-        },
-        {
-            "s_deviceId": "ca8728b081d798017d57b19f008e9b18571b9163e6051800e9835253cb8044c6",
-            "s_groupId": "7254094a60bd17d483841b4d258020100433b2566d4b86cbc3fdb6ea786bddca",
-            "s_kind": "videoinput",
-            "s_label": "SKT-MS200C-13A (9015:200c)",
-            "a_o_video_capability": [
-                {
-                    "s_name": "aspectRatio",
-                    "v_min": 0.0008333333333333334,
-                    "v_max": 1600,
-                    "v_current_value": 0.0008333333333333334,
-                    "o_cap": {
-                        "max": 1600,
-                        "min": 0.0008333333333333334
-                    }
-                },
-                {
-                    "s_name": "brightness",
-                    "v_min": -64,
-                    "v_max": 64,
-                    "v_step": 1,
-                    "v_current_value": -64,
-                    "o_cap": {
-                        "max": 64,
-                        "min": -64,
-                        "step": 1
-                    }
-                },
-                {
-                    "s_name": "colorTemperature",
-                    "v_min": 2800,
-                    "v_max": 6500,
-                    "v_step": 1,
-                    "v_current_value": 2800,
-                    "o_cap": {
-                        "max": 6500,
-                        "min": 2800,
-                        "step": 1
-                    }
-                },
-                {
-                    "s_name": "contrast",
-                    "v_min": 0,
-                    "v_max": 64,
-                    "v_step": 1,
-                    "v_current_value": 0,
-                    "o_cap": {
-                        "max": 64,
-                        "min": 0,
-                        "step": 1
-                    }
-                },
-                {
-                    "s_name": "exposureMode",
-                    "o_cap": [
-                        "manual",
-                        "continuous"
-                    ]
-                },
-                {
-                    "s_name": "exposureTime",
-                    "v_min": 1,
-                    "v_max": 5000,
-                    "v_step": 1,
-                    "v_current_value": 1,
-                    "o_cap": {
-                        "max": 5000,
-                        "min": 1,
-                        "step": 1
-                    }
-                },
-                {
-                    "s_name": "facingMode",
-                    "o_cap": []
-                },
-                {
-                    "s_name": "frameRate",
-                    "v_min": 0,
-                    "v_max": 30,
-                    "v_current_value": 0,
-                    "o_cap": {
-                        "max": 30,
-                        "min": 0
-                    }
-                },
-                {
-                    "s_name": "height",
-                    "v_min": 1,
-                    "v_max": 1200,
-                    "v_current_value": 1,
-                    "o_cap": {
-                        "max": 1200,
-                        "min": 1
-                    }
-                },
-                {
-                    "s_name": "resizeMode",
-                    "o_cap": [
-                        "none",
-                        "crop-and-scale"
-                    ]
-                },
-                {
-                    "s_name": "saturation",
-                    "v_min": 1,
-                    "v_max": 128,
-                    "v_step": 1,
-                    "v_current_value": 1,
-                    "o_cap": {
-                        "max": 128,
-                        "min": 1,
-                        "step": 1
-                    }
-                },
-                {
-                    "s_name": "sharpness",
-                    "v_min": 0,
-                    "v_max": 6,
-                    "v_step": 1,
-                    "v_current_value": 0,
-                    "o_cap": {
-                        "max": 6,
-                        "min": 0,
-                        "step": 1
-                    }
-                },
-                {
-                    "s_name": "whiteBalanceMode",
-                    "o_cap": [
-                        "manual",
-                        "continuous"
-                    ]
-                },
-                {
-                    "s_name": "width",
-                    "v_min": 1,
-                    "v_max": 1600,
-                    "v_current_value": 1,
-                    "o_cap": {
-                        "max": 1600,
-                        "min": 1
-                    }
-                }
-            ],
-            "a_o_resolution": [
-                {
-                    "n_scl_x_px": 1280,
-                    "n_scl_y_px": 720,
-                    "s_name": "720p(HD)"
-                },
-                {
-                    "n_scl_x_px": 320,
-                    "n_scl_y_px": 240,
-                    "s_name": "QVGA"
-                },
-                {
-                    "n_scl_x_px": 160,
-                    "n_scl_y_px": 120,
-                    "s_name": "QQVGA"
-                }
-            ],
-            "n_idx_a_o_resolution": 0
-        },
-        {
-            "s_deviceId": "0330d17c709cfd5258061e5fe0ee7634798ece9684cc235815944f5298b799de",
-            "s_groupId": "71575351b854599a913116afc5b4af7b5b24ddd739c60a0aac0661dd42b6fc14",
-            "s_kind": "videoinput",
-            "s_label": "USB2.0 PC CAMERA (1908:2311)",
-            "a_o_video_capability": [
-                {
-                    "s_name": "aspectRatio",
-                    "v_min": 0.0020833333333333333,
-                    "v_max": 640,
-                    "v_current_value": 0.0020833333333333333,
-                    "o_cap": {
-                        "max": 640,
-                        "min": 0.0020833333333333333
-                    }
-                },
-                {
-                    "s_name": "brightness",
-                    "v_min": 0,
-                    "v_max": 255,
-                    "v_step": 1,
-                    "v_current_value": 0,
-                    "o_cap": {
-                        "max": 255,
-                        "min": 0,
-                        "step": 1
-                    }
-                },
-                {
-                    "s_name": "contrast",
-                    "v_min": 0,
-                    "v_max": 255,
-                    "v_step": 1,
-                    "v_current_value": 0,
-                    "o_cap": {
-                        "max": 255,
-                        "min": 0,
-                        "step": 1
-                    }
-                },
-                {
-                    "s_name": "facingMode",
-                    "o_cap": []
-                },
-                {
-                    "s_name": "frameRate",
-                    "v_min": 0,
-                    "v_max": 30,
-                    "v_current_value": 0,
-                    "o_cap": {
-                        "max": 30,
-                        "min": 0
-                    }
-                },
-                {
-                    "s_name": "height",
-                    "v_min": 1,
-                    "v_max": 480,
-                    "v_current_value": 1,
-                    "o_cap": {
-                        "max": 480,
-                        "min": 1
-                    }
-                },
-                {
-                    "s_name": "resizeMode",
-                    "o_cap": [
-                        "none",
-                        "crop-and-scale"
-                    ]
-                },
-                {
-                    "s_name": "saturation",
-                    "v_min": 0,
-                    "v_max": 255,
-                    "v_step": 1,
-                    "v_current_value": 0,
-                    "o_cap": {
-                        "max": 255,
-                        "min": 0,
-                        "step": 1
-                    }
-                },
-                {
-                    "s_name": "sharpness",
-                    "v_min": 0,
-                    "v_max": 15,
-                    "v_step": 1,
-                    "v_current_value": 0,
-                    "o_cap": {
-                        "max": 15,
-                        "min": 0,
-                        "step": 1
-                    }
-                },
-                {
-                    "s_name": "width",
-                    "v_min": 1,
-                    "v_max": 640,
-                    "v_current_value": 1,
-                    "o_cap": {
-                        "max": 640,
-                        "min": 1
-                    }
-                }
-            ],
-            "a_o_resolution": [
-                {
-                    "n_scl_x_px": 320,
-                    "n_scl_y_px": 240,
-                    "s_name": "QVGA"
-                },
-                {
-                    "n_scl_x_px": 160,
-                    "n_scl_y_px": 120,
-                    "s_name": "QQVGA"
-                }
-            ],
-            "n_idx_a_o_resolution": 0
         }
     ],
-    "s_git_commit": "bac381b6b2aff2b582ed3a9a66e1bc84f85ed7fe",
+    "s_git_commit": "2db759ca1774b65868afe6b551d29151befe4324",
     "n_idx_a_o_camera": 0,
     "n_idx_a_s_image_mode": 0,
     "a_s_image_mode": [
@@ -479,15 +478,15 @@
     "n_factor_gamma": 1,
     "n_x_trn_nor": 0,
     "n_y_trn_nor": 0,
-    "s_path_rel_images": "./media/images_2024-06-12_00:19:41",
-    "s_path_rel_videos": "./media/videos_2024-06-12_00:19:41",
+    "s_path_rel_images": "./media/images_2024-06-18_14:15:42",
+    "s_path_rel_videos": "./media/videos_2024-06-18_14:15:42",
     "s_path_rel_stacking": "./media/tmp_focus_stacking_images",
     "s_path_rel_stitching": "./media/tmp_image_stitching_images",
     "s_path_rel_archive": "./media/archive",
     "b_layer_switch_type_on_click_cycle_through": false,
     "b_layer_switch_keep_pressed_required": true,
-    "n_idx_a_o_action_layer": 0,
-    "n_idx_a_o_action_layer__last": 0,
+    "n_idx_a_o_action_layer": 2,
+    "n_idx_a_o_action_layer__last": 2,
     "v_o_action_layer": null,
     "a_o_input_action_mapping__layer_switch": [
         {
@@ -553,7 +552,15 @@
                         "n_u32_id": 1,
                         "s_name": "move_slide_x_plus",
                         "s_nicename": "Slide right",
-                        "s_description": "Physically move the slide (only if the mic is motorized)"
+                        "s_description": "Physically move the slide (only if the mic is motorized)",
+                        "v_o_keyboard_key": {
+                            "s_name": "l",
+                            "n_ms_wpn_down": 1944370.5,
+                            "n_ms_wpn_up": 1944495.200000003,
+                            "b_down": false,
+                            "b_down__last": false,
+                            "n_ms_wpn__last_down_or_up": 1944495.200000003
+                        }
                     },
                     "s_name_input__controller": "right_stick_x_axis",
                     "s_name_char_keyboard": "l",
@@ -609,7 +616,15 @@
                         "n_u32_id": 5,
                         "s_name": "move_focus_plus",
                         "s_nicename": "Focus in",
-                        "s_description": ""
+                        "s_description": "",
+                        "v_o_keyboard_key": {
+                            "s_name": "o",
+                            "n_ms_wpn_down": 132437.59999999404,
+                            "n_ms_wpn_up": 132539.09999999404,
+                            "b_down": false,
+                            "b_down__last": false,
+                            "n_ms_wpn__last_down_or_up": 132539.09999999404
+                        }
                     },
                     "s_name_input__controller": "left_stick_y_axis",
                     "s_name_char_keyboard": "o",
@@ -637,7 +652,15 @@
                         "n_u32_id": 7,
                         "s_name": "move_slide_single_step_x_plus",
                         "s_nicename": "Slide right (one-step)",
-                        "s_description": "Moves the slide a single step of the stepper motor, which translates to approximately 2r*pi/(number_of_steps_per_rotation) = 0.007 millimeter"
+                        "s_description": "Moves the slide a single step of the stepper motor, which translates to approximately 2r*pi/(number_of_steps_per_rotation) = 0.007 millimeter",
+                        "v_o_keyboard_key": {
+                            "s_name": "l",
+                            "n_ms_wpn_down": 1944370.5,
+                            "n_ms_wpn_up": 1944495.200000003,
+                            "b_down": false,
+                            "b_down__last": false,
+                            "n_ms_wpn__last_down_or_up": 1944495.200000003
+                        }
                     },
                     "s_name_input__controller": "direction_pad_right",
                     "s_name_char_keyboard": "l",
@@ -1027,7 +1050,15 @@
                         "n_u32_id": 60,
                         "s_name": "usb_camera_next",
                         "s_nicename": "switch to next camera",
-                        "s_description": ""
+                        "s_description": "",
+                        "v_o_keyboard_key": {
+                            "s_name": "o",
+                            "n_ms_wpn_down": 132437.59999999404,
+                            "n_ms_wpn_up": 132539.09999999404,
+                            "b_down": false,
+                            "b_down__last": false,
+                            "n_ms_wpn__last_down_or_up": 132539.09999999404
+                        }
                     },
                     "s_name_input__controller": "right_middle_finger_button_r2",
                     "s_name_char_keyboard": "o",
@@ -1069,10 +1100,102 @@
                         "n_u32_id": 63,
                         "s_name": "usb_camera_resolution_previous",
                         "s_nicename": "switch to previous available resolution of the camera",
-                        "s_description": ""
+                        "s_description": "",
+                        "v_o_keyboard_key": {
+                            "s_name": "l",
+                            "n_ms_wpn_down": 1944370.5,
+                            "n_ms_wpn_up": 1944495.200000003,
+                            "b_down": false,
+                            "b_down__last": false,
+                            "n_ms_wpn__last_down_or_up": 1944495.200000003
+                        }
                     },
                     "s_name_input__controller": "direction_pad_right",
                     "s_name_char_keyboard": "l",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "n_u32_id": 41,
+                        "s_name": "usb_camera_exposureTime_minus",
+                        "s_nicename": "Time in seconds for exposure",
+                        "s_description": ""
+                    },
+                    "s_name_input__controller": "face_button_left",
+                    "s_name_char_keyboard": "a",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "n_u32_id": 41,
+                        "s_name": "usb_camera_exposureTime_minus",
+                        "s_nicename": "Time in seconds for exposure",
+                        "s_description": ""
+                    },
+                    "s_name_input__controller": "face_button_left",
+                    "s_name_char_keyboard": "d",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "n_u32_id": 38,
+                        "s_name": "usb_camera_exposureMode_next",
+                        "s_nicename": "auto, manual",
+                        "s_description": ""
+                    },
+                    "s_name_input__controller": "face_button_top",
+                    "s_name_char_keyboard": "w",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "n_u32_id": 39,
+                        "s_name": "usb_camera_exposureMode_previous",
+                        "s_nicename": "auto, manual",
+                        "s_description": ""
+                    },
+                    "s_name_input__controller": "face_button_bottom",
+                    "s_name_char_keyboard": "s",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "n_u32_id": 42,
+                        "s_name": "usb_camera_whiteBalanceMode_next",
+                        "s_nicename": "auto, manual",
+                        "s_description": ""
+                    },
+                    "s_name_input__controller": "left_stick_button_l3",
+                    "s_name_char_keyboard": "n",
+                    "v_b_invert_axis": false,
+                    "v_o_keyboard_key": null,
+                    "v_o_input_sensor": null,
+                    "v_o_input_sensor_last": null
+                },
+                {
+                    "o_input_action": {
+                        "n_u32_id": 43,
+                        "s_name": "usb_camera_whiteBalanceMode_previous",
+                        "s_nicename": "auto, manual",
+                        "s_description": ""
+                    },
+                    "s_name_input__controller": "left_stick_button_l3",
+                    "s_name_char_keyboard": "m",
                     "v_b_invert_axis": false,
                     "v_o_keyboard_key": null,
                     "v_o_input_sensor": null,

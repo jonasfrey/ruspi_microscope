@@ -22,7 +22,7 @@ class O_keyboard_key{
       v_n_step, 
       v_a_v_option,
       v_n_current_value, 
-      v_n_idx_current_value
+      v_n_idx_v_a_v_option
     ){
       this.s_name = s_name
       this.v_n_min = v_n_min
@@ -30,7 +30,7 @@ class O_keyboard_key{
       this.v_n_step = v_n_step
       this.v_a_v_option = v_a_v_option
       this.v_n_current_value = v_n_current_value
-      this.v_n_idx_current_value = v_n_idx_current_value
+      this.v_n_idx_v_a_v_option = v_n_idx_v_a_v_option
     }
   }
   class O_resolution{
